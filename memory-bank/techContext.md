@@ -43,19 +43,25 @@ tcc_call2go/
 ├── requirements.txt
 ├── data/
 │   ├── seed/
-│   │   └── artistas.csv              # Dimensão: lista mestre de artistas
+│   │   └── artistas.csv              # Dimensão: lista mestre (fonte oficial)
 │   ├── plots/                        # Gráficos gerados (PNG, DPI 300)
 │   ├── processed/
 │   │   ├── youtube_call2go_flagged.csv  # YouTube + flags Call2Go
 │   │   └── call2go.db                   # Data Warehouse SQLite
-│   └── raw/
-│       ├── spotify_metrics_*.csv        # Série temporal Spotify
-│       └── youtube_videos_raw.jsonl     # Dados brutos YouTube
+│   ├── raw/
+│   │   ├── spotify_metrics_*.csv        # Série temporal Spotify
+│   │   └── youtube_videos_raw.jsonl     # Dados brutos YouTube
+│   └── validation/                      # Artefatos de validação
+│       ├── manual_sample.csv            # Amostra para anotação manual
+│       ├── ground_truth.csv             # Anotação humana (preenchido manualmente)
+│       ├── cross_validation_report.csv  # Resultado humano vs. máquina
+│       └── cross_validation_report_metrics.json  # Métricas de concordância
 ├── notebooks/                        # Reservado para Jupyter notebooks
 ├── src/
 │   ├── __init__.py
 │   ├── collectors/
 │   │   ├── __init__.py
+│   │   ├── artist_source_builder.py  # Fonte oficial de artistas (playlists Spotify)
 │   │   ├── spotify_collector.py      # Coleta Spotify
 │   │   └── youtube_collector.py      # Coleta YouTube
 │   ├── analytics/
@@ -66,9 +72,14 @@ tcc_call2go/
 │   ├── db/
 │   │   ├── __init__.py
 │   │   └── db_builder.py             # Construtor do Data Warehouse
-│   └── processors/
+│   ├── processors/
+│   │   ├── __init__.py
+│   │   └── call2go_detector.py       # Motor regex (classificador)
+│   └── validation/                   # ** ARTEFATO CENTRAL DO TCC **
 │       ├── __init__.py
-│       └── call2go_detector.py       # Motor NLP (regex)
+│       ├── sample_generator.py       # Gera amostra para anotação manual
+│       ├── cross_validator.py        # A "volta": humano vs. máquina
+│       └── agreement_report.py       # Matriz de confusão e métricas visuais
 └── memory-bank/                      # Contexto persistente do projeto
 ```
 
@@ -76,4 +87,4 @@ tcc_call2go/
 - YouTube API tem quota diária limitada (10.000 unidades/dia)
 - Resolução de canal por nome (`search().list`) consome 100 unidades por chamada
 - Spotify Popularity Score é opaco — não se sabe exatamente como é calculado
-- Coleta do Spotify é snapshot pontual, não série temporal contínua (apenas 1 arquivo de data)
+- Coleta do Spotify é snapshot pontual, não série temporal contínua

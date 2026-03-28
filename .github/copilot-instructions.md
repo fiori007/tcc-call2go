@@ -13,10 +13,17 @@ Antes de responder qualquer pergunta sobre este projeto, leia os arquivos do mem
 ## Convenções
 - Código em Python 3, nomes de variáveis/funções em inglês, comentários em português
 - Scripts standalone com `if __name__ == "__main__"`
-- Dados de referência em `data/seed/`, brutos em `data/raw/`, processados em `data/processed/`, gráficos em `data/plots/`
-- Coletores em `src/collectors/`, processamento em `src/processors/`, análises em `src/analytics/`, banco em `src/db/`
+- Dados de referência em `data/seed/`, brutos em `data/raw/`, processados em `data/processed/`, gráficos em `data/plots/`, validação em `data/validation/`
+- Coletores em `src/collectors/`, processamento em `src/processors/`, análises em `src/analytics/`, banco em `src/db/`, validação em `src/validation/`
 - Autenticação via `.env` (nunca commitar chaves)
 - Gráficos acadêmicos com DPI 300
 
+## Foco do TCC (IMPORTANTE)
+O foco NÃO é estudar música ou artistas. É sobre **confiabilidade metodológica**: validar se o detector automatizado é confiável comparando com classificação humana. Os artistas são apenas o dataset.
+
 ## Contexto Acadêmico
-Este é um TCC (Trabalho de Conclusão de Curso). Priorize rigor estatístico, reprodutibilidade e clareza nas explicações.
+Este é um TCC (Trabalho de Conclusão de Curso) em Ciência da Computação. Priorize:
+- Rigor estatístico e reprodutibilidade
+- Validação independente (nunca aceitar resultado sem "volta")
+- Fontes oficiais e rastreáveis para dados de entrada
+- Separação clara entre o que a máquina fez e o que o humano validou

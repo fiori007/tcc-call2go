@@ -2,15 +2,22 @@
 
 ## Arquitetura Geral
 ```
-Coleta (APIs) → Processamento (NLP/Regex) → Armazenamento (SQLite) → Análise (Estatística + Visualização)
+Fonte Oficial → Coleta (APIs) → Processamento (Regex) → VALIDAÇÃO → Armazenamento (SQLite) → Análise
+                                                          ├─ Humano vs. Máquina (cross_validator)
+                                                          └─ YouTube ↔ Spotify (cross_platform_validator)
 ```
 
-## Padrão ETL
+## Padrão ETL + Validação
 | Etapa | Script | Input | Output |
 |-------|--------|-------|--------|
+| **Seed** | `src/collectors/artist_source_builder.py` | Playlists Oficiais Spotify | `data/seed/artistas.csv` |
 | Extract | `src/collectors/spotify_collector.py` | Spotify API | `data/raw/spotify_metrics_YYYY-MM-DD.csv` |
 | Extract | `src/collectors/youtube_collector.py` | YouTube Data API v3 | `data/raw/youtube_videos_raw.jsonl` |
 | Transform | `src/processors/call2go_detector.py` | JSONL bruto | `data/processed/youtube_call2go_flagged.csv` |
+| **Validate** | `src/validation/sample_generator.py` | JSONL bruto | `data/validation/manual_sample.csv` |
+| **Validate** | `src/validation/cross_validator.py` | Ground truth + JSONL | `data/validation/cross_validation_report.csv` |
+| **Validate** | `src/validation/agreement_report.py` | Report CSV + métricas | Gráficos de concordância |
+| **Validate** | `src/validation/cross_platform_validator.py` | Flagged CSV + Spotify CSV | Relatório bidirecional + gráficos |
 | Load | `src/db/db_builder.py` | CSVs processados | `data/processed/call2go.db` (SQLite) |
 | Analyze | `src/analytics/eda_analysis.py` | SQLite DB | Gráficos PNG + stats no console |
 | Analyze | `src/analytics/hypothesis_testing.py` | SQLite DB | Resultado do teste Mann-Whitney U |

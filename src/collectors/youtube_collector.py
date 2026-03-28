@@ -91,17 +91,34 @@ def collect_youtube_data():
     df_artists = pd.read_csv("data/seed/artistas.csv")
 
     all_data = []
+    success_count = 0
+    error_count = 0
 
     for index, row in df_artists.iterrows():
         artist_name = row['artist_name']
-        print(f"\nProcessando: {artist_name}")
+        print(f"\n[{index+1}/{len(df_artists)}] Processando: {artist_name}")
 
         try:
-            # 1. Resolução em tempo de execução
-            channel_id = get_channel_id_by_name(youtube, artist_name)
-            print(f"[OK] ID resolvido: {channel_id}")
+            # Usa youtube_channel_id do CSV se disponível, senão busca dinamicamente
+            channel_id = None
+            if 'youtube_channel_id' in row and pd.notna(row.get('youtube_channel_id')):
+                channel_id = row['youtube_channel_id']
+                # Verifica se o canal do CSV funciona
+                try:
+                    res = youtube.channels().list(id=channel_id, part='contentDetails').execute()
+                    if not res.get('items') or 'relatedPlaylists' not in res['items'][0].get('contentDetails', {}):
+                        print(f"  [AVISO] Canal do CSV inválido, buscando via pesquisa...")
+                        channel_id = None
+                    else:
+                        print(f"  [OK] Canal do CSV: {channel_id}")
+                except Exception:
+                    channel_id = None
 
-            # 2. Extração dos vídeos
+            if not channel_id:
+                channel_id = get_channel_id_by_name(youtube, artist_name)
+                print(f"  [OK] Canal resolvido via busca: {channel_id}")
+
+            # Extração dos vídeos
             video_ids = get_channel_videos(youtube, channel_id, max_results=50)
             video_details = get_video_details(youtube, video_ids)
 
@@ -109,18 +126,22 @@ def collect_youtube_data():
                 video['artist_name'] = artist_name
 
             all_data.extend(video_details)
-            print(f"[OK] {len(video_details)} vídeos processados com sucesso.")
+            success_count += 1
+            print(f"  [OK] {len(video_details)} vídeos processados com sucesso.")
 
         except Exception as e:
-            print(f"[ERRO] Falha ao coletar dados para {artist_name}: {e}")
+            error_count += 1
+            print(f"  [ERRO] Falha ao coletar dados para {artist_name}: {e}")
 
     # Salvar
+    os.makedirs("data/raw", exist_ok=True)
     output_file = "data/raw/youtube_videos_raw.jsonl"
     with open(output_file, 'w', encoding='utf-8') as f:
         for item in all_data:
             f.write(json.dumps(item, ensure_ascii=False) + '\n')
 
     print(f"\n✅ Dados do YouTube salvos com sucesso em: {output_file}")
+    print(f"  Total: {len(all_data)} vídeos | {success_count} artistas OK | {error_count} erros")
 
 
 if __name__ == "__main__":

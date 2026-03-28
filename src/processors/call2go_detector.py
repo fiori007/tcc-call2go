@@ -78,6 +78,18 @@ def process_videos():
     # Salva o dataset limpo e enriquecido
     df.to_csv(output_file, index=False, encoding='utf-8')
     print(f"✅ Processamento concluído. {len(df)} vídeos analisados.")
+
+    # Resumo por tipo
+    print(f"\n--- DISTRIBUIÇÃO ---")
+    for call_type, count in df['call2go_type'].value_counts().items():
+        pct = count / len(df) * 100
+        print(f"  {call_type}: {count} ({pct:.1f}%)")
+
+    return df
+
+
+if __name__ == "__main__":
+    process_videos()
     print(f"✅ Arquivo estruturado salvo em: {output_file}\n")
     
     # Sumarização Analítica

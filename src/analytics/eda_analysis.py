@@ -1,5 +1,7 @@
 import sqlite3
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
@@ -65,11 +67,11 @@ def run_analysis():
     # ---------------------------------------------------------
     print("\n--- ESTATÍSTICAS DESCRITIVAS (VIEWS POR TIPO) ---")
     # Calcula Média, Mediana, Min, Max e Desvio Padrão das views agrupadas pelo tipo de Call2Go
-    stats = df.groupby('call2go_type')['view_count'].describe()
+    desc_stats = df.groupby('call2go_type')['view_count'].describe()
     
     # Formata para evitar notação científica (ex: 1.2e7) e facilitar a leitura
     pd.options.display.float_format = '{:,.2f}'.format
-    print(stats[['count', 'mean', '50%', 'std']]) # 50% = Mediana
+    print(desc_stats[['count', 'mean', '50%', 'std']]) # 50% = Mediana
 
 if __name__ == "__main__":
     run_analysis()

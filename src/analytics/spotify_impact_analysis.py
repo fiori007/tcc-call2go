@@ -1,6 +1,8 @@
 import sqlite3
 import pandas as pd
 from scipy import stats
+import matplotlib
+matplotlib.use('Agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os

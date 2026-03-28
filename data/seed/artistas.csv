@@ -1,7 +1,21 @@
-artist_name,spotify_id,youtube_channel_id
-Anitta,716NhGYqD1jl2wI1Qkgq36,UCqjjyPUghDSSKFBABM_CXMw
-Marilia Mendonca,1yR65psqiazQpeM79CcGh8,UC0zE2F2g8xN2zY3vK19qT-A
-Henrique e Juliano,3p7PcrEHaaKLJnPUGOtRlT,UC0fW2E3Jb5A5TjYjM-V-QTw
-Luan Santana,3qZ2n5keVNehcjF0HjO7Xp,UCv5qf_bL3tG4_Xk4_yD0_Qw
-Ze Neto e Cristiano,511pD1N5Wbb9771B7GkZz1,UCRm4O2v-r8U_2Q_2T8_X_SQ
-Gusttavo Lima,74XFHRwlV6OrjEM0A2NCMF,UC3z0r5UvV4_r5mX9_Y0N-8Q
+artist_name,spotify_id,followers,popularity,genres,source,occurrence_count,extraction_date,selection_criteria
+Henrique & Juliano,3p7PcrEHaaKLJnPUGOtRlT,32672333,84,sertanejo; sertanejo universitário; arrocha,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Panda,5qIpstBGrGteJZg1xIvbiz,600664,82,sertanejo; sertanejo universitário,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Grupo Menos É Mais,6vTqEFbTtTRJsuIpzZgjxi,7463666,82,pagode; samba,search:pop brasil,2,2026-03-28,Spotify Search by Genre (Market: BR)
+MJ Records,0oAZhL6hFrM3YRr6QzjlOf,108675,81,sertanejo; sertanejo universitário,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Anitta,7FNnA9vBm6EKceENgCGRMb,13381218,80,brazilian pop; funk pop; brazilian funk,search:funk brasil,3,2026-03-28,Spotify Search by Genre (Market: BR)
+Jorge & Mateus,1elUiq4X7pxej6FRlrEzjM,25282067,80,sertanejo; sertanejo universitário; arrocha,search:sertanejo universitario,3,2026-03-28,Spotify Search by Genre (Market: BR)
+Gusttavo Lima,7MiDcPa6UiV3In7lIM71IN,23961217,79,sertanejo; sertanejo universitário; arrocha,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Ana Castela,2CKOmarVWvWqkNWUatHCex,10063816,78,sertanejo; agronejo; sertanejo universitário,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Marília Mendonça,1yR65psqiazQpeM79CcGh8,39676700,78,sertanejo; sertanejo universitário; arrocha,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Mc Gw,0f1IECbrVV952unZkzrsg2,1634374,78,brazilian funk; phonk; brazilian phonk,search:funk brasil,1,2026-03-28,Spotify Search by Genre (Market: BR)
+Matheus & Kauan,2Z0lRIqr997lIUiPtrpKCr,13574463,78,sertanejo; sertanejo universitário; arrocha,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Luan Santana,3qvcCP2J0fWi0m0uQDUf6r,10958546,78,sertanejo; sertanejo universitário; arrocha,search:sertanejo,1,2026-03-28,Spotify Search by Genre (Market: BR)
+Matuê,5nP8x4uEFjAAmDzwOEc9b8,14831815,78,brazilian trap; trap; brazilian hip hop,search:funk brasil,3,2026-03-28,Spotify Search by Genre (Market: BR)
+Ícaro e Gilmar,6Wlvsn3IPHiZwAv02lB5eC,936259,77,sertanejo; sertanejo universitário; agronejo,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Filipe Ret,7gJN8W0589FisSYJS17K54,9996833,77,brazilian hip hop; brazilian trap; trap funk,search:trap brasileiro,1,2026-03-28,Spotify Search by Genre (Market: BR)
+Mc Jacaré,6qrqAYlS6lUj2BVXax7SZW,1369533,77,brazilian funk; funk carioca; trap funk,search:funk brasil,1,2026-03-28,Spotify Search by Genre (Market: BR)
+PEDRO SAMPAIO,5wbf52LA6kcaboHSN6NEF1,3450966,77,brazilian funk; funk pop; funk carioca,search:funk brasil,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Zé Neto & Cristiano,487N2T9nIPEHrlTZLL3SQs,23766502,77,sertanejo; sertanejo universitário; agronejo,search:sertanejo universitario,2,2026-03-28,Spotify Search by Genre (Market: BR)
+Murilo Huff,3hq7WoPJsrRP0KMSLhUgRz,2794856,76,sertanejo; sertanejo universitário; arrocha,search:sertanejo,1,2026-03-28,Spotify Search by Genre (Market: BR)
+Veigh,4YqwRbMLqGHRHLS1w2ZKse,7047300,76,brazilian trap; trap funk; trap,search:trap brasileiro,1,2026-03-28,Spotify Search by Genre (Market: BR)

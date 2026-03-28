@@ -11,6 +11,10 @@ def build_database():
     os.makedirs("data/processed", exist_ok=True)
     db_path = "data/processed/call2go.db"
 
+    # Remove banco anterior para rebuild limpo
+    if os.path.exists(db_path):
+        os.remove(db_path)
+
     # Conecta ao banco (cria o arquivo se não existir)
     conn = sqlite3.connect(db_path)
 
