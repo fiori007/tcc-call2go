@@ -83,7 +83,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
     if scraped_data:
         print(f"  Links scrapeados carregados: {len(scraped_data)} canais")
     else:
-        print("  [AVISO] Links scrapeados não encontrados — detecção de canal será apenas por texto")
+        print(
+            "  [AVISO] Links scrapeados não encontrados — detecção de canal será apenas por texto")
 
     # Verifica se ground truth tem coluna de canal
     has_channel_gt = 'manual_channel_call2go_type' in df_gt.columns
