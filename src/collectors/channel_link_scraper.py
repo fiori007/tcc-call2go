@@ -126,7 +126,8 @@ def find_official_channel(artist_name, session=None):
 
         # Extrai todos os channel_ids dos resultados
         # Formato: "channelId":"UC..."
-        channel_ids = re.findall(r'"channelId"\s*:\s*"(UC[a-zA-Z0-9_-]{22})"', data)
+        channel_ids = re.findall(
+            r'"channelId"\s*:\s*"(UC[a-zA-Z0-9_-]{22})"', data)
         if not channel_ids:
             return None
 
@@ -310,7 +311,8 @@ def scrape_all_channels(artists_channels, output_file="data/raw/channel_links_sc
             official_tag = ""
             if result.get('official_channel_id'):
                 official_tag = f" → oficial: {result['official_channel_id'][:15]}..."
-            print(f"  [{i+1}/{total}] {artist}: CACHE ({spotify_tag}{oac_tag}{official_tag})")
+            print(
+                f"  [{i+1}/{total}] {artist}: CACHE ({spotify_tag}{oac_tag}{official_tag})")
             if result['has_spotify']:
                 spotify_found += 1
             if result.get('is_auto_generated_channel'):
@@ -386,7 +388,8 @@ def scrape_all_channels(artists_channels, output_file="data/raw/channel_links_sc
         f"\n✅ Scraping concluído: {scraped} novos + {total - scraped} do cache")
     print(f"✅ Artistas com Spotify no perfil: {spotify_found}/{total}")
     print(f"⚠️  Canais auto-gerados (OAC): {oac_count}/{total}")
-    print(f"📌 Canais oficiais descobertos (para OAC): {official_found}/{oac_count}")
+    print(
+        f"📌 Canais oficiais descobertos (para OAC): {official_found}/{oac_count}")
     print(f"✅ Cache salvo em: {output_file}")
 
     return cache

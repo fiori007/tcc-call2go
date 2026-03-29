@@ -1,7 +1,10 @@
 import os
 import pandas as pd
 import json
-from src.processors.call2go_detector import detect_call2go, detect_call2go_channel
+from src.processors.call2go_detector import (
+    detect_call2go, detect_call2go_channel, detect_call2go_channel_scraped
+)
+from src.collectors.channel_link_scraper import load_cached_channel_links
 
 
 def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
@@ -72,12 +75,20 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
                 raw_videos[vid] = {
                     'description': video.get('description', ''),
                     'channel_description': video.get('channel_description', ''),
+                    'channel_id': video.get('channel_id', ''),
                 }
+
+    # 2b. Carrega links scrapeados dos canais (About page)
+    scraped_data = load_cached_channel_links()
+    if scraped_data:
+        print(f"  Links scrapeados carregados: {len(scraped_data)} canais")
+    else:
+        print("  [AVISO] Links scrapeados não encontrados — detecção de canal será apenas por texto")
 
     # Verifica se ground truth tem coluna de canal
     has_channel_gt = 'manual_channel_call2go_type' in df_gt.columns
 
-    # 3. Comparação lado a lado (vídeo + canal)
+    # 3. Comparação lado a lado (vídeo + canal texto + canal scraped)
     results = []
     for _, row in df_gt.iterrows():
         vid = row['video_id']
@@ -86,12 +97,27 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
         raw = raw_videos.get(vid, {})
         description = raw.get('description', '')
         channel_desc = raw.get('channel_description', '')
+        channel_id = raw.get('channel_id', '')
 
         # Detector no vídeo
         auto_has_video, auto_type_video = detect_call2go(description)
-        # Detector no canal
-        auto_has_channel, auto_type_channel = detect_call2go_channel(
+        # Detector no canal (texto da channel_description)
+        auto_has_channel_text, auto_type_channel_text = detect_call2go_channel(
             channel_desc)
+        # Detector no canal (links scrapeados do About)
+        auto_has_channel_scraped, auto_type_channel_scraped = detect_call2go_channel_scraped(
+            channel_id, scraped_data)
+
+        # Canal combinado: scraped prevalece sobre texto
+        if auto_has_channel_scraped:
+            auto_has_channel = True
+            auto_type_channel = auto_type_channel_scraped
+        elif auto_has_channel_text:
+            auto_has_channel = True
+            auto_type_channel = auto_type_channel_text
+        else:
+            auto_has_channel = False
+            auto_type_channel = 'nenhum'
 
         # Classificação combinada (mesma lógica do call2go_detector.process_videos)
         if auto_has_video:

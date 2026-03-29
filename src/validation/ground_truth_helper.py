@@ -186,7 +186,8 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
             # Também adiciona links do canal oficial (para OAC)
             official_sp = ch_info.get('official_spotify_links', [])
             for sp in official_sp:
-                all_evidence.append(f"[SCRAPED] LINK no About (oficial): {sp[:80]}")
+                all_evidence.append(
+                    f"[SCRAPED] LINK no About (oficial): {sp[:80]}")
 
             # Se tem canal oficial separado, adiciona seus links também
             official_id = ch_info.get('official_channel_id')
@@ -201,7 +202,8 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
         if video_type == 'link_direto':
             confidence = 'ALTA'  # link direto na descrição do vídeo
         elif scraped_has and source == 'canal':
-            confidence = 'ALTA'  # link scrapeado do About (ou oficial) é muito confiável
+            # link scrapeado do About (ou oficial) é muito confiável
+            confidence = 'ALTA'
         elif auto_gen and suggested_type == 'nenhum':
             confidence = 'ALTA'  # auto-gen sem Call2Go = correto
         elif suggested_type == 'nenhum' and not all_evidence:
