@@ -176,26 +176,36 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
         all_evidence = video_evidence + \
             [f"[CANAL] {e}" for e in channel_evidence]
 
-        # Adiciona evidência de links scrapeados
+        # Adiciona evidência de links scrapeados (canal primário)
         if scraped_data and channel_id in scraped_data:
-            sp_links = scraped_data[channel_id].get('spotify_links', [])
+            ch_info = scraped_data[channel_id]
+            sp_links = ch_info.get('spotify_links', [])
             for sp in sp_links:
                 all_evidence.append(f"[SCRAPED] LINK no About: {sp[:80]}")
 
+            # Também adiciona links do canal oficial (para OAC)
+            official_sp = ch_info.get('official_spotify_links', [])
+            for sp in official_sp:
+                all_evidence.append(f"[SCRAPED] LINK no About (oficial): {sp[:80]}")
+
+            # Se tem canal oficial separado, adiciona seus links também
+            official_id = ch_info.get('official_channel_id')
+            if official_id and official_id in scraped_data:
+                off_info = scraped_data[official_id]
+                for sp in off_info.get('spotify_links', []):
+                    ev = f"[SCRAPED] LINK no About (oficial {official_id[:12]}): {sp[:80]}"
+                    if ev not in all_evidence:
+                        all_evidence.append(ev)
+
         # Calcula confiança
-        if auto_gen:
-            # Vídeos auto-gerados: se não tem Call2Go, alta confiança
-            # (labels não usam Call2Go em Content ID)
-            if suggested_type == 'nenhum':
-                confidence = 'ALTA'
-            else:
-                confidence = 'MEDIA'  # raro: auto-gen com Call2Go
-        elif video_type == 'link_direto':
-            confidence = 'ALTA'
+        if video_type == 'link_direto':
+            confidence = 'ALTA'  # link direto na descrição do vídeo
         elif scraped_has and source == 'canal':
-            confidence = 'ALTA'  # link scrapeado é muito confiável
+            confidence = 'ALTA'  # link scrapeado do About (ou oficial) é muito confiável
+        elif auto_gen and suggested_type == 'nenhum':
+            confidence = 'ALTA'  # auto-gen sem Call2Go = correto
         elif suggested_type == 'nenhum' and not all_evidence:
-            confidence = 'ALTA'
+            confidence = 'ALTA'  # sem evidência nenhuma = claramente nenhum
         elif source == 'canal' and not scraped_has:
             confidence = 'MEDIA'  # canal detectado por texto, não por scrape
         elif video_type == 'texto_implicito':

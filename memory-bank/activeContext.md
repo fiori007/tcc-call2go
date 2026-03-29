@@ -7,12 +7,12 @@ Qualidade dos dados significativamente melhorada. Web scraper extrai links estru
 - Coleta de dados do Spotify e YouTube: **concluída** (20 artistas, 1000 vídeos)
 - Detector Call2Go (regex): **melhorado** (3 níveis: vídeo + canal texto + canal scraped)
 - Filtro auto-gerados: **implementado** (450/1000 vídeos = 45% são auto-gerados)
-- Web scraper canais: **implementado** (7/20 artistas com Spotify no About, 9/20 OAC)
+- Web scraper canais: **implementado** (12/20 artistas com Spotify no About, 9/20 OAC, 9/9 oficiais descobertos)
 - Filtro narrativo: **implementado** ("charts do Spotify" ≠ Call2Go)
 - Data Warehouse SQLite: **construído**
 - Análises estatísticas: **concluídas** (mas resultados não validados)
 - Ground truth pré-preenchido: **50/50 alta confiança** ✅
-- Distribuição: 19 link_direto, 0 texto_implicito, 31 nenhum
+- Distribuição: 31 link_direto, 0 texto_implicito, 19 nenhum
 
 ## Próximas Ações (Prioridade)
 1. 🔴 **ALUNO:** Revisar `data/validation/ground_truth_prefilled.csv` (50 vídeos, todos alta confiança)

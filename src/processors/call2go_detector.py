@@ -116,6 +116,9 @@ def detect_call2go_channel_scraped(channel_id, scraped_data):
     Usa os dados de channel_link_scraper.py (web scraping) que captura
     os botões de redes sociais que a YouTube Data API não expõe.
 
+    Para canais OAC (auto-gerados), também verifica links do canal oficial
+    descoberto automaticamente pelo scraper.
+
     Args:
         channel_id: ID do canal do YouTube
         scraped_data: dict carregado de channel_links_scraped.json
@@ -127,8 +130,21 @@ def detect_call2go_channel_scraped(channel_id, scraped_data):
         return 0, 'nenhum'
 
     channel_info = scraped_data[channel_id]
+
+    # Verifica links diretos do canal
     if channel_info.get('has_spotify') and channel_info.get('spotify_links'):
         return 1, 'link_direto'
+
+    # Para OAC: verifica links do canal oficial (mesclados pelo scraper)
+    if channel_info.get('official_spotify_links'):
+        return 1, 'link_direto'
+
+    # Para OAC: verifica canal oficial no cache (se o scraper salvou separadamente)
+    official_id = channel_info.get('official_channel_id')
+    if official_id and official_id in scraped_data:
+        official_info = scraped_data[official_id]
+        if official_info.get('has_spotify') and official_info.get('spotify_links'):
+            return 1, 'link_direto'
 
     return 0, 'nenhum'
 

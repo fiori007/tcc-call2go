@@ -89,10 +89,13 @@ tcc_call2go/
 - **`channel_link_scraper.py`** — scraper 2-fases para links da aba Sobre
   - Fase 1: Página principal do canal → `ytInitialData`
   - Fase 2: Página `/about` → `channelExternalLinkViewModel`
+  - **Descoberta de canal oficial**: para canais OAC, busca via YouTube Search
+    `{artist_name} canal oficial` com filtro `sp=EgIQAg==` (tipo: Canal)
+    Testa até 5 resultados, retorna o primeiro não-OAC
   - Fix crítico: `\u0026` → `&` no JSON para decodificar redirect URLs completas
   - Detecta canais OAC via "Gerado automaticamente pelo YouTube"
-  - Cache: `data/raw/channel_links_scraped.json`
-  - 7/20 artistas com Spotify, 9/20 canais OAC
+  - Cache: `data/raw/channel_links_scraped.json` (29 canais: 20 primários + 9 oficiais)
+  - 12/20 artistas com Spotify, 9/20 canais OAC, 9/9 oficiais descobertos
   - Rate limiting: 2s entre requests, 0.5s entre fases do mesmo canal
 
 ## Dados de Qualidade
@@ -101,7 +104,8 @@ tcc_call2go/
 | Total de vídeos | 1000 |
 | Vídeos auto-gerados | 450 (45%) |
 | Canais OAC | 9/20 (45%) |
-| Artistas com Spotify no About | 7/20 (35%) |
+| Artistas com Spotify no About | 12/20 (60%) |
+| Canais oficiais descobertos (OAC) | 9/9 (100%) |
 | Vídeos com link direto (descrição) | 25 |
 | Vídeos com Call2Go via canal | 323 |
 

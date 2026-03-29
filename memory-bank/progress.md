@@ -41,9 +41,11 @@
 ### ✅ Concluído (Fase 4 — Qualidade dos Dados, 29/03/2026)
 - **`channel_link_scraper.py`** — NOVO: web scraper 2-fases (página principal + /about) para links estruturados
   - Fix crítico: decode `\u0026` no JSON do YouTube → URLs completas extraídas
-  - Resultado: 7/20 artistas têm Spotify na aba Sobre (antes: 2/20)
+  - **Descoberta de canal oficial para OAC**: busca automática via YouTube Search
+    - 9/9 canais oficiais encontrados para artistas com OAC
+  - Resultado: **12/20 artistas** têm Spotify na aba Sobre (antes: 2/20 → 7/20 → 12/20)
   - Detecta canais OAC (auto-gerados): 9/20 canais são OAC
-  - Cache em `data/raw/channel_links_scraped.json`
+  - Cache em `data/raw/channel_links_scraped.json` (29 canais: 20 primários + 9 oficiais)
 - **`call2go_detector.py`** — melhorias significativas:
   - `is_auto_generated()` — detecta vídeos "Provided to YouTube by..." (450/1000 = 45%)
   - `detect_call2go_channel_scraped()` — detecta Call2Go via links scrapeados (mais confiável)
@@ -55,7 +57,7 @@
   - Integra links scrapeados como evidência principal
   - Flags auto-gen e OAC para contexto
   - **50/50 alta confiança** (antes: 45/50) — melhoria de 100%
-  - Distribuição: 19 link_direto, 0 texto_implicito, 31 nenhum
+  - Distribuição: 31 link_direto, 0 texto_implicito, 19 nenhum
 - **Correção Grupo Menos É Mais** — "200 dias nos charts do Spotify" não é mais falso positivo
 
 ### 🔲 Pendente (Ações Imediatas — Em Ordem)
