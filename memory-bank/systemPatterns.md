@@ -15,6 +15,7 @@ Fonte Oficial → Coleta (APIs) → Processamento (Regex) → VALIDAÇÃO → Ar
 | Extract | `src/collectors/youtube_collector.py` | YouTube Data API v3 | `data/raw/youtube_videos_raw.jsonl` |
 | Transform | `src/processors/call2go_detector.py` | JSONL bruto | `data/processed/youtube_call2go_flagged.csv` |
 | **Validate** | `src/validation/sample_generator.py` | JSONL bruto | `data/validation/manual_sample.csv` |
+| **Validate** | `src/validation/ground_truth_helper.py` | Sample + JSONL bruto | `data/validation/ground_truth_prefilled.csv` |
 | **Validate** | `src/validation/cross_validator.py` | Ground truth + JSONL | `data/validation/cross_validation_report.csv` |
 | **Validate** | `src/validation/agreement_report.py` | Report CSV + métricas | Gráficos de concordância |
 | **Validate** | `src/validation/cross_platform_validator.py` | Flagged CSV + Spotify CSV | Relatório bidirecional + gráficos |
@@ -52,8 +53,8 @@ dim_artist (artist_name PK, spotify_id, youtube_channel_id)
 
 ## Padrões de Detecção NLP (Regex)
 ```python
-# Link direto
-r'(https?://(?:open\.spotify\.com|spoti\.fi)[^\s]+)'
+# Link direto (3 domínios oficiais do Spotify)
+r'(https?://(?:open\.spotify\.com|spoti\.fi|sptfy\.com)[^\s]+)'
 
 # Texto implícito (5 padrões, em ordem de especificidade)
 r'ou[çc]a no spotify'

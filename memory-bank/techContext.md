@@ -78,7 +78,8 @@ tcc_call2go/
 │   └── validation/                   # ** ARTEFATO CENTRAL DO TCC **
 │       ├── __init__.py
 │       ├── sample_generator.py       # Gera amostra para anotação manual
-│       ├── cross_validator.py        # A "volta": humano vs. máquina
+│       ├── ground_truth_helper.py    # Pré-preenche ground truth (semi-automático)
+│       ├── cross_validator.py        # A "volta": humano vs. máquina (3 níveis)
 │       └── agreement_report.py       # Matriz de confusão e métricas visuais
 └── memory-bank/                      # Contexto persistente do projeto
 ```

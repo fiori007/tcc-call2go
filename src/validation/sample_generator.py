@@ -49,16 +49,20 @@ def generate_validation_sample(input_file="data/raw/youtube_videos_raw.jsonl",
     rows = []
     for v in sample:
         description = v.get('description', '')
+        channel_desc = v.get('channel_description', '')
         rows.append({
             'video_id': v.get('video_id'),
             'artist_name': v.get('artist_name'),
             'title': v.get('title'),
             'description_preview': description[:300] if description else '',
             'full_description_length': len(description) if description else 0,
+            'channel_description_preview': channel_desc[:300] if channel_desc else '',
             'has_spotify_link': '',       # PREENCHER MANUALMENTE: sim/nao
             'has_spotify_text': '',       # PREENCHER MANUALMENTE: sim/nao
             # PREENCHER MANUALMENTE: link_direto / texto_implicito / nenhum
             'manual_call2go_type': '',
+            # PREENCHER MANUALMENTE: link_direto / texto_implicito / nenhum
+            'manual_channel_call2go_type': '',
             'notes': ''                   # PREENCHER MANUALMENTE: observações
         })
 
@@ -77,6 +81,7 @@ def generate_validation_sample(input_file="data/raw/youtube_videos_raw.jsonl",
     print("   - has_spotify_link: 'sim' se contém link do Spotify, 'nao' caso contrário")
     print("   - has_spotify_text: 'sim' se menciona Spotify por texto, 'nao' caso contrário")
     print("   - manual_call2go_type: 'link_direto', 'texto_implicito' ou 'nenhum'")
+    print("   - manual_channel_call2go_type: 'link_direto', 'texto_implicito' ou 'nenhum'")
     print("   - notes: qualquer observação relevante")
     print("4. Salve o arquivo como 'data/validation/ground_truth.csv'")
     print("\nEssa anotação será usada como referência para medir a acurácia do detector.")

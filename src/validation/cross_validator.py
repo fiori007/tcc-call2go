@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import json
-from src.processors.call2go_detector import detect_call2go
+from src.processors.call2go_detector import detect_call2go, detect_call2go_channel
 
 
 def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
@@ -62,108 +62,158 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
 
     gt_ids = set(df_gt['video_id'].values)
 
-    # 2. Carrega descrições brutas e re-executa o detector
-    descriptions = {}
+    # 2. Carrega dados brutos (descrição + channel_description) e re-executa o detector
+    raw_videos = {}
     with open(raw_file, 'r', encoding='utf-8') as f:
         for line in f:
             video = json.loads(line)
             vid = video.get('video_id')
             if vid in gt_ids:
-                descriptions[vid] = video.get('description', '')
+                raw_videos[vid] = {
+                    'description': video.get('description', ''),
+                    'channel_description': video.get('channel_description', ''),
+                }
 
-    # 3. Comparação lado a lado
+    # Verifica se ground truth tem coluna de canal
+    has_channel_gt = 'manual_channel_call2go_type' in df_gt.columns
+
+    # 3. Comparação lado a lado (vídeo + canal)
     results = []
     for _, row in df_gt.iterrows():
         vid = row['video_id']
         manual_type = row['manual_call2go_type'].strip().lower()
 
-        description = descriptions.get(vid, '')
-        auto_has, auto_type = detect_call2go(description)
+        raw = raw_videos.get(vid, {})
+        description = raw.get('description', '')
+        channel_desc = raw.get('channel_description', '')
 
-        match = (manual_type == auto_type)
+        # Detector no vídeo
+        auto_has_video, auto_type_video = detect_call2go(description)
+        # Detector no canal
+        auto_has_channel, auto_type_channel = detect_call2go_channel(channel_desc)
 
-        results.append({
+        # Classificação combinada (mesma lógica do call2go_detector.process_videos)
+        if auto_has_video:
+            auto_combined_type = auto_type_video
+            auto_source = 'video'
+        elif auto_has_channel:
+            auto_combined_type = auto_type_channel
+            auto_source = 'canal'
+        else:
+            auto_combined_type = 'nenhum'
+            auto_source = 'nenhum'
+
+        match_combined = (manual_type == auto_combined_type)
+        match_video = (manual_type == auto_type_video)
+
+        result = {
             'video_id': vid,
             'artist_name': row['artist_name'],
             'title': row.get('title', ''),
             'manual_call2go_type': manual_type,
-            'auto_call2go_type': auto_type,
-            'match': match,
+            'auto_video_type': auto_type_video,
+            'auto_channel_type': auto_type_channel,
+            'auto_combined_type': auto_combined_type,
+            'auto_source': auto_source,
+            'match_video_only': match_video,
+            'match_combined': match_combined,
             'description_length': len(description),
-        })
+        }
+
+        # Validação de canal (se ground truth inclui coluna de canal)
+        if has_channel_gt and pd.notna(row.get('manual_channel_call2go_type')):
+            manual_channel = str(row['manual_channel_call2go_type']).strip().lower()
+            if manual_channel:
+                result['manual_channel_type'] = manual_channel
+                result['match_channel'] = (manual_channel == auto_type_channel)
+
+        results.append(result)
 
     df_results = pd.DataFrame(results)
 
-    # 4. Métricas de concordância
-    total = len(df_results)
-    matches = df_results['match'].sum()
-    accuracy = matches / total if total > 0 else 0
+    # 4. Métricas de concordância — TRÊS NÍVEIS
+    def _calc_metrics(df, manual_col, auto_col, label):
+        """Calcula acurácia, precisão, recall, F1 para um par de colunas."""
+        valid = df[df[manual_col].notna() & df[auto_col].notna()].copy()
+        if len(valid) == 0:
+            return None, {}
 
-    # Métricas por classe
-    types = ['link_direto', 'texto_implicito', 'nenhum']
-    metrics_per_class = {}
+        total = len(valid)
+        matches = (valid[manual_col] == valid[auto_col]).sum()
+        accuracy = matches / total if total > 0 else 0
 
-    for t in types:
-        tp = len(df_results[(df_results['manual_call2go_type'] == t) & (
-            df_results['auto_call2go_type'] == t)])
-        fp = len(df_results[(df_results['manual_call2go_type'] != t) & (
-            df_results['auto_call2go_type'] == t)])
-        fn = len(df_results[(df_results['manual_call2go_type'] == t) & (
-            df_results['auto_call2go_type'] != t)])
+        types = ['link_direto', 'texto_implicito', 'nenhum']
+        per_class = {}
+        for t in types:
+            tp = len(valid[(valid[manual_col] == t) & (valid[auto_col] == t)])
+            fp = len(valid[(valid[manual_col] != t) & (valid[auto_col] == t)])
+            fn = len(valid[(valid[manual_col] == t) & (valid[auto_col] != t)])
+            precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+            recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+            f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+            per_class[t] = {
+                'true_positives': tp, 'false_positives': fp, 'false_negatives': fn,
+                'precision': precision, 'recall': recall, 'f1_score': f1
+            }
 
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-        f1 = 2 * (precision * recall) / (precision +
-                                         recall) if (precision + recall) > 0 else 0
+        print(f"\n{'=' * 50}")
+        print(f"  {label}")
+        print(f"{'=' * 50}")
+        print(f"  Total validados: {total}")
+        print(f"  Concordâncias: {matches}")
+        print(f"  Discordâncias: {total - matches}")
+        print(f"  ACURÁCIA: {accuracy:.1%}")
+        for t, m in per_class.items():
+            print(f"    [{t}] P={m['precision']:.1%} R={m['recall']:.1%} F1={m['f1_score']:.1%} (TP={m['true_positives']} FP={m['false_positives']} FN={m['false_negatives']})")
 
-        metrics_per_class[t] = {
-            'true_positives': tp,
-            'false_positives': fp,
-            'false_negatives': fn,
-            'precision': precision,
-            'recall': recall,
-            'f1_score': f1
-        }
+        return {
+            'total_validated': total,
+            'matches': int(matches),
+            'discordances': int(total - matches),
+            'accuracy': round(accuracy, 4),
+            'per_class': {k: {mk: round(mv, 4) if isinstance(mv, float) else mv
+                              for mk, mv in v.items()} for k, v in per_class.items()}
+        }, per_class
 
-    # 5. Relatório
-    print(f"\n--- RESULTADO DA VALIDAÇÃO CRUZADA ---")
-    print(f"Total de vídeos validados: {total}")
-    print(f"Concordâncias (humano = máquina): {matches}")
-    print(f"Discordâncias: {total - matches}")
-    print(f"ACURÁCIA GLOBAL: {accuracy:.1%}")
+    # Nível 1: Somente vídeo (humano vs. detector no vídeo)
+    metrics_video, _ = _calc_metrics(
+        df_results, 'manual_call2go_type', 'auto_video_type',
+        'NÍVEL 1 — VÍDEO APENAS (humano vs. regex no vídeo)')
 
-    print(f"\n--- MÉTRICAS POR CLASSE ---")
-    for t, m in metrics_per_class.items():
-        print(f"\n  [{t}]")
-        print(
-            f"    Precisão: {m['precision']:.1%}  |  Recall: {m['recall']:.1%}  |  F1: {m['f1_score']:.1%}")
-        print(
-            f"    TP={m['true_positives']}  FP={m['false_positives']}  FN={m['false_negatives']}")
+    # Nível 2: Combinado (humano vs. detector vídeo+canal)
+    metrics_combined, _ = _calc_metrics(
+        df_results, 'manual_call2go_type', 'auto_combined_type',
+        'NÍVEL 2 — COMBINADO (humano vs. regex vídeo+canal)')
 
-    # Detalhamento das discordâncias
-    discordances = df_results[~df_results['match']]
+    # Nível 3: Canal isolado (se ground truth tem coluna de canal)
+    metrics_channel = None
+    if 'manual_channel_type' in df_results.columns:
+        df_channel = df_results[df_results['manual_channel_type'].notna()]
+        if len(df_channel) > 0:
+            metrics_channel, _ = _calc_metrics(
+                df_channel, 'manual_channel_type', 'auto_channel_type',
+                'NÍVEL 3 — CANAL ISOLADO (humano vs. regex no perfil do canal)')
+
+    # Detalhamento das discordâncias (nível combinado)
+    discordances = df_results[~df_results['match_combined']]
     if len(discordances) > 0:
-        print(f"\n--- DISCORDÂNCIAS DETALHADAS ({len(discordances)}) ---")
+        print(f"\n--- DISCORDÂNCIAS DETALHADAS — NÍVEL COMBINADO ({len(discordances)}) ---")
         for _, d in discordances.iterrows():
             print(f"  Video: {d['video_id']} ({d['artist_name']})")
-            print(
-                f"    Humano: {d['manual_call2go_type']}  |  Máquina: {d['auto_call2go_type']}")
+            print(f"    Humano: {d['manual_call2go_type']}  |  Máquina: {d['auto_combined_type']} (fonte: {d['auto_source']})")
+            print(f"    Vídeo={d['auto_video_type']}  Canal={d['auto_channel_type']}")
 
     # Salva relatório
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     df_results.to_csv(output_file, index=False, encoding='utf-8')
 
-    # Salva métricas resumidas
+    # Salva métricas resumidas (todos os níveis)
     metrics_file = output_file.replace('.csv', '_metrics.json')
     import json as json_lib
     metrics_summary = {
-        'total_validated': total,
-        'matches': int(matches),
-        'discordances': int(total - matches),
-        'accuracy': round(accuracy, 4),
-        'per_class': {k: {mk: round(mv, 4) if isinstance(mv, float) else mv
-                          for mk, mv in v.items()}
-                      for k, v in metrics_per_class.items()}
+        'video_only': metrics_video,
+        'combined': metrics_combined,
+        'channel_only': metrics_channel,
     }
     with open(metrics_file, 'w', encoding='utf-8') as f:
         json_lib.dump(metrics_summary, f, indent=2, ensure_ascii=False)

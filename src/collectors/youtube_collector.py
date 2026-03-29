@@ -30,6 +30,30 @@ def get_channel_id_by_name(youtube, artist_name):
         f"Nenhum canal encontrado na busca para o nome: {artist_name}")
 
 
+def get_channel_about(youtube, channel_id):
+    """Coleta a descrição e metadados do perfil do canal (seção 'Sobre')."""
+    res = youtube.channels().list(
+        id=channel_id,
+        part='snippet,brandingSettings'
+    ).execute()
+
+    if not res.get('items'):
+        return {'channel_description': '', 'channel_keywords': ''}
+
+    item = res['items'][0]
+    snippet_desc = item.get('snippet', {}).get('description', '')
+    branding_desc = item.get('brandingSettings', {}).get('channel', {}).get('description', '')
+    keywords = item.get('brandingSettings', {}).get('channel', {}).get('keywords', '')
+
+    # Usa a descrição mais completa entre snippet e branding
+    channel_desc = branding_desc if len(branding_desc) > len(snippet_desc) else snippet_desc
+
+    return {
+        'channel_description': channel_desc,
+        'channel_keywords': keywords
+    }
+
+
 def get_channel_videos(youtube, channel_id, max_results=50):
     # Pega o ID da playlist de uploads
     res = youtube.channels().list(id=channel_id, part='contentDetails').execute()
@@ -118,12 +142,17 @@ def collect_youtube_data():
                 channel_id = get_channel_id_by_name(youtube, artist_name)
                 print(f"  [OK] Canal resolvido via busca: {channel_id}")
 
+            # Coleta dados do perfil do canal (descrição, links)
+            channel_about = get_channel_about(youtube, channel_id)
+
             # Extração dos vídeos
             video_ids = get_channel_videos(youtube, channel_id, max_results=50)
             video_details = get_video_details(youtube, video_ids)
 
             for video in video_details:
                 video['artist_name'] = artist_name
+                video['channel_description'] = channel_about['channel_description']
+                video['channel_keywords'] = channel_about['channel_keywords']
 
             all_data.extend(video_details)
             success_count += 1
