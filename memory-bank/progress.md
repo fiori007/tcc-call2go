@@ -38,8 +38,28 @@
 - **`call2go_detector.py`** corrigido — adicionado `sptfy.com` no regex (domínio oficial Spotify encontrado nos dados da Anitta)
 - **Bug fix:** Links `http://sptfy.com/...` estavam sendo classificados como `texto_implicito` em vez de `link_direto`
 
+### ✅ Concluído (Fase 4 — Qualidade dos Dados, 29/03/2026)
+- **`channel_link_scraper.py`** — NOVO: web scraper 2-fases (página principal + /about) para links estruturados
+  - Fix crítico: decode `\u0026` no JSON do YouTube → URLs completas extraídas
+  - Resultado: 7/20 artistas têm Spotify na aba Sobre (antes: 2/20)
+  - Detecta canais OAC (auto-gerados): 9/20 canais são OAC
+  - Cache em `data/raw/channel_links_scraped.json`
+- **`call2go_detector.py`** — melhorias significativas:
+  - `is_auto_generated()` — detecta vídeos "Provided to YouTube by..." (450/1000 = 45%)
+  - `detect_call2go_channel_scraped()` — detecta Call2Go via links scrapeados (mais confiável)
+  - Removido `\bspotify\b` genérico de `detect_call2go_channel()` (causava falsos positivos)
+  - Adicionado filtro de menções narrativas ("charts do Spotify" ≠ Call2Go)
+  - Novas colunas: `is_auto_generated`, `is_oac_channel`
+  - Resultado: 0 `texto_implicito` (todos agora são `link_direto` ou `nenhum`)
+- **`ground_truth_helper.py`** atualizado:
+  - Integra links scrapeados como evidência principal
+  - Flags auto-gen e OAC para contexto
+  - **50/50 alta confiança** (antes: 45/50) — melhoria de 100%
+  - Distribuição: 19 link_direto, 0 texto_implicito, 31 nenhum
+- **Correção Grupo Menos É Mais** — "200 dias nos charts do Spotify" não é mais falso positivo
+
 ### 🔲 Pendente (Ações Imediatas — Em Ordem)
-1. 🔴 **ALUNO:** Revisar `data/validation/ground_truth_prefilled.csv` (5 vídeos de média confiança)
+1. 🔴 **ALUNO:** Revisar `data/validation/ground_truth_prefilled.csv` (50 vídeos, todos alta confiança)
 2. 🔴 **ALUNO:** Salvar como `data/validation/ground_truth.csv`
 3. Rodar `cross_validator.py` — gerar métricas de confiabilidade (humano vs. máquina)
 4. Rodar `agreement_report.py` — gerar visualizações de concordância

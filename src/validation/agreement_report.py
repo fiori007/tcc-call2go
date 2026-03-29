@@ -1,11 +1,11 @@
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 import os
 import json
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 
 
 def generate_agreement_report(validation_file="data/validation/cross_validation_report.csv",
@@ -156,7 +156,8 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
                         height = bar.get_height()
                         if height > 0:
                             ax.annotate(f'{height:.0%}',
-                                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                                        xy=(bar.get_x() +
+                                            bar.get_width() / 2, height),
                                         xytext=(0, 3), textcoords="offset points",
                                         ha='center', va='bottom', fontsize=8)
 
@@ -169,7 +170,8 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
 
             # Resumo textual
             print(f"\n--- RESUMO PARA O TCC ---")
-            print(f"Acurácia global (combinado): {metrics.get('accuracy', 'N/A')}")
+            print(
+                f"Acurácia global (combinado): {metrics.get('accuracy', 'N/A')}")
             print(f"Vídeos validados: {metrics.get('total_validated', 'N/A')}")
             print(f"Concordâncias: {metrics.get('matches', 'N/A')}")
             print(f"Discordâncias: {metrics.get('discordances', 'N/A')}")

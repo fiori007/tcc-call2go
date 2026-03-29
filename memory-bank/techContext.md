@@ -62,6 +62,7 @@ tcc_call2go/
 │   ├── collectors/
 │   │   ├── __init__.py
 │   │   ├── artist_source_builder.py  # Fonte oficial de artistas (playlists Spotify)
+│   │   ├── channel_link_scraper.py   # Web scraper: links da aba Sobre do YouTube
 │   │   ├── spotify_collector.py      # Coleta Spotify
 │   │   └── youtube_collector.py      # Coleta YouTube
 │   ├── analytics/
@@ -84,8 +85,31 @@ tcc_call2go/
 └── memory-bank/                      # Contexto persistente do projeto
 ```
 
+## Web Scraping (Links Estruturados)
+- **`channel_link_scraper.py`** — scraper 2-fases para links da aba Sobre
+  - Fase 1: Página principal do canal → `ytInitialData`
+  - Fase 2: Página `/about` → `channelExternalLinkViewModel`
+  - Fix crítico: `\u0026` → `&` no JSON para decodificar redirect URLs completas
+  - Detecta canais OAC via "Gerado automaticamente pelo YouTube"
+  - Cache: `data/raw/channel_links_scraped.json`
+  - 7/20 artistas com Spotify, 9/20 canais OAC
+  - Rate limiting: 2s entre requests, 0.5s entre fases do mesmo canal
+
+## Dados de Qualidade
+| Métrica | Valor |
+|---------|-------|
+| Total de vídeos | 1000 |
+| Vídeos auto-gerados | 450 (45%) |
+| Canais OAC | 9/20 (45%) |
+| Artistas com Spotify no About | 7/20 (35%) |
+| Vídeos com link direto (descrição) | 25 |
+| Vídeos com Call2Go via canal | 323 |
+
 ## Limitações Técnicas Conhecidas
 - YouTube API tem quota diária limitada (10.000 unidades/dia)
 - Resolução de canal por nome (`search().list`) consome 100 unidades por chamada
 - Spotify Popularity Score é opaco — não se sabe exatamente como é calculado
 - Coleta do Spotify é snapshot pontual, não série temporal contínua
+- YouTube API NÃO expõe links estruturados da aba Sobre → necessário web scraping
+- Canais OAC (auto-gerados pelo YouTube) não têm links personalizados nem descrição
+- Web scraping depende da estrutura HTML do YouTube (pode quebrar com atualizações)

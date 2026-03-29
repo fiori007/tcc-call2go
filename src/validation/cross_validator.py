@@ -90,7 +90,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
         # Detector no vídeo
         auto_has_video, auto_type_video = detect_call2go(description)
         # Detector no canal
-        auto_has_channel, auto_type_channel = detect_call2go_channel(channel_desc)
+        auto_has_channel, auto_type_channel = detect_call2go_channel(
+            channel_desc)
 
         # Classificação combinada (mesma lógica do call2go_detector.process_videos)
         if auto_has_video:
@@ -122,7 +123,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
 
         # Validação de canal (se ground truth inclui coluna de canal)
         if has_channel_gt and pd.notna(row.get('manual_channel_call2go_type')):
-            manual_channel = str(row['manual_channel_call2go_type']).strip().lower()
+            manual_channel = str(
+                row['manual_channel_call2go_type']).strip().lower()
             if manual_channel:
                 result['manual_channel_type'] = manual_channel
                 result['match_channel'] = (manual_channel == auto_type_channel)
@@ -150,7 +152,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
             fn = len(valid[(valid[manual_col] == t) & (valid[auto_col] != t)])
             precision = tp / (tp + fp) if (tp + fp) > 0 else 0
             recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-            f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+            f1 = 2 * (precision * recall) / (precision +
+                                             recall) if (precision + recall) > 0 else 0
             per_class[t] = {
                 'true_positives': tp, 'false_positives': fp, 'false_negatives': fn,
                 'precision': precision, 'recall': recall, 'f1_score': f1
@@ -197,11 +200,14 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
     # Detalhamento das discordâncias (nível combinado)
     discordances = df_results[~df_results['match_combined']]
     if len(discordances) > 0:
-        print(f"\n--- DISCORDÂNCIAS DETALHADAS — NÍVEL COMBINADO ({len(discordances)}) ---")
+        print(
+            f"\n--- DISCORDÂNCIAS DETALHADAS — NÍVEL COMBINADO ({len(discordances)}) ---")
         for _, d in discordances.iterrows():
             print(f"  Video: {d['video_id']} ({d['artist_name']})")
-            print(f"    Humano: {d['manual_call2go_type']}  |  Máquina: {d['auto_combined_type']} (fonte: {d['auto_source']})")
-            print(f"    Vídeo={d['auto_video_type']}  Canal={d['auto_channel_type']}")
+            print(
+                f"    Humano: {d['manual_call2go_type']}  |  Máquina: {d['auto_combined_type']} (fonte: {d['auto_source']})")
+            print(
+                f"    Vídeo={d['auto_video_type']}  Canal={d['auto_channel_type']}")
 
     # Salva relatório
     os.makedirs(os.path.dirname(output_file), exist_ok=True)

@@ -56,10 +56,31 @@ dim_artist (artist_name PK, spotify_id, youtube_channel_id)
 # Link direto (3 domínios oficiais do Spotify)
 r'(https?://(?:open\.spotify\.com|spoti\.fi|sptfy\.com)[^\s]+)'
 
-# Texto implícito (5 padrões, em ordem de especificidade)
+# Texto implícito (4 padrões CTA, sem fallback genérico)
 r'ou[çc]a no spotify'
 r'dispon[ií]vel no spotify'
 r'stream.*spotify'
 r'ouvir.*spotify'
-r'\bspotify\b'  # fallback genérico
+# \bspotify\b REMOVIDO — causava falsos positivos com menções narrativas
+```
+
+## Filtros de Qualidade
+```python
+# Vídeos auto-gerados (Content ID / OAC)
+def is_auto_generated(description):
+    # Detecta: "Provided to YouTube by <distribuidora>"
+    # 450/1000 vídeos (45%) são auto-gerados
+
+# Menções narrativas (NÃO são Call2Go)
+_NARRATIVE_PATTERNS = [
+    r'chart\w*\s+(?:do|no)\s+spotify',   # "charts do Spotify"
+    r'ranking\s+(?:do|no)\s+spotify',
+    r'top\s+\d+\s+(?:do|no)\s+spotify',
+    r'milh[ãõ]\w*\s+(?:de\s+)?(?:plays?|streams?)\s+(?:no|do)\s+spotify',
+]
+
+# Detecção em 3 níveis:
+# 1. Vídeo: regex na descrição do vídeo
+# 2. Canal (texto): regex na channel_description
+# 3. Canal (scraped): links estruturados da aba Sobre (web scraping)
 ```
