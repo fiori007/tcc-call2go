@@ -186,24 +186,17 @@ def process_videos():
             # Nível 1: Detecta Call2Go na descrição do VÍDEO
             has_call2go, call_type = detect_call2go(description)
 
-            # Nível 2: Detecta Call2Go na descrição do PERFIL DO CANAL (texto)
-            has_channel_call2go, channel_call2go_type = detect_call2go_channel(
-                video.get('channel_description', ''))
-
-            # Nível 3: Detecta Call2Go via links scrapeados (About page)
+            # Nível 2: Links estruturados scrapeados da aba Sobre (About page)
+            # NOTA: Não usamos mais detect_call2go_channel() (texto da bio) porque
+            # gera falsos positivos com menções narrativas ao Spotify na descrição
+            # do canal (ex: "estreou em #1 no Spotify Global" = branding, não CTA).
+            # Apenas links estruturados (botões) contam como Call2Go no canal.
             has_scraped, scraped_type = detect_call2go_channel_scraped(
                 channel_id, scraped_data)
 
-            # Combina canal texto + scraped (scraped prevalece — mais confiável)
-            if has_scraped:
-                final_channel_has = True
-                final_channel_type = scraped_type
-            elif has_channel_call2go:
-                final_channel_has = True
-                final_channel_type = channel_call2go_type
-            else:
-                final_channel_has = False
-                final_channel_type = 'nenhum'
+            # Canal: apenas links estruturados
+            final_channel_has = has_scraped
+            final_channel_type = scraped_type if has_scraped else 'nenhum'
 
             # Classificação combinada: vídeo prevalece, canal complementa
             combined_has = has_call2go or final_channel_has

@@ -6,13 +6,14 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     1. Construção da base de artistas (Spotify Charts oficiais)
     2. Coleta de vídeos do YouTube (por artista)
     3. Coleta de métricas do Spotify (por artista)
-    4. Detecção de Call2Go (regex nas descrições)
-    5. Construção do Data Warehouse (SQLite)
-    6. Análise Exploratória (EDA)
-    7. Testes de Hipótese (Mann-Whitney U)
-    8. Análise de Impacto Cross-Platform
-    9. Geração de amostra para validação manual
-   10. Validação Cross-Platform Bidirecional (YouTube ↔ Spotify)
+    4. Scraping de links estruturados dos canais (About page)
+    5. Detecção de Call2Go (regex nas descrições)
+    6. Construção do Data Warehouse (SQLite)
+    7. Análise Exploratória (EDA)
+    8. Testes de Hipótese (Mann-Whitney U)
+    9. Análise de Impacto Cross-Platform
+   10. Geração de amostra para validação manual
+   11. Validação Cross-Platform Bidirecional (YouTube ↔ Spotify)
 
 Uso:
     python run_pipeline.py                  # pipeline completo
@@ -65,7 +66,7 @@ def run_step(step_func, step_name):
 
 
 def step_01_build_artist_base():
-    """Constrói base de artistas a partir de playlists oficiais do Spotify."""
+    """Constrói base de artistas Top 50 BR (Spotify × YouTube)."""
     from src.collectors.artist_source_builder import build_artist_base
 
     playlists = [
@@ -74,13 +75,13 @@ def step_01_build_artist_base():
         {'id': '37i9dQZF1DX0FOF1IUWK1W', 'name': 'Top Hits Brasil'},
     ]
 
-    df = build_artist_base(playlists, max_artists=20)
+    df = build_artist_base(playlists, max_artists=50, min_popularity=60)
 
 
 def step_02_collect_youtube():
-    """Coleta vídeos do YouTube para cada artista."""
+    """Coleta os 20 vídeos mais visualizados por artista no YouTube."""
     from src.collectors.youtube_collector import collect_youtube_data
-    collect_youtube_data()
+    collect_youtube_data(max_videos_per_artist=20)
 
 
 def step_03_collect_spotify():
@@ -89,57 +90,72 @@ def step_03_collect_spotify():
     collect_spotify_data()
 
 
-def step_04_detect_call2go():
+def step_04_scrape_channel_links():
+    """Scraping de links estruturados da aba Sobre dos canais do YouTube."""
+    import pandas as pd
+    from src.collectors.channel_link_scraper import scrape_all_channels
+
+    df = pd.read_csv('data/seed/artistas.csv')
+    artists_channels = {}
+    for _, row in df.iterrows():
+        if pd.notna(row.get('youtube_channel_id')):
+            artists_channels[row['artist_name']] = row['youtube_channel_id']
+
+    scrape_all_channels(artists_channels, force=True)
+
+
+def step_05_detect_call2go():
     """Aplica detector regex nas descrições dos vídeos."""
     from src.processors.call2go_detector import process_videos
     process_videos()
 
 
-def step_05_build_database():
+def step_06_build_database():
     """Constrói o Data Warehouse SQLite."""
     from src.db.db_builder import build_database
     build_database()
 
 
-def step_06_eda_analysis():
+def step_07_eda_analysis():
     """Executa análise exploratória de dados."""
     from src.analytics.eda_analysis import run_analysis
     run_analysis()
 
 
-def step_07_hypothesis_testing():
+def step_08_hypothesis_testing():
     """Executa testes de hipótese estatísticos."""
     from src.analytics.hypothesis_testing import run_hypothesis_test
     run_hypothesis_test()
 
 
-def step_08_spotify_impact():
+def step_09_spotify_impact():
     """Executa análise de impacto cross-platform."""
     from src.analytics.spotify_impact_analysis import run_spotify_impact_test
     run_spotify_impact_test()
 
 
-def step_09_generate_sample():
+def step_10_generate_sample():
     """Gera amostra para validação manual."""
     from src.validation.sample_generator import generate_validation_sample
     generate_validation_sample()
 
 
-def step_10_cross_platform_validation():
+def step_11_cross_platform_validation():
     """Executa validação cross-platform bidirecional."""
     from src.validation.cross_platform_validator import run_cross_platform_validation
     run_cross_platform_validation()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TCC Call2Go — Pipeline Orquestrador")
+    parser = argparse.ArgumentParser(
+        description="TCC Call2Go — Pipeline Orquestrador")
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-10)')
+                        help='Começa a partir de uma etapa específica (1-11)')
     args = parser.parse_args()
 
-    total_steps = 10
+    total_steps = 11
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -167,13 +183,16 @@ def main():
         (1, "CONSTRUÇÃO DA BASE DE ARTISTAS", step_01_build_artist_base, False),
         (2, "COLETA YOUTUBE", step_02_collect_youtube, False),
         (3, "COLETA SPOTIFY", step_03_collect_spotify, False),
-        (4, "DETECÇÃO CALL2GO (REGEX)", step_04_detect_call2go, True),
-        (5, "CONSTRUÇÃO DO DATA WAREHOUSE", step_05_build_database, True),
-        (6, "ANÁLISE EXPLORATÓRIA (EDA)", step_06_eda_analysis, True),
-        (7, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_07_hypothesis_testing, True),
-        (8, "ANÁLISE IMPACTO CROSS-PLATFORM", step_08_spotify_impact, True),
-        (9, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_09_generate_sample, True),
-        (10, "VALIDAÇÃO BIDIRECIONAL (YouTube ↔ Spotify)", step_10_cross_platform_validation, True),
+        (4, "SCRAPING LINKS CANAIS (ABOUT PAGE)",
+         step_04_scrape_channel_links, False),
+        (5, "DETECÇÃO CALL2GO (REGEX)", step_05_detect_call2go, True),
+        (6, "CONSTRUÇÃO DO DATA WAREHOUSE", step_06_build_database, True),
+        (7, "ANÁLISE EXPLORATÓRIA (EDA)", step_07_eda_analysis, True),
+        (8, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_08_hypothesis_testing, True),
+        (9, "ANÁLISE IMPACTO CROSS-PLATFORM", step_09_spotify_impact, True),
+        (10, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_10_generate_sample, True),
+        (11, "VALIDAÇÃO BIDIRECIONAL (YouTube ↔ Spotify)",
+         step_11_cross_platform_validation, True),
     ]
 
     results = {}
@@ -194,7 +213,8 @@ def main():
         results[step_num] = "OK" if success else "FALHA"
 
         if not success and step_num <= 3:
-            print(f"\n  [AVISO] Etapa de coleta falhou. Tentando continuar com dados existentes...")
+            print(
+                f"\n  [AVISO] Etapa de coleta falhou. Tentando continuar com dados existentes...")
             continue
 
     # Relatório final
@@ -216,6 +236,7 @@ def main():
     output_files = [
         "data/seed/artistas.csv",
         "data/raw/youtube_videos_raw.jsonl",
+        "data/raw/channel_links_scraped.json",
         "data/processed/youtube_call2go_flagged.csv",
         "data/processed/call2go.db",
         "data/plots/boxplot_call2go_views.png",

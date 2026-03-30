@@ -406,15 +406,33 @@ def load_cached_channel_links(cache_file="data/raw/channel_links_scraped.json"):
 if __name__ == "__main__":
     import sys
 
-    # Carrega artistas → channel_ids do JSONL
-    artists_channels = {}
-    with open("data/raw/youtube_videos_raw.jsonl", 'r', encoding='utf-8') as f:
-        for line in f:
-            v = json.loads(line)
-            a = v.get('artist_name')
-            c = v.get('channel_id')
-            if a and c and a not in artists_channels:
-                artists_channels[a] = c
-
     force = '--force' in sys.argv
+
+    # Carrega artistas → channel_ids preferencialmente do CSV seed
+    artists_channels = {}
+    seed_file = "data/seed/artistas.csv"
+    jsonl_file = "data/raw/youtube_videos_raw.jsonl"
+
+    if os.path.exists(seed_file):
+        import pandas as pd
+        df = pd.read_csv(seed_file)
+        for _, row in df.iterrows():
+            name = row.get('artist_name')
+            cid = row.get('youtube_channel_id')
+            if name and isinstance(cid, str) and cid.startswith('UC'):
+                artists_channels[name] = cid
+        print(f"  Carregados {len(artists_channels)} artistas de {seed_file}")
+    elif os.path.exists(jsonl_file):
+        with open(jsonl_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                v = json.loads(line)
+                a = v.get('artist_name')
+                c = v.get('channel_id')
+                if a and c and a not in artists_channels:
+                    artists_channels[a] = c
+        print(f"  Carregados {len(artists_channels)} artistas de {jsonl_file}")
+    else:
+        print("[ERRO] Nenhuma fonte de dados encontrada.")
+        sys.exit(1)
+
     scrape_all_channels(artists_channels, force=force)
