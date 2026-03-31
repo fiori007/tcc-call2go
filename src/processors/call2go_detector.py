@@ -55,13 +55,24 @@ def detect_call2go(text):
     if re.search(link_pattern, text_lower):
         return 1, 'link_direto'
 
+    # 1b. Spotify redirect links (lnk.to, bit.ly, smarturl.it, etc.)
+    # Padrão: "Spotify" + separador (: | - –) + URL na mesma linha
+    if re.search(r'spotify\s*[:\|\-\u2013]\s*https?://[^\s]+', text_lower):
+        return 1, 'link_direto'
+
+    # 1c. URLs que contêm 'spotify' ou 'sptfy' no caminho (serviços de redirect)
+    # Ex: bit.ly/LivinhoNoSpotify, smarturl.it/mj_otw_sptfy
+    if re.search(r'https?://[^\s]*(?:spotify|sptfy)[^\s]*', text_lower):
+        return 1, 'link_direto'
+
     # 2. Busca por Texto Implícito (Semântica)
-    # Lista de padrões que indicam direcionamento de plataforma
+    # Padrões que indicam direcionamento de plataforma
+    # Permite palavras entre o verbo e "spotify" (ex: "Ouça MC Livinho no Spotify")
     implicit_patterns = [
-        r'ou[çc]a no spotify',
-        r'dispon[ií]vel no spotify',
-        r'stream.*spotify',
-        r'ouvir.*spotify',
+        r'ou[çc]a\b.{0,50}\bspotify',
+        r'dispon[ií]vel\b.{0,30}\bspotify',
+        r'\bstream\b.{0,50}\bspotify',
+        r'\bouvir\b.{0,50}\bspotify',
     ]
 
     for pattern in implicit_patterns:
@@ -92,14 +103,22 @@ def detect_call2go_channel(channel_description):
     if re.search(link_pattern, text_lower):
         return 1, 'link_direto'
 
+    # Spotify redirect links na bio do canal
+    if re.search(r'spotify\s*[:\|\-\u2013]\s*https?://[^\s]+', text_lower):
+        return 1, 'link_direto'
+
+    # URLs com spotify/sptfy no caminho
+    if re.search(r'https?://[^\s]*(?:spotify|sptfy)[^\s]*', text_lower):
+        return 1, 'link_direto'
+
     # Texto implícito na bio do canal
-    # NÃO usa \bspotify\b como fallback aqui — bios têm muita menção narrativa
-    # Ex.: "200 dias nos charts do Spotify Brasil" = branding, não Call2Go
+    # NÃO usa \bspotify\b como fallback — bios têm menção narrativa
+    # Range limitado (.{0,50}) para evitar match cross-sentence
     implicit_patterns = [
-        r'ou[çc]a no spotify',
-        r'dispon[ií]vel no spotify',
-        r'stream.*spotify',
-        r'ouvir.*spotify',
+        r'ou[çc]a\b.{0,50}\bspotify',
+        r'dispon[ií]vel\b.{0,30}\bspotify',
+        r'\bstream\b.{0,50}\bspotify',
+        r'\bouvir\b.{0,50}\bspotify',
     ]
 
     for pattern in implicit_patterns:
@@ -170,6 +189,15 @@ def process_videos():
         print(
             f"  Links scrapeados dos canais carregados: {len(scraped_data)} canais")
 
+    # Carrega mapeamento artist_name → seed channel_id (para resolver mismatches)
+    seed_file = "data/seed/artistas.csv"
+    seed_channels = {}
+    if os.path.exists(seed_file):
+        df_seed = pd.read_csv(seed_file)
+        if 'youtube_channel_id' in df_seed.columns:
+            seed_channels = dict(
+                zip(df_seed['artist_name'], df_seed['youtube_channel_id']))
+
     processed_data = []
 
     # Leitura otimizada de JSONL (linha por linha, não sobrecarrega a RAM)
@@ -187,12 +215,17 @@ def process_videos():
             has_call2go, call_type = detect_call2go(description)
 
             # Nível 2: Links estruturados scrapeados da aba Sobre (About page)
-            # NOTA: Não usamos mais detect_call2go_channel() (texto da bio) porque
-            # gera falsos positivos com menções narrativas ao Spotify na descrição
-            # do canal (ex: "estreou em #1 no Spotify Global" = branding, não CTA).
-            # Apenas links estruturados (botões) contam como Call2Go no canal.
+            # Tenta pelo channel_id do vídeo E pelo channel_id do seed (podem divergir)
             has_scraped, scraped_type = detect_call2go_channel_scraped(
                 channel_id, scraped_data)
+
+            # Fallback: tenta pelo channel_id do seed (resolve mismatches de canal)
+            artist_name = video.get('artist_name', '')
+            if not has_scraped and artist_name in seed_channels:
+                seed_ch = seed_channels[artist_name]
+                if seed_ch != channel_id:
+                    has_scraped, scraped_type = detect_call2go_channel_scraped(
+                        seed_ch, scraped_data)
 
             # Canal: apenas links estruturados
             final_channel_has = has_scraped
@@ -200,7 +233,14 @@ def process_videos():
 
             # Classificação combinada: vídeo prevalece, canal complementa
             combined_has = has_call2go or final_channel_has
-            if has_call2go:
+            if has_call2go and final_channel_has:
+                # Ambas as fontes têm Call2Go — usa o tipo mais forte
+                type_priority = {'link_direto': 2,
+                                 'texto_implicito': 1, 'nenhum': 0}
+                combined_type = call_type if type_priority.get(call_type, 0) >= type_priority.get(
+                    final_channel_type, 0) else final_channel_type
+                combined_source = 'ambos'
+            elif has_call2go:
                 combined_type = call_type
                 combined_source = 'video'
             elif final_channel_has:

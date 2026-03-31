@@ -171,7 +171,8 @@ def collect_youtube_data(max_videos_per_artist=20):
                     all_data.append(record)
                     completed_artists.add(record.get('artist_name'))
         if completed_artists:
-            print(f"  [RESUME] {len(completed_artists)} artistas já coletados, continuando...")
+            print(
+                f"  [RESUME] {len(completed_artists)} artistas já coletados, continuando...")
 
     success_count = len(completed_artists)
     error_count = 0
@@ -180,7 +181,8 @@ def collect_youtube_data(max_videos_per_artist=20):
         artist_name = row['artist_name']
 
         if artist_name in completed_artists:
-            print(f"\n[{index+1}/{len(df_artists)}] {artist_name}: SKIP (já coletado)")
+            print(
+                f"\n[{index+1}/{len(df_artists)}] {artist_name}: SKIP (já coletado)")
             continue
 
         print(f"\n[{index+1}/{len(df_artists)}] Processando: {artist_name}")

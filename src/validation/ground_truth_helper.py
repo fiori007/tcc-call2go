@@ -20,18 +20,33 @@ def _find_spotify_evidence(text):
     evidence = []
     text_lower = text.lower()
 
-    # Links diretos
+    # Links diretos (domínios Spotify)
     for match in re.finditer(
         r'(https?://(?:open\.spotify\.com|spoti\.fi|sptfy\.com)[^\s]+)', text_lower
     ):
         evidence.append(f"LINK: {match.group(0)[:80]}")
 
-    # Padrões textuais (mesmos do detector, sem o fallback genérico)
+    # Spotify redirect links (lnk.to, bit.ly, smarturl.it com contexto Spotify)
+    for match in re.finditer(
+        r'spotify\s*[:\|\-\u2013]\s*(https?://[^\s]+)', text_lower
+    ):
+        evidence.append(f"LINK (redirect): {match.group(0)[:80]}")
+
+    # URLs contendo spotify/sptfy no caminho
+    for match in re.finditer(
+        r'(https?://[^\s]*(?:spotify|sptfy)[^\s]*)', text_lower
+    ):
+        url = match.group(0)
+        # Não duplicar se já foi capturado por domínio direto
+        if not re.match(r'https?://(?:open\.spotify\.com|spoti\.fi|sptfy\.com)', url):
+            evidence.append(f"LINK (redirect URL): {url[:80]}")
+
+    # Padrões textuais (mesmos do detector, range limitado)
     text_patterns = [
-        (r'ou[çc]a no spotify', 'ouça no spotify'),
-        (r'dispon[ií]vel no spotify', 'disponível no spotify'),
-        (r'stream.*spotify', 'stream...spotify'),
-        (r'ouvir.*spotify', 'ouvir...spotify'),
+        (r'ou[\xe7c]a\b.{0,50}\bspotify', 'ouça...spotify'),
+        (r'dispon[i\xed]vel\b.{0,30}\bspotify', 'disponível...spotify'),
+        (r'\bstream\b.{0,50}\bspotify', 'stream...spotify'),
+        (r'\bouvir\b.{0,50}\bspotify', 'ouvir...spotify'),
     ]
     for pattern, label in text_patterns:
         m = re.search(pattern, text_lower)
@@ -199,6 +214,9 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
                         all_evidence.append(ev)
 
         # Calcula confiança
+        # Filtra evidências: narrativas não contam como evidência real
+        real_evidence = [e for e in all_evidence if 'narrativa' not in e]
+
         if video_type == 'link_direto':
             confidence = 'ALTA'  # link direto na descrição do vídeo
         elif scraped_has and source == 'canal':
@@ -206,8 +224,8 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
             confidence = 'ALTA'
         elif auto_gen and suggested_type == 'nenhum':
             confidence = 'ALTA'  # auto-gen sem Call2Go = correto
-        elif suggested_type == 'nenhum' and not all_evidence:
-            confidence = 'ALTA'  # sem evidência nenhuma = claramente nenhum
+        elif suggested_type == 'nenhum' and not real_evidence:
+            confidence = 'ALTA'  # sem evidência real = claramente nenhum
         elif source == 'canal' and not scraped_has:
             confidence = 'MEDIA'  # canal detectado por texto, não por scrape
         elif video_type == 'texto_implicito':
@@ -217,8 +235,12 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
 
         # has_spotify_link: sim se há link do Spotify em qualquer evidência
         has_link = 'sim' if any('LINK' in e for e in all_evidence) else 'nao'
-        # has_spotify_text: sim se há menção textual ao Spotify
-        has_text = 'sim' if any('TEXTO' in e for e in all_evidence) else 'nao'
+        # has_spotify_text: sim se há chamada formal ao Spotify (NÃO conta narrativa/recordes)
+        # Menções isoladas/narrativas ("Top 10 do Spotify", "streams no Spotify") NÃO contam
+        has_text = 'sim' if any(
+            'TEXTO' in e and 'narrativa' not in e
+            for e in all_evidence
+        ) else 'nao'
 
         stats[suggested_type] += 1
         if confidence == 'ALTA':

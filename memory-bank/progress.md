@@ -60,23 +60,95 @@
   - Distribuição: 31 link_direto, 0 texto_implicito, 19 nenhum
 - **Correção Grupo Menos É Mais** — "200 dias nos charts do Spotify" não é mais falso positivo
 
+### ✅ Concluído (Fase 5 — Novo Pipeline Top 50 BR, 30-31/03/2026)
+- Pipeline completo reconstruído: 50 artistas Top BR, 1000 vídeos, 11 etapas
+- `artist_source_builder.py` reescrito (Spotify playlists → YouTube viewCount → dedup)
+- `youtube_collector.py` otimizado (89% menos quota com `playlistItems.list`)
+- `call2go_detector.py` — Nível 2 (texto da bio) removido, apenas links
+- Coleta concluída em 31/03 após reset de quota
+
+### ✅ Concluído (Fase 6 — Correções de Precisão, 31/03/2026)
+
+#### Problemas Encontrados na Revisão Humana do Ground Truth
+- **Anitta (oyhlZhUjaeQ):** `Spotify | https://Anitta.lnk.to/Spotify` NÃO detectado — `lnk.to` redirect fora do regex
+- **NATTAN (c7Fv2roodqI):** Falso positivo — `stream.*spotify` greedy casou 207 chars de bio narrativa
+- **MJ Records:** Label brasileira mapeada para canal do Michael Jackson (UCID errado). 20 vídeos contaminados
+- **Channel ID mismatch:** 4 artistas (Anitta, Panda, Turma do Pagode, Léo Santana) com channel_id diferente no seed vs JSONL
+- **28 links redirect perdidos:** Mc Livinho (`bit.ly/LivinhoNoSpotify`), Anitta (`lnk.to`), Pablo (`smarturl.it`)
+
+#### Correções Aplicadas
+1. **call2go_detector.py** — 6 fixes:
+   - 3 novas camadas de link: domínio direto + labeled redirect + URL com spotify/sptfy no path
+   - Greedy fix: `stream.*spotify` → `.{0,50}` (range limitado)
+   - Padrões implícitos: `ou[çc]a\b.{0,50}\bspotify` (aceita palavras no meio)
+   - Nova fonte `ambos` (vídeo + canal com Call2Go)
+   - Seed channel fallback para mismatches
+2. **ground_truth_helper.py** — Padrões de evidência atualizados (redirect + range limitado)
+3. **hypothesis_testing.py** — Grupos corrigidos: `Com Call2Go` vs `Sem Call2Go` (era `texto_implicito` vs `nenhum` → NaN)
+4. **spotify_impact_analysis.py** — Mesma correção de grupos
+5. **MJ Records removido:** artistas.csv (50→49), JSONL (1000→980 vídeos)
+
+#### Resultados Após Correções
+- **Detecção:** 575 link_direto (58.7%), 0 texto_implicito (0%), 405 nenhum (41.3%)
+- **Fontes:** 494 canal, 66 ambos, 15 vídeo, 405 nenhum
+- **Mann-Whitney:** U=118004, p=0.35983 — **NÃO REJEITA H0**
+- **Cross-platform:** U=169415.5, p=0.99819 — **NÃO REJEITA H0**
+- **Bidirecional:** UNIDIRECIONAL Spotify → YouTube (ρ=0.392***, Call2Go Rate ρ=-0.086 ns)
+- **Ground truth:** 49 alta confiança, 1 flagado (Eric Land — narrativa), vs 6 flagados antes
+- **Verificações:** Anitta=link_direto+ambos ✅, NATTAN=nenhum ✅, Panda=20/20 detectados ✅
+
+#### Coleta de Dados (30-31/03/2026)
+- **Seed:** 49 artistas — `data/seed/artistas.csv` (MJ Records removido — canal incorreto)
+  - Top 3: Marília Mendonça (20.6B views, 39.7M followers), Gusttavo Lima (18.5B), Henrique & Juliano (14.3B)
+- **Spotify:** `data/raw/spotify_metrics_2026-03-30.csv` — 50 artistas coletados
+- **Channel scraping:** `data/raw/channel_links_scraped.json` — 52 entradas (50 + 2 oficiais para OACs)
+  - 29 com link Spotify no About, 2 OAC detectados
+- **YouTube:** `data/raw/youtube_videos_raw.jsonl` — 980 vídeos (20/artista × 49), 0 erros
+
+#### Detecção Call2Go (31/03/2026) — Antes das Correções da Fase 6
+- **1.000 vídeos processados (dados originais antes de remover MJ Records):**
+  - 528 link_direto (52.8%), 48 texto_implicito (4.8%), 424 nenhum (42.4%)
+  - Fontes: 475 canal, 101 vídeo, 424 nenhum
+  - 40 auto-gerados (4%), 960 orgânicos
+- **Após Fase 6 (980 vídeos):** ver seção Fase 6 acima
+
+#### Pipeline Steps 6-11 (31/03/2026) — Re-executados após correções da Fase 6
+- **Step 6 — DB Build:** `call2go.db` (dim_artist, fact_yt_videos, fact_spotify_metrics)
+- **Step 7 — EDA:** link_direto média 46.1M views vs nenhum 19.1M (N=1240 registros cruzados)
+  - Boxplot: `data/plots/boxplot_call2go_views.png`
+- **Step 8 — Hypothesis Testing:** Mann-Whitney U=118004, p=0.35983
+  - **NÃO REJEITA H0:** Não há diferença significativa de views entre vídeos com/sem Call2Go
+- **Step 9 — Cross-Platform:** Mann-Whitney U=169415.5, p=0.99819
+  - **NÃO REJEITA H0:** Call2Go no YouTube não impacta popularidade no Spotify
+  - Média Pop sem Call2Go: 74.77, com Call2Go: 73.58
+  - Scatter: `data/plots/scatter_cross_platform.png`
+- **Step 10 — Sample Generation:** 50 vídeos de 980 (seed=42)
+  - Output: `data/validation/manual_sample.csv`
+- **Step 11 — Bidirectional Validation:**
+  - Direção A (YT→Spotify): Call2Go Rate ↔ Pop ρ=-0.086, p=0.556 — **NÃO significativo**
+  - Direção B (Spotify→YT): Pop ↔ Avg Views ρ=0.392, p=0.0054*** — **SIGNIFICATIVO**
+  - Direção B: Followers ↔ Avg Engagement ρ=0.380, p=0.0071***
+  - Per-video: Pop ↔ Views ρ=0.344, p≈0 (N=980)
+  - **Classificação: UNIDIRECIONAL Spotify → YouTube** (α=0.1)
+  - Outputs: direction_a, direction_b, heatmap, cross_platform_report.txt, artist_cross_platform_profile.csv
+
 ### 🔲 Pendente (Ações Imediatas — Em Ordem)
-1. 🔴 **ALUNO:** Revisar `data/validation/ground_truth_prefilled.csv` (50 vídeos, todos alta confiança)
-2. 🔴 **ALUNO:** Salvar como `data/validation/ground_truth.csv`
-3. Rodar `cross_validator.py` — gerar métricas de confiabilidade (humano vs. máquina)
-4. Rodar `agreement_report.py` — gerar visualizações de concordância
-5. Rodar `cross_platform_validator.py` — análise bidirecional YouTube ↔ Spotify
-6. Re-rodar análises estatísticas com dados validados
-7. Escrever capítulo de Metodologia do TCC documentando todo o fluxo
+1. 🔴 **ALUNO:** Revisar `ground_truth_prefilled.csv` (1 flagado: Eric Land tmAsMpFERrE)
+2. 🔴 **ALUNO:** Salvar como `ground_truth.csv`
+3. 🔴 **ALUNO:** Alinhar com orientador sobre interpretação da Direção B (correlação vs. links reais)
+4. [ ] Rodar `cross_validator.py` — gerar métricas de confiabilidade (humano vs. máquina)
+5. [ ] Rodar `agreement_report.py` — gerar visualizações de concordância
+6. [ ] Commit e push de todos os dados e artefatos gerados
+7. [ ] Escrever capítulo de Metodologia do TCC documentando todo o fluxo
 
 ### 🔲 Pendente (Melhorias Futuras)
 - Coleta longitudinal do Spotify (múltiplas datas)
-- Teste de correlação Spearman (views × popularity)  
 - Análise de engagement rate (likes/views, comments/views)
 - Expansão do detector para outras plataformas (Deezer, Apple Music)
+- Considerar scraping de perfis Spotify para links YouTube (Direção B real)
 
 ## Observações Importantes
-- **ALERTA:** Os dados atuais (6 artistas) foram selecionados sem critério oficial — devem ser refeitos
-- **ALERTA:** Resultados das análises estatísticas atuais NÃO foram validados — não usar no TCC ainda
-- A categoria `link_direto` tem amostra muito pequena (n≈1)
-- Apenas 1 snapshot do Spotify (12/03/2026)
+- **Dados atuais:** 49 artistas Top 50 BR (MJ Records removido), 980 vídeos (20 mais visualizados/artista)
+- **⚠️ Questão metodológica:** Direção B da validação bidirecional usa apenas correlação estatística, não links reais do Spotify→YouTube
+- **⚠️ Mann-Whitney p=0.36:** Não há diferença significativa de views entre vídeos com/sem Call2Go — dado importante para discussão no TCC
+- Pipeline 100% reprodutível: `python run_pipeline.py` executa todos os 11 passos
