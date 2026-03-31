@@ -169,7 +169,7 @@ def direction_a_youtube_to_spotify(df_profile, df_yt, output_dir):
                                         'median_without': without_c2g.median()}
 
     # 3. Gráfico: Call2Go Rate vs Spotify Popularity (por artista)
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(5.9, 4))
 
     axes[0].scatter(df_profile['call2go_rate'], df_profile['popularity'],
                     s=100, c='#1DB954', edgecolors='black')
@@ -247,7 +247,7 @@ def direction_b_spotify_to_youtube(df_profile, df_yt, df_sp, output_dir):
             'rho': rho_vid, 'p': p_vid, 'n': len(df_video)}
 
     # 3. Gráfico: Spotify metrics → YouTube metrics
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(5.9, 4))
 
     # Popularity → Avg Views
     axes[0].scatter(df_profile['popularity'], df_profile['avg_views'],
@@ -359,7 +359,7 @@ def bidirectional_synthesis(results_a, results_b, df_profile, output_dir):
         corr_matrix = pd.DataFrame(
             corr_data, index=existing_sp, columns=existing_yt)
 
-        fig, ax = plt.subplots(figsize=(10, 4))
+        fig, ax = plt.subplots(figsize=(5.9, 4))
         sns.heatmap(corr_matrix, annot=True, fmt='.2f', cmap='RdYlGn', center=0,
                     vmin=-1, vmax=1, ax=ax, linewidths=0.5,
                     xticklabels=[c.replace('_', ' ').title()

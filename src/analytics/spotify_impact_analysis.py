@@ -35,7 +35,7 @@ def run_spotify_impact_test():
     # ---------------------------------------------------------
     # 1. Gráfico de Dispersão (Correlação Views vs Popularity)
     # ---------------------------------------------------------
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(6, 4))
     sns.scatterplot(
         data=df,
         x='view_count',

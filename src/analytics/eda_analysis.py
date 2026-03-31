@@ -48,7 +48,7 @@ def run_analysis():
     # se distribui em relação à audiência (view_count) no YouTube.
     
     sns.set_theme(style="whitegrid")
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(6, 4))
     
     # O Boxplot é o padrão científico para mostrar distribuição e outliers
     ax = sns.boxplot(x="call2go_type", y="view_count", data=df, hue="call2go_type", palette="Set2", legend=False)
