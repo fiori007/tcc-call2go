@@ -36,3 +36,15 @@ data/processed/*.db
 
 # === Jupyter ===
 .ipynb_checkpoints/
+
+# === Templates originais (copiados para artigo_latex/) ===
+SBC_Conferences_Template*/
+
+# === LaTeX auxiliares ===
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz

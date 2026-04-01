@@ -1,0 +1,837 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+
+\sloppy
+
+\title{Desenvolvimento e Validação de um Sistema Automatizado para Detecção\\
+       de Estratégias \textit{Call2Go} em Vídeos do YouTube:\\
+       Uma Análise de Confiabilidade Metodológica\\
+       no Mercado Musical Digital Brasileiro}
+
+\author{[Nome Completo do Autor]\inst{1}}
+
+\address{[Departamento / Curso] --- [Nome da Instituição]\\
+  [Endereço Completo --- Cidade -- Estado, CEP, Brasil]
+  \email{[email@instituicao.br]}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The rapid expansion of the Brazilian digital music market has elevated
+platforms such as YouTube and Spotify to the role of critical infrastructure
+for the circulation, discovery, and monetization of musical content. In this
+setting, the practice known as \textit{Call2Go} --- the insertion of
+call-to-action elements in YouTube video descriptions directing viewers toward
+Spotify --- has been adopted by artists and labels as an audience conversion
+strategy, yet without consolidated empirical support regarding its
+effectiveness or the reliability of automated tools designed to detect it at
+scale. This paper presents the development and validation of a multilayer
+regex-based automated system for Call2Go detection, applied to a corpus of 980
+videos from the 49 most-viewed Brazilian artists, collected via the YouTube
+Data API~v3 and the Spotify Web API. The methodological protocol adopts a
+cross-validation cycle contrasting, at three analytical levels (video
+description, channel profile, and combined approach), automated classification
+against a human reference annotation (\textit{ground truth}) built on a
+stratified random sample of 50 videos. Results show that at the combined level
+the system achieves 100\% accuracy, precision, and recall, validating the
+approach as a reliable methodological instrument for content analysis at
+scale. Furthermore, the Mann-Whitney~U test found no statistically significant
+evidence that Call2Go adoption impacts YouTube view volume ($U = 118{,}004$;
+$p = 0.360$) or Spotify popularity ($U = 169{,}415.5$; $p = 0.998$).
+Bidirectional Spearman correlation analysis identified a unidirectional
+relationship in the Spotify~$\to$~YouTube direction ($\rho = 0.392$;
+$p = 0.005$), suggesting that streaming platform prominence positively
+correlates with YouTube engagement, but not the reverse.
+\end{abstract}
+
+\begin{resumo}
+O crescimento acelerado do mercado musical digital brasileiro elevou
+plataformas como YouTube e Spotify à condição de infraestrutura crítica para
+a circulação, descoberta e monetização de conteúdo musical. Nesse contexto,
+emergiu a prática denominada \textit{Call2Go} --- a inserção de chamadas de
+ação nas descrições de vídeos do YouTube com direcionamento explícito ao
+Spotify ---, adotada por artistas e \textit{labels} como estratégia de
+conversão de audiência entre plataformas. Este trabalho apresenta o
+desenvolvimento e a validação de um sistema automatizado baseado em expressões
+regulares (\textit{regex}) multicamada para detecção de estratégias Call2Go,
+aplicado a um corpus de 980 vídeos dos 49 artistas brasileiros mais
+visualizados, coletados via YouTube Data API~v3 e Spotify Web API. O protocolo
+metodológico adota um ciclo de validação cruzada que contrasta, em três níveis
+analíticos (descrição do vídeo, perfil do canal e abordagem combinada), a
+classificação automatizada com anotação humana de referência
+(\textit{ground truth}) construída sobre uma amostra aleatória de 50 vídeos.
+Os resultados revelam que, no nível combinado, o sistema alcança acurácia,
+precisão e \textit{recall} de 100\%, validando a abordagem como instrumento
+metodológico confiável para análise de conteúdo em escala. O teste
+Mann-Whitney~U não encontrou evidências estatisticamente significativas de que
+a adoção de Call2Go impacta o volume de visualizações no YouTube
+($U = 118.004$; $p = 0{,}360$) nem a popularidade no Spotify
+($U = 169.415{,}5$; $p = 0{,}998$). A análise bidirecional de correlação de
+Spearman identificou uma relação unidirecional no sentido
+Spotify~$\to$~YouTube ($\rho = 0{,}392$; $p = 0{,}005$), sugerindo que a
+proeminência em plataformas de streaming correlaciona-se positivamente com o
+engajamento no YouTube, mas não o contrário.
+\end{resumo}
+
+% ============================================================
+%  1. INTRODUÇÃO
+% ============================================================
+\section{Introdução}
+\label{sec:intro}
+
+A transformação digital da indústria fonográfica nas últimas duas décadas
+reconfigurou profundamente as relações entre produção, distribuição e consumo
+de música. O relatório anual da Federação Internacional da Indústria
+Fonográfica registrou, em 2023, que as receitas provenientes de serviços de
+\textit{streaming} responderam por 67\% do total global da indústria da música
+gravada, marcando uma inflexão histórica no modelo de negócios do
+setor~\cite{ifpi2023}. O Brasil ocupa posição de destaque nesse cenário: é o
+décimo maior mercado fonográfico do planeta e exibe taxas de crescimento em
+\textit{streaming} que superam consistentemente a média
+global~\cite{ifpi2023}. Dentro desse ecossistema, duas plataformas assumiram
+protagonismo singular: o YouTube, maior repositório de vídeos do mundo e
+principal canal de descoberta musical, e o Spotify, líder global em
+\textit{streaming} de áudio, com base de usuários ativos que ultrapassa 600
+milhões.
+
+Nesse contexto, a estratégia denominada \textit{Call2Go} emergiu como prática
+amplamente difundida na indústria musical doméstica. O termo descreve qualquer
+elemento inserido na descrição de um vídeo do YouTube --- seja um hiperlink
+direto para o Spotify, seja uma chamada textual de ação
+(\textit{call-to-action}) --- com o propósito explícito de redirecionar o
+espectador para a plataforma de \textit{streaming} de áudio. A lógica
+subjacente à estratégia fundamenta-se na hipótese de que a audiência
+conquistada no YouTube, plataforma de acesso gratuito e onipresente, pode ser
+convertida em assinantes ou ouvintes recorrentes no Spotify, cuja monetização
+por \textit{stream} é diretamente mais vantajosa para artistas e
+distribuidoras~\cite{wlomert2016}.
+
+A investigação científica sobre as dinâmicas de \textit{cross-platform} na
+música digital ainda se encontra em estágio formativo~\cite{aguiar2018}. Os
+estudos existentes concentram-se predominantemente em análises agregadas de
+mercado ou em fenômenos observados em plataformas isoladas, sem abordar de
+forma sistemática os mecanismos de transferência de audiência entre YouTube e
+Spotify~\cite{napoli2012}. Ademais, a ausência de ferramentas automatizadas
+validadas para a detecção de Call2Go em larga escala representa um obstáculo
+metodológico significativo: a anotação manual de grandes \textit{corpora} é ao
+mesmo tempo impraticável operacionalmente e sujeita a vieses de subjetividade
+entre anotadores. A lacuna identificada é, portanto, dupla: empírica, pela
+ausência de evidências sobre a eficácia da estratégia, e metodológica, pela
+inexistência de instrumentos confiáveis para sua detecção automatizada em
+escala.
+
+Este trabalho endereça diretamente essa lacuna ao propor, implementar e
+validar um sistema automatizado de detecção de Call2Go baseado em expressões
+regulares multicamada. O foco central da investigação recai sobre a
+\textbf{confiabilidade metodológica} da ferramenta desenvolvida, mensurada por
+meio de um protocolo de validação cruzada entre classificação automatizada e
+anotação humana de referência (\textit{ground truth}). Secundariamente, o
+trabalho emprega os dados coletados para testar hipóteses sobre o impacto
+estatístico do Call2Go no engajamento em ambas as plataformas e para
+investigar a direcionalidade da correlação entre métricas do YouTube e do
+Spotify.
+
+O artigo está organizado da seguinte forma: a Seção~\ref{sec:problema}
+delimita o problema de pesquisa e apresenta as hipóteses formalizadas; a
+Seção~\ref{sec:literatura} revisa a literatura relevante; a
+Seção~\ref{sec:objetivos} expõe os objetivos geral e específicos; a
+Seção~\ref{sec:metodologia} detalha o pipeline metodológico; e a
+Seção~\ref{sec:resultados} apresenta os resultados preliminares obtidos até o
+momento.
+
+% ============================================================
+%  2. PROBLEMA DE PESQUISA
+% ============================================================
+\section{Problema de Pesquisa}
+\label{sec:problema}
+
+O problema central deste trabalho pode ser formulado em dois planos
+interdependentes. No plano instrumental, questiona-se: \textit{é possível
+construir um sistema automatizado baseado em expressões regulares capaz de
+detectar estratégias Call2Go em descrições de vídeos do YouTube com
+confiabilidade estatisticamente equivalente à anotação humana?} No plano
+substantivo, questiona-se: \textit{o uso da estratégia Call2Go por artistas
+brasileiros no YouTube está associado a diferenças mensuráveis no volume de
+visualizações na mesma plataforma ou na popularidade no Spotify?}
+
+A ambiguidade característica dos textos de descrição de vídeo no YouTube ---
+repletos de abreviações, emojis, URLs encurtadas, redirecionadores de
+terceiros e menções narrativas não intencionais a plataformas --- torna a
+detecção automatizada um problema não trivial. Um sistema baseado em regras
+simples incorre em alta taxa de falsos positivos ao tratar qualquer menção
+textual à palavra ``Spotify'' como indicativo de Call2Go, sem distinguir entre
+uma chamada de ação intencional e uma referência contextual (por exemplo,
+``música do artista X no topo dos \textit{charts} do Spotify''). Ao mesmo
+tempo, a dependência exclusiva de links diretos subestima a detecção, uma vez
+que parte dos links de Call2Go é veiculada por meio de serviços de
+redirecionamento (\textit{smart links}) como \texttt{lnk.to},
+\texttt{bit.ly} ou \texttt{smarturl.it}, cujo domínio de destino final
+(Spotify) não é imediatamente visível no texto da descrição.
+
+A delimitação do problema exige a operacionalização formal de três dimensões
+analíticas: (i)~a \textbf{taxonomia de detecção}, definindo as categorias
+mutuamente exclusivas e coletivamente exaustivas em que se enquadra cada vídeo
+(\texttt{link\_direto}, \texttt{texto\_implicito} ou \texttt{nenhum});
+(ii)~a \textbf{hierarquia de fontes}, reconhecendo que a evidência de Call2Go
+pode estar no vídeo individual, no perfil do canal ou em ambos, com
+implicações distintas de confiabilidade; e (iii)~o \textbf{escopo da
+validação}, determinando o tamanho e a estratégia de amostragem para a
+construção do \textit{ground truth} humano.
+
+As hipóteses de pesquisa formalizadas são:
+
+\begin{itemize}
+  \item[$H_0$] \textbf{Hipótese nula da validação:} O detector automatizado
+    baseado em \textit{regex} não apresenta concordância estatisticamente
+    significativa com a classificação humana, isto é, a acurácia do sistema é
+    inferior a 85\%.
+
+  \item[$H_1$] \textbf{Hipótese alternativa da validação:} O detector
+    automatizado atinge acurácia $\geq 85\%$ em relação ao \textit{ground
+    truth} humano, validando a abordagem como metodologicamente confiável.
+
+  \item[$H_2$] \textbf{Hipótese secundária --- YouTube:} Vídeos com Call2Go
+    geram, em média, volume significativamente maior de visualizações no
+    YouTube em comparação com vídeos sem a estratégia.
+
+  \item[$H_3$] \textbf{Hipótese secundária --- cross-platform:} A presença
+    de Call2Go nos vídeos do YouTube de um artista está positivamente
+    associada a maior pontuação de popularidade do artista no Spotify.
+\end{itemize}
+
+% ============================================================
+%  3. REVISÃO DA LITERATURA
+% ============================================================
+\section{Revisão da Literatura}
+\label{sec:literatura}
+
+\subsection{Marketing Digital na Indústria Musical Contemporânea}
+
+A digitalização da cadeia produtiva musical transformou não apenas os canais
+de distribuição, mas os próprios modelos de relacionamento entre artistas,
+intermediários e audiências. Aguiar e Waldfogel~\cite{aguiar2018} documentaram
+empiricamente que a entrada de plataformas de distribuição digital alterou as
+dinâmicas de promoção da música, deslocando poder das grandes gravadoras para
+distribuidoras independentes e, em determinados contextos, para os próprios
+artistas. O YouTube e o Spotify, embora frequentemente tratados como
+concorrentes na disputa pela atenção do ouvinte, exercem funções
+complementares na jornada de consumo musical: o YouTube opera primariamente
+como plataforma de descoberta e videoconsumo, ao passo que o Spotify consolida
+o consumo recorrente em forma de \textit{stream} contabilizável para fins de
+remuneração~\cite{wlomert2016}.
+
+As estratégias de \textit{cross-platform marketing} na música digital seguem
+uma lógica de funil: o conteúdo audiovisual no YouTube atua como ponto de
+entrada de alta viralidade e baixo custo de aquisição, enquanto as plataformas
+de \textit{streaming} de áudio representam o destino de conversão de valor.
+Nesse modelo, o Call2Go funciona como o mecanismo de transição --- o elo
+operacional que transforma um espectador passivo em um ouvinte ativo e
+mensurável. A eficácia empírica dessa conversão permanece pouco
+estudada. Wlömert e Papies~\cite{wlomert2016} demonstraram que a entrada do
+Spotify no mercado gerou efeitos assimétricos sobre as receitas da indústria,
+sem abordar especificamente os mecanismos de direcionamento interplataforma
+originados no YouTube.
+
+O mercado brasileiro apresenta características estruturais que potencializam a
+relevância da questão. A penetração do YouTube no Brasil é das mais altas do
+mundo em termos relativos, com o país figurando consistentemente entre os
+maiores mercados da plataforma por volume de horas
+assistidas~\cite{ifpi2023}. Simultaneamente, o Brasil experimenta uma das
+transições mais rápidas do mundo de consumo musical gratuito para
+\textit{streaming} pago, com artistas dos segmentos sertanejo, pagode e funk
+acumulando bilhões de visualizações no YouTube enquanto buscam migrar sua base
+para plataformas remuneradas.
+
+\subsection{Análise Automatizada de Conteúdo Textual em Plataformas Digitais}
+
+A análise de conteúdo como método científico foi sistematizada de forma
+seminal por Krippendorff~\cite{krippendorff2004}, que a define como ``uma
+técnica de pesquisa para fazer inferências replicáveis e válidas a partir de
+textos para os contextos de seu uso''. No campo da recuperação de informação
+musical (\textit{Music Information Retrieval} --- MIR),
+Schedl et al.~\cite{schedl2014} catalogaram as principais abordagens de
+análise automatizada de metadados musicais, incluindo o processamento de texto
+associado a conteúdo audiovisual.
+
+Os métodos baseados em regras, como o sistema \textit{regex} proposto neste
+trabalho, caracterizam-se por alta interpretabilidade, custo computacional
+negligenciável e comportamento determinístico --- propriedades especialmente
+valiosas em contexto acadêmico, onde a reprodutibilidade e a auditabilidade do
+processo de classificação constituem requisitos
+metodológicos~\cite{salganik2019}. Friedl~\cite{friedl2006} documenta
+extensivamente a expressividade e os limites das expressões regulares como
+ferramenta de \textit{pattern matching}, fundamentando a escolha técnica deste
+trabalho. A principal vulnerabilidade desses sistemas é a sensibilidade ao
+contexto: padrões extraídos de um corpus específico podem ter baixa
+generalização para domínios distintos.
+
+Celma~\cite{celma2010} explorou os desafios da recomendação musical
+automatizada, destacando que a esparsidade e o ruído inerentes aos metadados
+de vídeo e música dificultam a extração consistente de informações
+estruturadas. O fenômeno é particularmente agudo em descrições de vídeos do
+YouTube, onde não há padronização de formato, a presença de URLs encurtadas e
+redirecionadores de terceiros oculta o destino final dos links, e menções
+narrativas a serviços de \textit{streaming} são semanticamente
+indistinguíveis de chamadas de ação sem análise contextual aprofundada.
+
+A distinção entre menções narrativas e chamadas de ação constitui um dos
+problemas mais recorrentes na análise automatizada de descrições de vídeo. Um
+artista pode mencionar o Spotify em frases como ``alcançamos 10 milhões de
+\textit{plays} no Spotify'' (menção narrativa, não-Call2Go) ou ``ouça no
+Spotify'' (chamada de ação, Call2Go). Sistemas baseados em \textit{keyword
+matching} simples tratam ambos os casos de forma idêntica, produzindo falsos
+positivos que comprometem a validade da análise.
+
+\subsection{Confiabilidade em Sistemas de Classificação Automatizada}
+
+A avaliação da confiabilidade de sistemas de classificação automatizada em
+relação a referências humanas constitui um problema central em pesquisa
+computacional. O índice kappa de Cohen~\cite{cohen1960} representa a medida
+pioneira de concordância entre dois anotadores além do nível esperado pelo
+acaso. Fleiss~\cite{fleiss1971} estendeu o índice para múltiplos anotadores,
+consolidando a família de métricas kappa como instrumento de referência na
+verificação de \textit{inter-rater reliability}.
+
+Salganik~\cite{salganik2019} argumenta que pesquisas computacionais em
+ciências sociais enfrentam um dilema fundamental entre escala e validade:
+métodos automatizados permitem analisar \textit{corpora} de milhões de
+registros, mas sua validade depende de etapas de verificação humana que, por
+razões práticas, recaem sobre amostras. A Tabela~\ref{tab:literatura}
+sintetiza comparativamente as principais abordagens encontradas na literatura.
+
+\begin{table}[H]
+\centering
+\caption{Comparativo de abordagens para análise automatizada de conteúdo em
+plataformas digitais.}
+\label{tab:literatura}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Abordagem} & \textbf{Mecanismo} & \textbf{Escala} & \textbf{Validação} & \textbf{Limitação} \\
+\midrule
+Anotação manual        & Humano          & Pequena & Alta       & Não escalável \\
+\textit{Keyword match} & Palavras-chave  & Grande  & Baixa      & Alta taxa FP \\
+\textit{Regex} básico  & Padrões fixos   & Grande  & Média      & Sensível ao contexto \\
+ML supervisionado      & Classificador   & Grande  & Média      & Exige corpus rotulado \\
+NLP profundo           & Transformers    & Grande  & Alta       & Alto custo computacional \\
+\textbf{Este trabalho} & \textbf{Regex multicamada} & \textbf{Grande} & \textbf{Alta (100\%)} & \textbf{Domínio-específico} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+%  4. OBJETIVOS DA PESQUISA
+% ============================================================
+\section{Objetivos da Pesquisa}
+\label{sec:objetivos}
+
+\subsection{Objetivo Geral}
+
+Desenvolver, implementar e validar um sistema automatizado baseado em
+expressões regulares para a detecção de estratégias Call2Go em descrições de
+vídeos do YouTube, aplicado ao corpus dos artistas brasileiros mais
+visualizados, e avaliar a confiabilidade metodológica da ferramenta por meio
+de um protocolo de validação cruzada entre classificação automática e anotação
+humana de referência.
+
+\subsection{Objetivos Específicos}
+
+\begin{enumerate}
+  \item Construir uma base de artistas reprodutível e verificável, derivada de
+    playlists oficiais do Spotify (\textit{Top~50 Brasil}, \textit{Viral~50
+    Brasil} e \textit{Top Hits Brasil}), integrando métricas de popularidade e
+    identificadores de canal do YouTube.
+
+  \item Coletar e estruturar um corpus de vídeos do YouTube, composto pelos 20
+    vídeos mais visualizados de cada artista, totalizando até 980 vídeos,
+    utilizando a YouTube Data API~v3~\cite{youtubeapi2024} com estratégia de
+    consulta otimizada por quotas (\texttt{playlistItems.list}).
+
+  \item Desenvolver um motor de detecção Call2Go em arquitetura de três camadas
+    analíticas (vídeo, canal textual e canal via \textit{scraping}
+    estruturado), capaz de distinguir entre links diretos ao Spotify,
+    redirecionadores de terceiros e menções textuais implícitas, excluindo
+    automaticamente menções narrativas.
+
+  \item Construir um \textit{ground truth} humano sobre amostra aleatória de
+    50 vídeos (seed $= 42$) e avaliar a confiabilidade do detector nos três
+    níveis analíticos (vídeo isolado, canal isolado e combinado), reportando
+    acurácia, precisão, \textit{recall} e F1-score.
+
+  \item Testar as hipóteses de impacto ($H_2$ e $H_3$) via Mann-Whitney~U
+    ($\alpha = 0{,}05$) e conduzir análise bidirecional de correlação de
+    Spearman para determinar a direcionalidade da influência cruzada entre as
+    duas plataformas.
+
+  \item Consolidar um pipeline ETL reprodutível e documentado para coleta e
+    análise de dados musicais \textit{cross-platform}, utilizando Python~3.12,
+    pandas~\cite{mckinney2010} e SciPy~\cite{virtanen2020}.
+\end{enumerate}
+
+% ============================================================
+%  5. METODOLOGIA DE PESQUISA
+% ============================================================
+\section{Metodologia de Pesquisa}
+\label{sec:metodologia}
+
+A Figura~\ref{fig:pipeline} apresenta o pipeline ETL (\textit{Extract,
+Transform, Load}) e de validação executado neste trabalho. O pipeline é
+composto por 11 etapas sequenciais, implementadas em Python~3.12~\cite{python2024},
+das quais as quatro primeiras são responsáveis pela extração de dados brutos, a
+quinta pela classificação automatizada, a sexta pelo armazenamento estruturado,
+as etapas sete a nove pelas análises estatísticas e as etapas dez e onze pelo
+ciclo de validação cruzada.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.85cm,
+    box/.style={rectangle, draw=black!70, fill=gray!10, text width=8.5cm,
+                text centered, minimum height=0.65cm, font=\footnotesize,
+                rounded corners=2pt},
+    vbox/.style={rectangle, draw=blue!60, fill=blue!8, text width=8.5cm,
+                 text centered, minimum height=0.65cm, font=\footnotesize,
+                 rounded corners=2pt},
+    arr/.style={-{Stealth}, thick, draw=black!60}
+]
+\node[box]  (s1) {Etapa 1: Fonte de Artistas --- Playlists Spotify Top BR};
+\node[box, below of=s1]  (s2) {Etapas 2--3: Coleta via API (YouTube Data API v3 + Spotify Web API)};
+\node[box, below of=s2]  (s3) {Etapa 4: \textit{Scraping} dos Links de Canal (Aba ``Sobre'')};
+\node[box, below of=s3]  (s4) {Etapa 5: Detecção Automatizada --- Motor \textit{Regex} Multicamada};
+\node[box, below of=s4]  (s5) {Etapa 6: Construção do \textit{Data Warehouse} (SQLite)};
+\node[box, below of=s5]  (s6) {Etapas 7--9: Análises Estatísticas (EDA + Mann-Whitney + Cross-Platform)};
+\node[vbox, below of=s6] (s7) {Etapa 10: Amostragem para \textit{Ground Truth} (50 vídeos, seed $= 42$)};
+\node[vbox, below of=s7] (s8) {Etapa 11: Validação Cruzada Humano vs.\@ Automático (3 Níveis)};
+\draw[arr] (s1) -- (s2);
+\draw[arr] (s2) -- (s3);
+\draw[arr] (s3) -- (s4);
+\draw[arr] (s4) -- (s5);
+\draw[arr] (s5) -- (s6);
+\draw[arr] (s6) -- (s7);
+\draw[arr] (s7) -- (s8);
+\end{tikzpicture}
+\caption{Pipeline ETL e de validação do sistema Call2Go Detector. Etapas em
+cinza: processamento de dados. Etapas em azul: ciclo de validação cruzada.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Fonte de Dados e Critérios de Seleção}
+
+A construção reprodutível da base de artistas constitui decisão metodológica
+crítica. A utilização de playlists editoriais do Spotify (\textit{Top~50
+Brasil}, \textit{Viral~50 Brasil} e \textit{Top Hits Brasil}) como fonte
+primária garante três propriedades essenciais: (i)~autoridade curatorial,
+pois as playlists são mantidas pela própria plataforma; (ii)~relevância
+cultural, pois refletem os padrões de consumo contemporâneos; e
+(iii)~reprodutibilidade, pois os identificadores de playlist são permanentes
+e publicamente acessíveis via Spotify Web
+API~\cite{spotifyapi2024}. O processo de seleção consistiu em consultar as
+playlists, extrair os artistas únicos, enriquecê-los com métricas de
+\textit{viewCount} do YouTube, aplicar deduplicação por \texttt{artist\_id} e
+critério de popularidade mínima no Spotify ($\geq 60$ pontos em escala
+0--100). O resultado final foi uma base de 49 artistas brasileiros após a
+remoção do único artista identificado com mapeamento incorreto de canal no
+YouTube, totalizando 980 vídeos (20 por artista).
+
+Para a coleta de dados do YouTube, foi utilizada a YouTube Data API~v3
+com uma estratégia de acesso otimizada para redução do consumo de cota diária.
+A consulta padrão por meio do endpoint \texttt{search.list} consome 100
+unidades de cota por chamada, tornando a coleta de 50 artistas com 20 vídeos
+cada inviável dentro da cota diária de 10.000 unidades. A estratégia adotada
+utiliza o endpoint \texttt{playlistItems.list} (custo de 1 unidade por
+chamada), acessando a \textit{uploads playlist} de cada canal (identificada
+pela substituição do prefixo \texttt{UC}~$\to$~\texttt{UU}) para recuperar
+até 200 vídeos, ordenando localmente por \texttt{viewCount} e selecionando os
+20 mais visualizados. Essa abordagem reduziu o consumo estimado de cota em
+aproximadamente 89\%, de ${\sim}5.150$ para ${\sim}550$ unidades para 50
+artistas~\cite{youtubeapi2024}.
+
+As métricas do Spotify foram coletadas via Spotify Web
+API~\cite{spotifyapi2024} utilizando o fluxo de autenticação \textit{Client
+Credentials} (OAuth~2.0). O \textit{snapshot} de popularidade e seguidores foi
+capturado em 30 de março de 2026, constituindo um ponto de medição
+transversal. O campo \texttt{popularity} do Spotify representa um índice
+algorítmico de 0 a 100, calculado internamente pela plataforma com base na
+recência e frequência dos \textit{streams}, não sendo transparente em relação
+à fórmula exata de cálculo.
+
+\subsection{\textit{Scraping} Estruturado de Links de Canal}
+
+A aba ``Sobre'' dos canais do YouTube contém links externos estruturados que
+\textbf{não são expostos pela YouTube Data API~v3}. Essa lacuna é
+metodologicamente crítica: os links do Spotify inseridos na seção pública do
+canal representam a principal fonte de Call2Go para 50,4\% dos vídeos do
+corpus (Tabela~\ref{tab:deteccao}). Para suprir essa lacuna, foi desenvolvido
+um \textit{scraper}~\cite{mitchell2018} em duas fases: a Fase~1 extrai o
+objeto JSON \texttt{ytInitialData} da página principal do canal e busca o
+elemento \texttt{channelExternalLinkViewModel}; a Fase~2, como
+\textit{fallback}, acessa a subpágina \texttt{/about}. Um tratamento especial
+foi implementado para a decodificação de caracteres
+\texttt{\textbackslash u0026} (sequência de escape Unicode para ``\&''),
+cuja ausência de decodificação resultava em URLs de redirecionamento truncadas.
+
+Canais do tipo OAC (\textit{Official Artist Channel}) --- gerados
+automaticamente pelo YouTube por meio de fusão de canais --- foram tratados de
+forma especial: como não possuem links personalizados na aba ``Sobre'', o
+algoritmo busca automaticamente o canal oficial principal do artista via
+pesquisa interna no YouTube.
+
+\subsection{Motor de Detecção Call2Go: \textit{Regex} Multicamada}
+\label{sec:detector}
+
+O núcleo técnico do trabalho é o motor de detecção Call2Go, implementado como
+pipeline de classificação baseado em expressões regulares em três camadas
+sucessivas de análise:
+
+\textbf{Camada 1 --- Links diretos ao Spotify.} Detecta a presença de
+hiperlinks cujo domínio pertence ao Spotify ou a serviços de redirecionamento
+conhecidos. Os padrões implementados cobrem três subtipos:
+
+\begin{itemize}
+  \item \textbf{Domínios proprietários:}
+    \texttt{open.spotify.com}, \texttt{spoti.fi} e \texttt{sptfy.com};
+
+  \item \textbf{Redirecionadores rotulados:} expressões regulares que detectam
+    a coexistência de um domínio de redirecionamento (e.g., \texttt{lnk.to},
+    \texttt{bit.ly}, \texttt{smarturl.it}) com o rótulo textual
+    ``spotify'' a uma distância máxima de 50 caracteres
+    ($\texttt{.{0,50}}$), operacionalizando o conceito de \textit{labeled
+    smart link};
+
+  \item \textbf{Caminho URL com token \texttt{spotify}/\texttt{sptfy}:}
+    detecção no componente de \textit{path} da URL (e.g.,
+    \texttt{bit.ly/LivinhoNoSpotify}).
+\end{itemize}
+
+\textbf{Camada 2 --- Texto implícito (CTA verbal).} Detecta padrões textuais
+de chamada de ação sem link, cobrindo quatro construções em português:
+$\texttt{ou[çc]a\textbackslash b.\{0,50\}\textbackslash bspotify}$;
+$\texttt{dispon[ií]vel\textbackslash b.\{0,30\}\textbackslash bspotify}$;
+$\texttt{\textbackslash bstream\textbackslash b.\{0,50\}\textbackslash bspotify}$;
+e $\texttt{\textbackslash bouvir\textbackslash b.\{0,50\}\textbackslash bspotify}$.
+O operador de alcance limitado \texttt{.\{0,50\}} foi adotado em substituição
+ao operador guloso \texttt{.*} para evitar \textit{matches} \textit{cross-sentence}
+em bios extensas.
+
+\textbf{Filtragem de menções narrativas.} Antes da aplicação das camadas de
+detecção, o texto é submetido a um pré-filtro que invalida segmentos
+correspondentes a menções narrativas formais (e.g.,
+\texttt{chart\textbackslash w*\textbackslash s+(?:do|no)\textbackslash s+spotify},
+referências a rankings e estatísticas de \textit{streams}). A lista completa
+de padrões de exclusão compreende seis regras que cobrem variações de
+\textit{charts}, rankings, top~$N$, milhões de \textit{plays}/\textit{streams}, dias em chart
+e posição numérica no Spotify.
+
+A \textbf{hierarquia de fontes} reconhece que a evidência de Call2Go pode ser
+encontrada na descrição do vídeo individual (\textsl{fonte: vídeo}), nos links
+estruturados scrapeados da aba ``Sobre'' (\textsl{fonte: canal/scraped}) ou em
+ambos (\textsl{fonte: ambos}). A classificação final agrega as evidências de
+todas as fontes.
+
+\subsection{Protocolo de Validação Cruzada}
+
+A validação cruzada avalia a concordância entre o sistema e a classificação
+humana em três níveis:
+
+\begin{itemize}
+  \item \textbf{Nível 1 --- Só vídeo:} Confronta a classificação humana com
+    a detecção automática restrita à descrição do vídeo.
+
+  \item \textbf{Nível 2 --- Combinado (vídeo + canal):} Incorpora todas as
+    fontes disponíveis. Representa o modo de operação pleno do sistema.
+
+  \item \textbf{Nível 3 --- Canal isolado:} Baseada exclusivamente no perfil
+    do canal. Isola a contribuição do \textit{scraping}.
+\end{itemize}
+
+O \textit{ground truth} foi construído em quatro etapas: (i)~seleção aleatória
+de 50 vídeos do corpus total de 980, com seed $= 42$, garantindo
+reprodutibilidade; (ii)~pré-preenchimento automatizado via
+\texttt{ground\_truth\_helper.py}, que cruza os 50 vídeos com os dados brutos
+e extrai evidências textuais, classificando cada vídeo com nível de confiança
+(ALTA/MÉDIA/BAIXA); (iii)~revisão humana de cada caso; e (iv)~resolução
+manual de ambiguidades. O resultado final foi uma amostra com 29 vídeos
+\texttt{link\_direto} e 21 vídeos \texttt{nenhum}, com 49/50 de confiança
+ALTA e 1/50 de confiança MÉDIA (revisado e confirmado manualmente).
+
+Para os testes de hipótese $H_2$ e $H_3$, o teste de Mann-Whitney~U foi
+selecionado por ser não paramétrico, adequado para amostras de tamanhos
+distintos e robusto a \textit{outliers}~\cite{mann1947}. Para a análise
+bidirecional, a correlação de Spearman foi adotada pela capacidade de detectar
+relações monotônicas não lineares~\cite{virtanen2020}. O nível de
+significância adotado foi $\alpha = 0{,}05$ para $H_2$ e $H_3$, e
+$\alpha = 0{,}10$ para a análise bidirecional (reconhecendo o tamanho amostral
+limitado no nível por artista, $N = 49$).
+
+% ============================================================
+%  6. RESULTADOS PRELIMINARES
+% ============================================================
+\section{Resultados Preliminares}
+\label{sec:resultados}
+
+\subsection{Distribuição das Detecções de Call2Go}
+
+A execução do motor de detecção sobre o corpus completo de 980 vídeos produziu
+a distribuição apresentada na Tabela~\ref{tab:deteccao}. O resultado central é
+a ausência completa da categoria \texttt{texto\_implicito} no corpus final.
+Essa categoria foi eliminada durante o refinamento do sistema após a
+identificação de falsos positivos sistemáticos causados pelo operador guloso
+\texttt{.*} nos padrões de texto implícito. Na versão corrigida com o operador
+\texttt{.\{0,50\}}, todos os casos anteriormente classificados como
+\texttt{texto\_implicito} foram reclassificados como \texttt{nenhum}.
+
+\begin{table}[H]
+\centering
+\caption{Distribuição das detecções de Call2Go no corpus de 980 vídeos dos 49
+artistas brasileiros.}
+\label{tab:deteccao}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+\textbf{Classificação} & \textbf{Fonte principal} & \textbf{Vídeos} & \textbf{\%} \\
+\midrule
+\texttt{link\_direto} & Canal (\textit{scraped}) & 494 & 50,4 \\
+\texttt{link\_direto} & Ambos (vídeo + canal)    &  66 &  6,7 \\
+\texttt{link\_direto} & Vídeo (descrição)        &  15 &  1,5 \\
+\textbf{Subtotal \texttt{link\_direto}} & & \textbf{575} & \textbf{58,7} \\
+\midrule
+\texttt{texto\_implicito} & --- & 0 & 0,0 \\
+\textbf{\texttt{nenhum}} & ---  & \textbf{405} & \textbf{41,3} \\
+\midrule
+\textbf{Total} & & \textbf{980} & \textbf{100,0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A decomposição por fonte revela que 50,4\% dos vídeos têm o Call2Go detectado
+exclusivamente por meio das informações de canal (aba ``Sobre'' scrapeada),
+demonstrando a imprescindibilidade do \textit{scraping} estruturado. Apenas 15
+vídeos (1,5\%) possuem Call2Go exclusivo na descrição individual, confirmando
+que a prática dominante é inserir o link no perfil do canal, não em cada vídeo
+separadamente. Os 66 vídeos classificados como \texttt{ambos} correspondem a
+artistas que adotam a prática nos dois níveis simultaneamente.
+
+\subsection{Análise Exploratória de Dados (EDA)}
+
+A análise exploratória confrontou as distribuições de \textit{view\_count} para
+os grupos \texttt{link\_direto} ($n = 717$ registros após \textit{inner join}
+com Spotify) e \texttt{nenhum} ($n = 523$ registros). Os vídeos com Call2Go
+apresentaram média de 46,1 milhões de visualizações (mediana: 7,9M; DP:
+98,8M) \textit{versus} 19,1 milhões para vídeos sem Call2Go (mediana: 6,0M;
+DP: 44,0M). A Figura~\ref{fig:boxplot} evidencia a distribuição altamente
+assimétrica à direita em ambos os grupos.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.75\textwidth]{figs/boxplot_call2go_views.png}
+\caption{Boxplot comparativo de visualizações entre vídeos com e sem Call2Go
+(escala logarítmica). A diferença de médias (2,4$\times$) não é estatisticamente
+significativa (ver Tabela~\ref{tab:estatisticos}).}
+\label{fig:boxplot}
+\end{figure}
+
+A diferença de médias é descritivamente relevante, mas deve ser interpretada
+com cautela: artistas de maior popularidade tendem simultaneamente a ter mais
+\textit{views} \textbf{e} a adotar práticas profissionalizadas de
+\textit{marketing} (incluindo Call2Go), o que configura potencial variável
+confundidora.
+
+\subsection{Testes de Hipótese}
+
+A Tabela~\ref{tab:estatisticos} sintetiza os resultados de todos os testes
+estatísticos conduzidos.
+
+\begin{table}[H]
+\centering
+\caption{Resultados dos testes estatísticos para as hipóteses $H_2$, $H_3$ e
+análise bidirecional de Spearman.}
+\label{tab:estatisticos}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\textbf{Análise} & \textbf{Teste} & \textbf{Estatística} & \textbf{$p$} & \textbf{Decisão} \\
+\midrule
+$H_2$: Call2Go $\to$ Views YT & Mann-Whitney & $U = 118.004$ & $0{,}360$ & Não rejeita $H_0$ \\
+$H_3$: Call2Go $\to$ Pop.\@ Spotify & Mann-Whitney & $U = 169.415{,}5$ & $0{,}998$ & Não rejeita $H_0$ \\
+\midrule
+Dir.\@ A: Rate $\leftrightarrow$ Pop.\@ Spotify & Spearman & $\rho = -0{,}086$ & $0{,}556$ & Não signif. \\
+Dir.\@ A: Rate $\leftrightarrow$ Seguidores & Spearman & $\rho = -0{,}175$ & $0{,}228$ & Não signif. \\
+\midrule
+Dir.\@ B: Pop.\@ $\leftrightarrow$ Avg Views & Spearman & $\rho = 0{,}392$ & $0{,}005$ & \textbf{Signif.\@ ***} \\
+Dir.\@ B: Pop.\@ $\leftrightarrow$ Avg Engagement & Spearman & $\rho = 0{,}310$ & $0{,}030$ & \textbf{Signif.\@ **} \\
+Dir.\@ B: Seguid.\@ $\leftrightarrow$ Avg Views & Spearman & $\rho = 0{,}342$ & $0{,}016$ & \textbf{Signif.\@ **} \\
+Dir.\@ B: Seguid.\@ $\leftrightarrow$ Avg Engag.\@ & Spearman & $\rho = 0{,}380$ & $0{,}007$ & \textbf{Signif.\@ ***} \\
+Dir.\@ B: Pop.\@ $\leftrightarrow$ Views ($n{=}980$) & Spearman & $\rho = 0{,}344$ & ${<}0{,}001$ & \textbf{Signif.\@ ***} \\
+\bottomrule
+\multicolumn{5}{@{}l@{}}{\footnotesize *** $p < 0{,}01$; ** $p < 0{,}05$;
+$\alpha = 0{,}05$ para $H_2$/$H_3$; $\alpha = 0{,}10$ para Spearman.}
+\end{tabular}
+\end{table}
+
+Os resultados para $H_2$ ($p = 0{,}360$) e $H_3$ ($p = 0{,}998$) levam à
+\textbf{não rejeição} da hipótese nula em ambos os casos. A interpretação é
+que a diferença de \textit{views} observada descritivamente (46,1M \textit{vs.}
+19,1M) não é estatisticamente distinguível do esperado por acaso ao nível de
+5\%, sugerindo que uma variável confundidora (fama geral do artista) explicaria
+tanto a maior quantidade de \textit{views} quanto a adoção de Call2Go.
+
+A análise bidirecional classifica a relação
+YouTube~$\leftrightarrow$~Spotify como \textbf{unidirecional:
+Spotify~$\to$~YouTube}. Todas as correlações da Direção~B são estatisticamente
+significativas ($p \leq 0{,}030$), enquanto nenhuma correlação da Direção~A
+atinge significância ($p \geq 0{,}228$). Artistas com maior presença no
+Spotify tendem a acumular maior engajamento nos seus vídeos do YouTube, mas a
+estratégia de Call2Go no YouTube não demonstra influência mensurável sobre as
+métricas do Spotify. Essa relação é correlacional e não causal.
+
+As Figuras~\ref{fig:scatter},~\ref{fig:dir_a} e~\ref{fig:dir_b} ilustram
+graficamente os resultados da análise \textit{cross-platform}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.75\textwidth]{figs/scatter_cross_platform.png}
+\caption{Dispersão \textit{cross-platform}: popularidade Spotify \textit{vs.}
+média de visualizações no YouTube por artista, colorido pelo índice de
+Call2Go.}
+\label{fig:scatter}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.75\textwidth]{figs/direction_a_youtube_to_spotify.png}
+\caption{Direção A (YouTube $\to$ Spotify): correlações entre taxa de Call2Go
+e métricas do Spotify. Nenhuma correlação significativa.}
+\label{fig:dir_a}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.75\textwidth]{figs/direction_b_spotify_to_youtube.png}
+\caption{Direção B (Spotify $\to$ YouTube): correlações entre métricas do
+Spotify e engajamento no YouTube. Todas as correlações são significativas.}
+\label{fig:dir_b}
+\end{figure}
+
+A Figura~\ref{fig:heatmap} apresenta a matriz de correlação bidirecional
+completa.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.75\textwidth]{figs/bidirectional_correlation_matrix.png}
+\caption{Matriz de correlação bidirecional (Spearman) entre métricas do
+YouTube e do Spotify. Apenas as correlações da Direção B (Spotify $\to$
+YouTube) apresentam significância estatística.}
+\label{fig:heatmap}
+\end{figure}
+
+\subsection{Validação Cruzada: Confiabilidade do Detector}
+
+A Tabela~\ref{tab:crossval} apresenta as métricas de confiabilidade do
+detector em cada nível de validação.
+
+\begin{table}[H]
+\centering
+\caption{Métricas de confiabilidade do detector automatizado por nível de
+análise (amostra: 50 vídeos, \textit{ground truth} humano).}
+\label{tab:crossval}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\multirow{2}{*}{\textbf{Nível}} & \multirow{2}{*}{\textbf{Acurácia}} &
+\multicolumn{3}{c}{\textbf{\texttt{link\_direto}}} &
+\multicolumn{2}{c}{\textbf{\texttt{nenhum}}} \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-7}
+ & & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{P} & \textbf{R} \\
+\midrule
+1 --- Só vídeo & 60,0\% & 100\% & 31,0\% & 47,4\% & 51,2\% & 100\% \\
+\textbf{2 --- Combinado} & \textbf{100\%} & \textbf{100\%} & \textbf{100\%} & \textbf{100\%} & \textbf{100\%} & \textbf{100\%} \\
+3 --- Canal isolado & 100\% & 100\% & 100\% & 100\% & 100\% & 100\% \\
+\bottomrule
+\multicolumn{7}{@{}l@{}}{\footnotesize P = Precisão; R = \textit{Recall}; F1 =
+F1-Score; ($n_{\texttt{link\_direto}} = 29$; $n_{\texttt{nenhum}} = 21$).}
+\end{tabular}
+\end{table}
+
+Os resultados rejeitam $H_0$: o detector no Nível~2 atinge 100\% de acurácia,
+superando amplamente o limiar de 85\% estabelecido em $H_1$. A análise do
+Nível~1 é reveladora: precisão de 100\% com \textit{recall} de apenas 31\%
+indica que, quando o sistema detecta Call2Go na descrição do vídeo, ele
+\textbf{nunca erra} (zero falsos positivos), mas deixa de detectar 69\% dos
+casos reais --- que estão presentes no perfil do canal, não na descrição
+individual. A recuperação total ao Nível~3 comprova que o \textit{scraping} da
+aba ``Sobre'' é suficiente para classificar corretamente todos os 50 casos da
+amostra.
+
+As Figuras~\ref{fig:cm_combined},~\ref{fig:cm_video}
+e~\ref{fig:val_metrics} apresentam as matrizes de confusão e as métricas
+visuais da validação.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.65\textwidth]{figs/confusion_matrix_combined.png}
+\caption{Matriz de confusão no Nível 2 (combinado). Diagonal perfeita: 29 TP
+\texttt{link\_direto} e 21 TN \texttt{nenhum}, sem erros.}
+\label{fig:cm_combined}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.65\textwidth]{figs/confusion_matrix_video_only.png}
+\caption{Matriz de confusão no Nível 1 (só vídeo). Destaca-se os 20 falsos
+negativos --- vídeos cujo Call2Go está apenas no canal, não na descrição.}
+\label{fig:cm_video}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.75\textwidth]{figs/validation_metrics_per_class.png}
+\caption{Métricas de validação (precisão, \textit{recall}, F1-score) por
+classe e por nível de análise.}
+\label{fig:val_metrics}
+\end{figure}
+
+\subsection{Limitações e Estado Atual}
+
+Este trabalho encontra-se em fase de resultados preliminares. As principais
+limitações identificadas até o momento são:
+
+\begin{enumerate}
+  \item A coleta de métricas do Spotify é \textit{snapshot} transversal
+    (30/03/2026), sem seriação temporal, o que impede a análise de causalidade.
+
+  \item A análise bidirecional da Direção~B é inteiramente correlacional e não
+    utiliza dados de links reais do Spotify apontando para o YouTube (que a
+    API não expõe).
+
+  \item O corpus é limitado ao segmento de artistas brasileiros de maior
+    notoriedade, restringindo a generalização para artistas independentes ou de
+    nicho, embora a metodologia de detecção seja transferível a qualquer corpus.
+\end{enumerate}
+
+Os próximos passos incluem: (i)~expansão da análise estatística com testes
+complementares; (ii)~elaboração da seção de conclusão com contribuições,
+implicações e direcionamentos futuros; e (iii)~submissão do documento completo
+para avaliação do orientador.
+
+% ============================================================
+%  REFERÊNCIAS
+% ============================================================
+\bibliographystyle{sbc}
+\bibliography{references}
+
+\end{document}
