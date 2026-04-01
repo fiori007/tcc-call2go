@@ -15,15 +15,14 @@
 
 \sloppy
 
-\title{Desenvolvimento e Validação de um Sistema Automatizado para Detecção\\
-       de Estratégias \textit{Call2Go} em Vídeos do YouTube:\\
-       Uma Análise de Confiabilidade Metodológica\\
-       no Mercado Musical Digital Brasileiro}
+\title{Detecção Automatizada de Estratégias \textit{Call2Go}\\
+       em Vídeos do YouTube: Validação Metodológica\\
+       no Mercado Musical Brasileiro}
 
 \author{[Nome Completo do Autor]\inst{1}}
 
-\address{[Departamento / Curso] --- [Nome da Instituição]\\
-  [Endereço Completo --- Cidade -- Estado, CEP, Brasil]
+\address{[Departamento / Curso] -- [Nome da Instituição]\\
+  [Cidade -- Estado, Brasil]
   \email{[email@instituicao.br]}
 }
 
@@ -32,60 +31,27 @@
 \maketitle
 
 \begin{abstract}
-The rapid expansion of the Brazilian digital music market has elevated
-platforms such as YouTube and Spotify to the role of critical infrastructure
-for the circulation, discovery, and monetization of musical content. In this
-setting, the practice known as \textit{Call2Go} --- the insertion of
-call-to-action elements in YouTube video descriptions directing viewers toward
-Spotify --- has been adopted by artists and labels as an audience conversion
-strategy, yet without consolidated empirical support regarding its
-effectiveness or the reliability of automated tools designed to detect it at
-scale. This paper presents the development and validation of a multilayer
-regex-based automated system for Call2Go detection, applied to a corpus of 980
-videos from the 49 most-viewed Brazilian artists, collected via the YouTube
-Data API~v3 and the Spotify Web API. The methodological protocol adopts a
-cross-validation cycle contrasting, at three analytical levels (video
-description, channel profile, and combined approach), automated classification
-against a human reference annotation (\textit{ground truth}) built on a
-stratified random sample of 50 videos. Results show that at the combined level
-the system achieves 100\% accuracy, precision, and recall, validating the
-approach as a reliable methodological instrument for content analysis at
-scale. Furthermore, the Mann-Whitney~U test found no statistically significant
-evidence that Call2Go adoption impacts YouTube view volume ($U = 118{,}004$;
-$p = 0.360$) or Spotify popularity ($U = 169{,}415.5$; $p = 0.998$).
-Bidirectional Spearman correlation analysis identified a unidirectional
-relationship in the Spotify~$\to$~YouTube direction ($\rho = 0.392$;
-$p = 0.005$), suggesting that streaming platform prominence positively
-correlates with YouTube engagement, but not the reverse.
+This paper presents a multilayer regex-based system for automated detection
+of \textit{Call2Go} strategies --- call-to-action elements in YouTube video
+descriptions directing viewers to Spotify --- applied to 980 videos from
+the 49 most-viewed Brazilian artists. Cross-validation against a 50-video
+human ground truth achieved 100\% accuracy at the combined level (video +
+channel). Mann-Whitney~U tests found no significant impact on YouTube views
+($p = 0.360$) or Spotify popularity ($p = 0.998$). Bidirectional Spearman
+analysis revealed a unidirectional Spotify~$\to$~YouTube correlation
+($\rho = 0.392$; $p = 0.005$).
 \end{abstract}
 
 \begin{resumo}
-O crescimento acelerado do mercado musical digital brasileiro elevou
-plataformas como YouTube e Spotify à condição de infraestrutura crítica para
-a circulação, descoberta e monetização de conteúdo musical. Nesse contexto,
-emergiu a prática denominada \textit{Call2Go} --- a inserção de chamadas de
-ação nas descrições de vídeos do YouTube com direcionamento explícito ao
-Spotify ---, adotada por artistas e \textit{labels} como estratégia de
-conversão de audiência entre plataformas. Este trabalho apresenta o
-desenvolvimento e a validação de um sistema automatizado baseado em expressões
-regulares (\textit{regex}) multicamada para detecção de estratégias Call2Go,
-aplicado a um corpus de 980 vídeos dos 49 artistas brasileiros mais
-visualizados, coletados via YouTube Data API~v3 e Spotify Web API. O protocolo
-metodológico adota um ciclo de validação cruzada que contrasta, em três níveis
-analíticos (descrição do vídeo, perfil do canal e abordagem combinada), a
-classificação automatizada com anotação humana de referência
-(\textit{ground truth}) construída sobre uma amostra aleatória de 50 vídeos.
-Os resultados revelam que, no nível combinado, o sistema alcança acurácia,
-precisão e \textit{recall} de 100\%, validando a abordagem como instrumento
-metodológico confiável para análise de conteúdo em escala. O teste
-Mann-Whitney~U não encontrou evidências estatisticamente significativas de que
-a adoção de Call2Go impacta o volume de visualizações no YouTube
-($U = 118.004$; $p = 0{,}360$) nem a popularidade no Spotify
-($U = 169.415{,}5$; $p = 0{,}998$). A análise bidirecional de correlação de
-Spearman identificou uma relação unidirecional no sentido
-Spotify~$\to$~YouTube ($\rho = 0{,}392$; $p = 0{,}005$), sugerindo que a
-proeminência em plataformas de streaming correlaciona-se positivamente com o
-engajamento no YouTube, mas não o contrário.
+Este trabalho apresenta um sistema baseado em \textit{regex} multicamada
+para detecção automatizada de estratégias \textit{Call2Go} --- chamadas de
+ação em vídeos do YouTube direcionando ao Spotify --- aplicado a 980 vídeos
+dos 49 artistas brasileiros mais visualizados. A validação cruzada com
+\textit{ground truth} humano (50 vídeos) alcançou acurácia de 100\% no nível
+combinado (vídeo + canal). Testes Mann-Whitney~U não encontraram impacto
+significativo nas visualizações ($p = 0{,}360$) nem na popularidade Spotify
+($p = 0{,}998$). Análise bidirecional de Spearman revelou correlação
+unidirecional Spotify~$\to$~YouTube ($\rho = 0{,}392$; $p = 0{,}005$).
 \end{resumo}
 
 % ============================================================
