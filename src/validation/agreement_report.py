@@ -15,14 +15,14 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     Gera visualizações da concordância entre classificação humana e automatizada.
 
     Artefatos gerados:
-        1. Matriz de confusão (nível combinado) — humano vs. detector vídeo+canal
-        2. Gráfico de barras — métricas por classe (nível combinado)
-        3. Matriz de confusão (nível vídeo) — humano vs. detector só no vídeo
+        1. Matriz de confusão (nível combinado) -- humano vs. detector vídeo+canal
+        2. Gráfico de barras -- métricas por classe (nível combinado)
+        3. Matriz de confusão (nível vídeo) -- humano vs. detector só no vídeo
 
     Esses gráficos são evidência direta da confiabilidade do detector
     e vão para o capítulo de Resultados do TCC.
 
-    NOTA: Imagens limitadas a max 1800px em qualquer dimensão (figsize × dpi).
+    NOTA: Imagens limitadas a max 1800px em qualquer dimensão (figsize x dpi).
     """
     print("=" * 60)
     print("GERAÇÃO DE RELATÓRIO VISUAL DE CONCORDÂNCIA")
@@ -39,7 +39,7 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     # Detecta se usa formato novo (auto_combined_type) ou legado (auto_call2go_type)
     auto_col = 'auto_combined_type' if 'auto_combined_type' in df.columns else 'auto_call2go_type'
 
-    # 1. Matriz de Confusão — Nível Combinado (vídeo + canal)
+    # 1. Matriz de Confusão -- Nível Combinado (vídeo + canal)
     labels = ['nenhum', 'texto_implicito', 'link_direto']
     present_labels = [
         l for l in labels if l in df['manual_call2go_type'].values or l in df[auto_col].values]
@@ -60,7 +60,7 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     confusion = confusion.reindex(
         index=present_labels, columns=present_labels, fill_value=0)
 
-    # figsize=(6,4) × dpi=300 = 1800×1200 px (seguro, < 2000px)
+    # figsize=(6,4) x dpi=300 = 1800x1200 px (seguro, < 2000px)
     plt.figure(figsize=(6, 4))
     sns.heatmap(confusion, annot=True, fmt='d', cmap='Blues',
                 xticklabels=present_labels, yticklabels=present_labels,
@@ -74,9 +74,9 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     cm_path = os.path.join(output_dir, "confusion_matrix_combined.png")
     plt.savefig(cm_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Matriz de confusão (combinado) salva em: {cm_path}")
+    print(f"[OK] Matriz de confusão (combinado) salva em: {cm_path}")
 
-    # 1b. Matriz de Confusão — Nível Vídeo Apenas (se coluna existe)
+    # 1b. Matriz de Confusão -- Nível Vídeo Apenas (se coluna existe)
     if 'auto_video_type' in df.columns:
         present_labels_v = [
             l for l in labels if l in df['manual_call2go_type'].values or l in df['auto_video_type'].values]
@@ -108,7 +108,7 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
         cm_v_path = os.path.join(output_dir, "confusion_matrix_video_only.png")
         plt.savefig(cm_v_path, dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"✅ Matriz de confusão (só vídeo) salva em: {cm_v_path}")
+        print(f"[OK] Matriz de confusão (só vídeo) salva em: {cm_v_path}")
 
     # 2. Métricas por classe (se o arquivo de métricas existir)
     if os.path.exists(metrics_file):
@@ -132,7 +132,7 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
                 x = np.arange(len(classes))
                 width = 0.25
 
-                # figsize=(6,4) × dpi=300 = 1800×1200 px (seguro)
+                # figsize=(6,4) x dpi=300 = 1800x1200 px (seguro)
                 fig, ax = plt.subplots(figsize=(6, 4))
                 bars1 = ax.bar(x - width, precision_vals, width,
                                label='Precisão', color='#2196F3')
@@ -166,25 +166,48 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
                     output_dir, "validation_metrics_per_class.png")
                 plt.savefig(metrics_path, dpi=300, bbox_inches='tight')
                 plt.close()
-                print(f"✅ Gráfico de métricas salvo em: {metrics_path}")
+                print(f"[OK] Gráfico de métricas salvo em: {metrics_path}")
 
             # Resumo textual
             print(f"\n--- RESUMO PARA O TCC ---")
-            print(
-                f"Acurácia global (combinado): {metrics.get('accuracy', 'N/A')}")
-            print(f"Vídeos validados: {metrics.get('total_validated', 'N/A')}")
-            print(f"Concordâncias: {metrics.get('matches', 'N/A')}")
-            print(f"Discordâncias: {metrics.get('discordances', 'N/A')}")
+            acc = metrics.get('accuracy', 'N/A')
+            kappa = metrics.get('cohens_kappa', 'N/A')
+            kappa_ci = metrics.get('kappa_ci95', [])
+            acc_ci = metrics.get('accuracy_ci95', [])
+            kappa_interp = metrics.get('kappa_interpretation', '')
+
+            print(f"Acuracia global (combinado): {acc}")
+            if acc_ci:
+                print(f"  IC95% Acuracia: [{acc_ci[0]}, {acc_ci[1]}]")
+            if kappa != 'N/A':
+                print(f"Cohen's Kappa (combinado): {kappa}")
+                if kappa_ci:
+                    print(f"  IC95% Kappa: [{kappa_ci[0]}, {kappa_ci[1]}]")
+                if kappa_interp:
+                    print(f"  Interpretacao (Landis & Koch): {kappa_interp}")
+            print(f"Videos validados: {metrics.get('total_validated', 'N/A')}")
+            print(f"Concordancias: {metrics.get('matches', 'N/A')}")
+            print(f"Discordancias: {metrics.get('discordances', 'N/A')}")
 
             # Mostra métricas de vídeo-only e canal se disponíveis
             if 'video_only' in metrics_raw and metrics_raw['video_only']:
                 vid_m = metrics_raw['video_only']
-                print(f"\nAcurácia (só vídeo): {vid_m.get('accuracy', 'N/A')}")
+                vid_kappa = vid_m.get('cohens_kappa', 'N/A')
+                vid_kappa_ci = vid_m.get('kappa_ci95', [])
+                print(f"\nAcuracia (so video): {vid_m.get('accuracy', 'N/A')}")
+                if vid_kappa != 'N/A':
+                    print(f"Kappa (so video): {vid_kappa}")
+                    if vid_kappa_ci:
+                        print(
+                            f"  IC95%: [{vid_kappa_ci[0]}, {vid_kappa_ci[1]}]")
             if 'channel_only' in metrics_raw and metrics_raw['channel_only']:
                 ch_m = metrics_raw['channel_only']
-                print(f"Acurácia (só canal): {ch_m.get('accuracy', 'N/A')}")
+                ch_kappa = ch_m.get('cohens_kappa', 'N/A')
+                print(f"Acuracia (so canal): {ch_m.get('accuracy', 'N/A')}")
+                if ch_kappa != 'N/A':
+                    print(f"Kappa (so canal): {ch_kappa}")
 
-    print(f"\n✅ Relatório visual completo gerado em: {output_dir}/")
+    print(f"\n[OK] Relatório visual completo gerado em: {output_dir}/")
 
 
 if __name__ == "__main__":

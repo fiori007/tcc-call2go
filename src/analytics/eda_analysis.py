@@ -39,7 +39,7 @@ def run_analysis():
         print("[ERRO] O dataset unificado está vazio. A query falhou no JOIN.")
         return
 
-    print(f"✅ Dados cruzados com sucesso. Total de registros prontos para análise: {len(df)}")
+    print(f"[OK] Dados cruzados com sucesso. Total de registros prontos para análise: {len(df)}")
     
     # ---------------------------------------------------------
     # Geração do Gráfico 1: Impacto Estrutural nas Views
@@ -60,7 +60,7 @@ def run_analysis():
     
     plot1_path = "data/plots/boxplot_call2go_views.png"
     plt.savefig(plot1_path, dpi=300, bbox_inches='tight') # DPI 300 exigido por bancas acadêmicas
-    print(f"✅ Gráfico gerado e salvo para o TCC em: {plot1_path}")
+    print(f"[OK] Gráfico gerado e salvo para o TCC em: {plot1_path}")
     
     # ---------------------------------------------------------
     # Estatística Descritiva Matemática

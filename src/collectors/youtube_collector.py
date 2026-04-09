@@ -63,7 +63,7 @@ def get_channel_videos(youtube, channel_id, max_results=20):
 
     Estratégia otimizada para quota:
         1. Usa playlistItems.list (1 unit/call) para listar IDs de vídeos recentes
-           do canal (playlist de uploads = UC→UU).
+           do canal (playlist de uploads = UC->UU).
         2. Usa videos.list (1 unit/call por 50 vídeos) para obter viewCount.
         3. Ordena localmente por viewCount (descendente).
         4. Retorna os top N vídeos mais visualizados.
@@ -73,7 +73,7 @@ def get_channel_videos(youtube, channel_id, max_results=20):
     milhares de vídeos, a amostra pode não incluir os vídeos mais antigos
     e mais visualizados, mas 200 é suficiente para a vasta maioria.
     """
-    # Passo 1: Listar IDs via playlist de uploads (UC→UU)
+    # Passo 1: Listar IDs via playlist de uploads (UC->UU)
     uploads_playlist = 'UU' + channel_id[2:]
     video_ids = []
     next_page_token = None
@@ -233,7 +233,7 @@ def collect_youtube_data(max_videos_per_artist=20):
         for item in all_data:
             f.write(json.dumps(item, ensure_ascii=False) + '\n')
 
-    print(f"\n✅ Dados do YouTube salvos com sucesso em: {output_file}")
+    print(f"\n[OK] Dados do YouTube salvos com sucesso em: {output_file}")
     print(
         f"  Total: {len(all_data)} vídeos | {success_count} artistas OK | {error_count} erros")
 

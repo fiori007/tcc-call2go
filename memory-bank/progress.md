@@ -133,13 +133,39 @@
   - Outputs: direction_a, direction_b, heatmap, cross_platform_report.txt, artist_cross_platform_profile.csv
 
 ### 🔲 Pendente (Ações Imediatas — Em Ordem)
-1. 🔴 **ALUNO:** Revisar `ground_truth_prefilled.csv` (1 flagado: Eric Land tmAsMpFERrE)
-2. 🔴 **ALUNO:** Salvar como `ground_truth.csv`
-3. 🔴 **ALUNO:** Alinhar com orientador sobre interpretação da Direção B (correlação vs. links reais)
-4. [ ] Rodar `cross_validator.py` — gerar métricas de confiabilidade (humano vs. máquina)
-5. [ ] Rodar `agreement_report.py` — gerar visualizações de concordância
-6. [ ] Commit e push de todos os dados e artefatos gerados
-7. [ ] Escrever capítulo de Metodologia do TCC documentando todo o fluxo
+1. 🔴 **ALUNO:** Anotar `blind_annotation.csv` (91 vídeos, amostra adversarial estratificada)
+   - NÃO usar ground_truth_prefilled.csv — validação circular confirmada
+   - Preencher: manual_call2go_video, manual_call2go_canal, manual_call2go_combinado, confianca
+2. 🔴 **ALUNO:** Salvar como `data/validation/ground_truth.csv`
+3. [ ] Rodar `cross_validator.py` — gerar métricas honestas (com Kappa + IC 95%)
+4. [ ] Rodar `agreement_report.py` — gerar visualizações atualizadas
+5. 🔴 **ALUNO:** Alinhar com orientador sobre interpretação da Direção B (correlação vs. links reais)
+6. [ ] Escrever capítulo de Metodologia do TCC documentando todo o fluxo
+
+### ✅ Concluído (Fase 7 — Auditoria Profissional, 07/04/2026)
+
+#### Problemas Críticos Encontrados
+- **VALIDAÇÃO CIRCULAR CONFIRMADA:** ground_truth.csv é byte-a-byte idêntico ao ground_truth_prefilled.csv
+  - SHA256 ambos: C5BC1124118A67BDF5FB94190DB09B19B852C4FC2D3D5B0DEC87A1501FC3F437
+  - cross_validator.py comparava detector consigo mesmo → 100% acurácia por construção
+  - Cohen's Kappa Nível 2-3 = 1.0 (circular) vs Nível 1 = 0.27 (honesto, "razoável")
+- **ZERO texto_implicito no dataset real:** padrões existem no código mas nunca disparam em 980 vídeos
+- **Amostra original enviesada:** 50 vídeos, 72% com auto_source=canal (trivial), 0 OAC, 0 redirect sem label, 0 narrativa
+
+#### Soluções Implementadas
+1. **tests/test_call2go_detector.py** — 77 testes adversariais em 11 grupos (100% passam)
+2. **src/validation/adversarial_sampler.py** — Amostra estratificada de 91 vídeos cobrindo todos os edge cases
+3. **src/validation/blind_annotator.py** — Gera CSV cego sem sugestões do detector
+4. **cross_validator.py atualizado** — Cohen's Kappa + Bootstrap IC 95% + suporte a formato novo
+5. **agreement_report.py atualizado** — Kappa + IC no resumo
+6. **requirements.txt** — Todas as versões pinadas + scikit-learn + pytest adicionados
+7. **Encoding fix** — 14 arquivos: emojis/caracteres não-cp1252 substituídos por ASCII
+   - Pipeline agora roda sem PYTHONIOENCODING no Windows
+
+#### Dados da Amostra Adversarial (91 vídeos)
+- video_link_direto: 15 | ambos_link_direto: 10 | canal_only: 20
+- nenhum_limpo: 15 | auto_generated: 10 | desc_vazia: 10 | desc_curta: 10
+- narrativa_spotify: 1 | fallback_spotify: 0
 
 ### 🔲 Pendente (Melhorias Futuras)
 - Coleta longitudinal do Spotify (múltiplas datas)

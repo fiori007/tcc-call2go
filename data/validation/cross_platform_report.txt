@@ -1,28 +1,28 @@
 RELATÓRIO DE VALIDAÇÃO CROSS-PLATFORM BIDIRECIONAL
 ============================================================
 
-CLASSIFICAÇÃO: UNIDIRECIONAL: Spotify → YouTube
-Nível de significância: α = 0.1
+CLASSIFICAÇÃO: UNIDIRECIONAL: Spotify -> YouTube
+Nível de significância: alpha = 0.1
 
 INTERPRETAÇÃO:
 Métricas do Spotify correlacionam com engajamento no YouTube, mas Call2Go no YouTube não demonstra impacto significativo no Spotify.
 
 ------------------------------------------------------------
-DIREÇÃO A: YouTube → Spotify
+DIREÇÃO A: YouTube -> Spotify
 ------------------------------------------------------------
-  call2go_vs_popularity: {'rho': np.float64(-0.08618151909348307), 'p': np.float64(0.5559993292233456)}
-  call2go_vs_followers: {'rho': np.float64(-0.17531939605110336), 'p': np.float64(0.22823674447581668)}
+  call2go_vs_popularity: {'rho': np.float64(-0.08618151909348307), 'p': np.float64(0.5559993292233457)}
+  call2go_vs_followers: {'rho': np.float64(-0.17531939605110336), 'p': np.float64(0.22823674447581654)}
   views_mannwhitney: {'U': np.float64(118004.0), 'p': np.float64(0.7196618717893403), 'median_with': np.float64(6374734.0), 'median_without': np.float64(5581316.0)}
 
 ------------------------------------------------------------
-DIREÇÃO B: Spotify → YouTube (A VOLTA)
+DIREÇÃO B: Spotify -> YouTube (A VOLTA)
 ------------------------------------------------------------
-  popularity_vs_avg_views: {'rho': np.float64(0.39191781017366184), 'p': np.float64(0.005353225271106567)}
-  popularity_vs_avg_engagement: {'rho': np.float64(0.3099170168835136), 'p': np.float64(0.030228520245104182)}
-  followers_vs_avg_views: {'rho': np.float64(0.3418367346938775), 'p': np.float64(0.01621691135391361)}
-  followers_vs_total_views: {'rho': np.float64(0.3418367346938775), 'p': np.float64(0.01621691135391361)}
+  popularity_vs_avg_views: {'rho': np.float64(0.39191781017366184), 'p': np.float64(0.005353225271106578)}
+  popularity_vs_avg_engagement: {'rho': np.float64(0.3099170168835136), 'p': np.float64(0.03022852024510419)}
+  followers_vs_avg_views: {'rho': np.float64(0.3418367346938775), 'p': np.float64(0.016216911353913618)}
+  followers_vs_total_views: {'rho': np.float64(0.3418367346938775), 'p': np.float64(0.016216911353913618)}
   followers_vs_avg_engagement: {'rho': np.float64(0.37979591836734683), 'p': np.float64(0.0071107242017007105)}
-  per_video_pop_vs_views: {'rho': np.float64(0.3443102014094364), 'p': np.float64(1.170195195000349e-28), 'n': 980}
+  per_video_pop_vs_views: {'rho': np.float64(0.3443102014094364), 'p': np.float64(1.1701951950003466e-28), 'n': 980}
 
 ------------------------------------------------------------
 PERFIL POR ARTISTA

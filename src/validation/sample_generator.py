@@ -15,7 +15,7 @@ def generate_validation_sample(input_file="data/raw/youtube_videos_raw.jsonl",
     o aluno deve classificar manualmente uma amostra ANTES de confiar no
     classificador automatizado. Isso cria um padrão de referência independente.
 
-    O seed fixo garante reprodutibilidade — qualquer pesquisador que rode
+    O seed fixo garante reprodutibilidade -- qualquer pesquisador que rode
     este script obterá a mesma amostra.
 
     Args:
@@ -71,9 +71,9 @@ def generate_validation_sample(input_file="data/raw/youtube_videos_raw.jsonl",
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     df.to_csv(output_file, index=False, encoding='utf-8')
 
-    print(f"\n✅ Amostra gerada: {actual_sample} vídeos de {total} total")
-    print(f"✅ Arquivo salvo em: {output_file}")
-    print(f"✅ Seed utilizado: {seed}")
+    print(f"\n[OK] Amostra gerada: {actual_sample} vídeos de {total} total")
+    print(f"[OK] Arquivo salvo em: {output_file}")
+    print(f"[OK] Seed utilizado: {seed}")
     print(f"\n--- INSTRUÇÕES PARA O ANOTADOR ---")
     print("1. Abra o arquivo CSV gerado")
     print("2. Para cada vídeo, leia 'description_preview'")

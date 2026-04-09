@@ -1,20 +1,20 @@
 """
-VALIDAÇÃO CROSS-PLATFORM BIDIRECIONAL — A "VOLTA"
+VALIDAÇÃO CROSS-PLATFORM BIDIRECIONAL -- A "VOLTA"
 
 A questão central: a relação entre YouTube e Spotify é unidirecional ou bidirecional?
 
-Direção A — YouTube → Spotify:
-    Vídeos com Call2Go (links/menções ao Spotify) → Impacto nas métricas do Spotify?
-    Intensidade de Call2Go por artista → Correlação com popularidade/seguidores Spotify?
+Direção A -- YouTube -> Spotify:
+    Vídeos com Call2Go (links/menções ao Spotify) -> Impacto nas métricas do Spotify?
+    Intensidade de Call2Go por artista -> Correlação com popularidade/seguidores Spotify?
 
-Direção B — Spotify → YouTube (A VOLTA):
-    Popularidade no Spotify → Impacto nas métricas do YouTube?
-    Seguidores Spotify → Correlação com views/likes/comentários no YouTube?
+Direção B -- Spotify -> YouTube (A VOLTA):
+    Popularidade no Spotify -> Impacto nas métricas do YouTube?
+    Seguidores Spotify -> Correlação com views/likes/comentários no YouTube?
     Spotify como FONTE de tráfego para YouTube?
 
 Resultado esperado: classificar a relação cross-platform como:
-    - Unidirecional (só YouTube → Spotify)
-    - Bidirecional (feedback loop — ambas as plataformas se alimentam)
+    - Unidirecional (só YouTube -> Spotify)
+    - Bidirecional (feedback loop -- ambas as plataformas se alimentam)
     - Independente (sem correlação significativa)
 """
 
@@ -127,18 +127,18 @@ def build_artist_profile(df_yt, df_sp):
 
 def direction_a_youtube_to_spotify(df_profile, df_yt, output_dir):
     """
-    DIREÇÃO A: YouTube → Spotify
+    DIREÇÃO A: YouTube -> Spotify
     Pergunta: A intensidade de Call2Go nos vídeos do YouTube se correlaciona
     com métricas mais altas no Spotify?
     """
     print("\n" + "=" * 60)
-    print("DIREÇÃO A: YouTube → Spotify")
+    print("DIREÇÃO A: YouTube -> Spotify")
     print("Pergunta: Call2Go no YouTube impacta o Spotify?")
     print("=" * 60)
 
     results = {}
 
-    # 1. Correlação: taxa de Call2Go ↔ popularidade Spotify
+    # 1. Correlação: taxa de Call2Go <-> popularidade Spotify
     if len(df_profile) >= 3:
         corr_pop, p_pop = stats.spearmanr(
             df_profile['call2go_rate'], df_profile['popularity'])
@@ -146,9 +146,9 @@ def direction_a_youtube_to_spotify(df_profile, df_yt, output_dir):
             df_profile['call2go_rate'], df_profile['followers'])
 
         print(
-            f"\n  Call2Go Rate ↔ Spotify Popularity: ρ={corr_pop:.3f}, p={p_pop:.4f}")
+            f"\n  Call2Go Rate <-> Spotify Popularity: rho={corr_pop:.3f}, p={p_pop:.4f}")
         print(
-            f"  Call2Go Rate ↔ Spotify Followers:  ρ={corr_fol:.3f}, p={p_fol:.4f}")
+            f"  Call2Go Rate <-> Spotify Followers:  rho={corr_fol:.3f}, p={p_fol:.4f}")
 
         results['call2go_vs_popularity'] = {'rho': corr_pop, 'p': p_pop}
         results['call2go_vs_followers'] = {'rho': corr_fol, 'p': p_fol}
@@ -179,7 +179,7 @@ def direction_a_youtube_to_spotify(df_profile, df_yt, output_dir):
     axes[0].set_xlabel('Taxa de Call2Go (YouTube)', fontsize=11)
     axes[0].set_ylabel('Popularidade (Spotify)', fontsize=11)
     axes[0].set_title(
-        'YouTube → Spotify\nCall2Go Rate vs Popularidade', fontsize=12, fontweight='bold')
+        'YouTube -> Spotify\nCall2Go Rate vs Popularidade', fontsize=12, fontweight='bold')
 
     axes[1].scatter(df_profile['call2go_rate'], df_profile['followers'],
                     s=100, c='#1DB954', edgecolors='black')
@@ -189,7 +189,7 @@ def direction_a_youtube_to_spotify(df_profile, df_yt, output_dir):
     axes[1].set_xlabel('Taxa de Call2Go (YouTube)', fontsize=11)
     axes[1].set_ylabel('Seguidores (Spotify)', fontsize=11)
     axes[1].set_title(
-        'YouTube → Spotify\nCall2Go Rate vs Seguidores', fontsize=12, fontweight='bold')
+        'YouTube -> Spotify\nCall2Go Rate vs Seguidores', fontsize=12, fontweight='bold')
     axes[1].yaxis.set_major_formatter(
         plt.FuncFormatter(lambda x, _: f'{x/1e6:.1f}M'))
 
@@ -204,33 +204,33 @@ def direction_a_youtube_to_spotify(df_profile, df_yt, output_dir):
 
 def direction_b_spotify_to_youtube(df_profile, df_yt, df_sp, output_dir):
     """
-    DIREÇÃO B: Spotify → YouTube (A VOLTA!)
+    DIREÇÃO B: Spotify -> YouTube (A VOLTA!)
     Pergunta: A popularidade no Spotify se correlaciona com mais engajamento
     nos vídeos do YouTube? Spotify gera tráfego de volta?
     """
     print("\n" + "=" * 60)
-    print("DIREÇÃO B: Spotify → YouTube (A VOLTA)")
+    print("DIREÇÃO B: Spotify -> YouTube (A VOLTA)")
     print("Pergunta: Popularidade no Spotify impacta o YouTube?")
     print("=" * 60)
 
     results = {}
 
-    # 1. Correlação por artista: Spotify metrics ↔ YouTube metrics
+    # 1. Correlação por artista: Spotify metrics <-> YouTube metrics
     if len(df_profile) >= 3:
         pairs = [
-            ('popularity', 'avg_views', 'Spotify Pop ↔ YouTube Avg Views'),
-            ('popularity', 'avg_engagement', 'Spotify Pop ↔ YouTube Avg Engagement'),
-            ('followers', 'avg_views', 'Spotify Followers ↔ YouTube Avg Views'),
-            ('followers', 'total_views', 'Spotify Followers ↔ YouTube Total Views'),
+            ('popularity', 'avg_views', 'Spotify Pop <-> YouTube Avg Views'),
+            ('popularity', 'avg_engagement', 'Spotify Pop <-> YouTube Avg Engagement'),
+            ('followers', 'avg_views', 'Spotify Followers <-> YouTube Avg Views'),
+            ('followers', 'total_views', 'Spotify Followers <-> YouTube Total Views'),
             ('followers', 'avg_engagement',
-             'Spotify Followers ↔ YouTube Avg Engagement'),
+             'Spotify Followers <-> YouTube Avg Engagement'),
         ]
 
-        print("\n  Correlações Spotify → YouTube (Spearman):")
+        print("\n  Correlações Spotify -> YouTube (Spearman):")
         for sp_col, yt_col, label in pairs:
             rho, p = stats.spearmanr(df_profile[sp_col], df_profile[yt_col])
             sig = "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else "n.s."
-            print(f"    {label}: ρ={rho:.3f}, p={p:.4f} {sig}")
+            print(f"    {label}: rho={rho:.3f}, p={p:.4f} {sig}")
             results[f'{sp_col}_vs_{yt_col}'] = {'rho': rho, 'p': p}
 
     # 2. Análise por vídeo: Spotify popularity do artista vs views do vídeo
@@ -242,14 +242,14 @@ def direction_b_spotify_to_youtube(df_profile, df_yt, df_sp, output_dir):
             df_video['popularity'], df_video['view_count'].astype(float))
         print(f"\n  Por vídeo (N={len(df_video)}):")
         print(
-            f"    Spotify Pop ↔ YouTube Views: ρ={rho_vid:.3f}, p={p_vid:.5f}")
+            f"    Spotify Pop <-> YouTube Views: rho={rho_vid:.3f}, p={p_vid:.5f}")
         results['per_video_pop_vs_views'] = {
             'rho': rho_vid, 'p': p_vid, 'n': len(df_video)}
 
-    # 3. Gráfico: Spotify metrics → YouTube metrics
+    # 3. Gráfico: Spotify metrics -> YouTube metrics
     fig, axes = plt.subplots(1, 2, figsize=(5.9, 4))
 
-    # Popularity → Avg Views
+    # Popularity -> Avg Views
     axes[0].scatter(df_profile['popularity'], df_profile['avg_views'],
                     s=100, c='#FF0000', edgecolors='black')
     for _, row in df_profile.iterrows():
@@ -258,11 +258,11 @@ def direction_b_spotify_to_youtube(df_profile, df_yt, df_sp, output_dir):
     axes[0].set_xlabel('Popularidade (Spotify)', fontsize=11)
     axes[0].set_ylabel('Média de Views (YouTube)', fontsize=11)
     axes[0].set_title(
-        'Spotify → YouTube (A VOLTA)\nPopularidade vs Média de Views', fontsize=12, fontweight='bold')
+        'Spotify -> YouTube (A VOLTA)\nPopularidade vs Média de Views', fontsize=12, fontweight='bold')
     axes[0].yaxis.set_major_formatter(
         plt.FuncFormatter(lambda x, _: f'{x/1e3:.0f}K'))
 
-    # Followers → Avg Engagement
+    # Followers -> Avg Engagement
     axes[1].scatter(df_profile['followers'], df_profile['avg_engagement'],
                     s=100, c='#FF0000', edgecolors='black')
     for _, row in df_profile.iterrows():
@@ -271,7 +271,7 @@ def direction_b_spotify_to_youtube(df_profile, df_yt, df_sp, output_dir):
     axes[1].set_xlabel('Seguidores (Spotify)', fontsize=11)
     axes[1].set_ylabel('Engajamento Médio (YouTube)', fontsize=11)
     axes[1].set_title(
-        'Spotify → YouTube (A VOLTA)\nSeguidores vs Engajamento', fontsize=12, fontweight='bold')
+        'Spotify -> YouTube (A VOLTA)\nSeguidores vs Engajamento', fontsize=12, fontweight='bold')
     axes[1].xaxis.set_major_formatter(
         plt.FuncFormatter(lambda x, _: f'{x/1e6:.0f}M'))
 
@@ -292,7 +292,7 @@ def bidirectional_synthesis(results_a, results_b, df_profile, output_dir):
     - Independente (sem correlação)
     """
     print("\n" + "=" * 60)
-    print("SÍNTESE BIDIRECIONAL — CLASSIFICAÇÃO DA RELAÇÃO")
+    print("SÍNTESE BIDIRECIONAL -- CLASSIFICAÇÃO DA RELAÇÃO")
     print("=" * 60)
 
     alpha = 0.10  # Relaxado para amostras pequenas
@@ -320,11 +320,11 @@ def bidirectional_synthesis(results_a, results_b, df_profile, output_dir):
                           "Call2Go no YouTube correlaciona com métricas Spotify, E "
                           "métricas Spotify correlacionam com engajamento no YouTube.")
     elif a_sig and not b_sig:
-        classification = "UNIDIRECIONAL: YouTube → Spotify"
+        classification = "UNIDIRECIONAL: YouTube -> Spotify"
         interpretation = ("Call2Go no YouTube mostra correlação com métricas Spotify, "
                           "mas NÃO há evidência de que Spotify impacte de volta o YouTube.")
     elif not a_sig and b_sig:
-        classification = "UNIDIRECIONAL: Spotify → YouTube"
+        classification = "UNIDIRECIONAL: Spotify -> YouTube"
         interpretation = ("Métricas do Spotify correlacionam com engajamento no YouTube, "
                           "mas Call2Go no YouTube não demonstra impacto significativo no Spotify.")
     else:
@@ -333,10 +333,10 @@ def bidirectional_synthesis(results_a, results_b, df_profile, output_dir):
                           "As plataformas parecem operar de forma independente nesta amostra.")
 
     print(f"\n  CLASSIFICAÇÃO: {classification}")
-    print(f"  α = {alpha}")
+    print(f"  alpha = {alpha}")
     print(f"\n  Interpretação: {interpretation}")
 
-    # Gráfico de síntese — Heatmap de correlação bidirecional
+    # Gráfico de síntese -- Heatmap de correlação bidirecional
     sp_cols = ['popularity', 'followers']
     yt_cols = ['avg_views', 'avg_likes',
                'avg_comments', 'call2go_rate', 'total_views']
@@ -401,18 +401,18 @@ def generate_report(df_profile, results_a, results_b, synthesis, output_dir):
         f.write("=" * 60 + "\n\n")
 
         f.write("CLASSIFICAÇÃO: " + synthesis['classification'] + "\n")
-        f.write("Nível de significância: α = " +
+        f.write("Nível de significância: alpha = " +
                 str(synthesis['alpha']) + "\n\n")
         f.write("INTERPRETAÇÃO:\n" + synthesis['interpretation'] + "\n\n")
 
         f.write("-" * 60 + "\n")
-        f.write("DIREÇÃO A: YouTube → Spotify\n")
+        f.write("DIREÇÃO A: YouTube -> Spotify\n")
         f.write("-" * 60 + "\n")
         for k, v in results_a.items():
             f.write(f"  {k}: {v}\n")
 
         f.write("\n" + "-" * 60 + "\n")
-        f.write("DIREÇÃO B: Spotify → YouTube (A VOLTA)\n")
+        f.write("DIREÇÃO B: Spotify -> YouTube (A VOLTA)\n")
         f.write("-" * 60 + "\n")
         for k, v in results_b.items():
             f.write(f"  {k}: {v}\n")
@@ -436,7 +436,7 @@ def run_cross_platform_validation():
     """Executa a validação cross-platform bidirecional completa."""
     print("=" * 60)
     print("VALIDAÇÃO CROSS-PLATFORM BIDIRECIONAL")
-    print("A 'VOLTA': YouTube ↔ Spotify")
+    print("A 'VOLTA': YouTube <-> Spotify")
     print("=" * 60)
 
     # 1. Carrega dados
@@ -459,10 +459,10 @@ def run_cross_platform_validation():
     output_dir = "data/validation"
     os.makedirs(output_dir, exist_ok=True)
 
-    # 4. Direção A: YouTube → Spotify
+    # 4. Direção A: YouTube -> Spotify
     results_a = direction_a_youtube_to_spotify(df_profile, df_yt, output_dir)
 
-    # 5. Direção B: Spotify → YouTube (A VOLTA)
+    # 5. Direção B: Spotify -> YouTube (A VOLTA)
     results_b = direction_b_spotify_to_youtube(
         df_profile, df_yt, df_sp, output_dir)
 

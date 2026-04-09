@@ -5,7 +5,7 @@ import pandas as pd
 
 
 # ─────────────────────────────────────────────────────
-# Padrões narrativos — menções ao Spotify que NÃO são Call2Go
+# Padrões narrativos -- menções ao Spotify que NÃO são Call2Go
 # Ex.: "200 dias nos charts do Spotify" é branding, não CTA
 # ─────────────────────────────────────────────────────
 _NARRATIVE_PATTERNS = [
@@ -79,7 +79,7 @@ def detect_call2go(text):
         if re.search(pattern, text_lower):
             return 1, 'texto_implicito'
 
-    # Fallback: menção isolada ao Spotify — mas só se NÃO for narrativa
+    # Fallback: menção isolada ao Spotify -- mas só se NÃO for narrativa
     # "200 dias nos charts do Spotify" = narrativa, não Call2Go
     if re.search(r'\bspotify\b', text_lower) and not _is_narrative_mention(text_lower):
         return 1, 'texto_implicito'
@@ -112,7 +112,7 @@ def detect_call2go_channel(channel_description):
         return 1, 'link_direto'
 
     # Texto implícito na bio do canal
-    # NÃO usa \bspotify\b como fallback — bios têm menção narrativa
+    # NÃO usa \bspotify\b como fallback -- bios têm menção narrativa
     # Range limitado (.{0,50}) para evitar match cross-sentence
     implicit_patterns = [
         r'ou[çc]a\b.{0,50}\bspotify',
@@ -189,7 +189,7 @@ def process_videos():
         print(
             f"  Links scrapeados dos canais carregados: {len(scraped_data)} canais")
 
-    # Carrega mapeamento artist_name → seed channel_id (para resolver mismatches)
+    # Carrega mapeamento artist_name -> seed channel_id (para resolver mismatches)
     seed_file = "data/seed/artistas.csv"
     seed_channels = {}
     if os.path.exists(seed_file):
@@ -234,7 +234,7 @@ def process_videos():
             # Classificação combinada: vídeo prevalece, canal complementa
             combined_has = has_call2go or final_channel_has
             if has_call2go and final_channel_has:
-                # Ambas as fontes têm Call2Go — usa o tipo mais forte
+                # Ambas as fontes têm Call2Go -- usa o tipo mais forte
                 type_priority = {'link_direto': 2,
                                  'texto_implicito': 1, 'nenhum': 0}
                 combined_type = call_type if type_priority.get(call_type, 0) >= type_priority.get(
@@ -282,7 +282,7 @@ def process_videos():
 
     # Salva o dataset limpo e enriquecido
     df.to_csv(output_file, index=False, encoding='utf-8')
-    print(f"✅ Processamento concluído. {len(df)} vídeos analisados.")
+    print(f"[OK] Processamento concluído. {len(df)} vídeos analisados.")
 
     # Resumo por tipo combinado
     print(f"\n--- DISTRIBUIÇÃO COMBINADA (Vídeo + Canal) ---")

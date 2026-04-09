@@ -1,18 +1,22 @@
 # Tech Context — TCC Call2Go
 
 ## Stack Principal
-| Tecnologia | Versão/Info | Uso |
-|------------|-------------|-----|
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
 | Python | 3.12.9 | Linguagem principal |
-| Pandas | latest | Manipulação de dados |
+| Pandas | 3.0.1 | Manipulação de dados |
+| NumPy | 2.4.3 | Computação numérica |
 | Spotipy | 2.23.0 | Wrapper da Spotify Web API |
 | google-api-python-client | 2.97.0 | YouTube Data API v3 |
 | Requests | 2.31.0 | HTTP requests |
 | python-dotenv | 1.0.0 | Gerenciamento de env vars |
 | SQLite3 | built-in | Data Warehouse local |
-| Matplotlib | latest | Visualização |
-| Seaborn | latest | Visualização estatística |
-| SciPy | latest | Testes estatísticos |
+| Matplotlib | 3.10.8 | Visualização |
+| Seaborn | 0.13.2 | Visualização estatística |
+| SciPy | 1.17.1 | Testes estatísticos |
+| statsmodels | 0.14.6 | Modelos estatísticos |
+| scikit-learn | 1.8.0 | Cohen's Kappa (concordância inter-anotador) |
+| pytest | 9.0.3 | Testes unitários adversariais |
 
 ## APIs Externas
 - **Spotify Web API** — via OAuth2 Client Credentials (sem login do usuário)
@@ -44,38 +48,52 @@ As bibliotecas de análise são usadas nos scripts de analytics e validation:
 ## Estrutura de Diretórios
 ```
 tcc_call2go/
-├── requirements.txt
+├── requirements.txt              # Todas as versões pinadas (12 dependências)
+├── run_pipeline.py               # Orquestrador: 11 etapas, sem emojis (cp1252 safe)
+├── .env                          # Credenciais (NÃO commitar)
+├── .env.example                  # Template de credenciais
+├── .gitignore                    # Python, venv, .env, LaTeX, SBC template, .db
 ├── data/
 │   ├── seed/
-│   │   └── artistas.csv              # Dimensão: 49 artistas (MJ Records removido)
+│   │   └── artistas.csv              # 49 artistas (MJ Records removido)
 │   ├── plots/                        # Gráficos gerados (PNG, DPI 300)
+│   │   ├── boxplot_call2go_views.png
+│   │   ├── confusion_matrix_combined.png
+│   │   ├── confusion_matrix_video_only.png
+│   │   ├── scatter_cross_platform.png
+│   │   └── validation_metrics_per_class.png
 │   ├── processed/
-│   │   ├── youtube_call2go_flagged.csv  # YouTube + flags Call2Go (980 vídeos)
-│   │   └── call2go.db                   # Data Warehouse SQLite
+│   │   ├── youtube_call2go_flagged.csv  # 980 vídeos + flags Call2Go
+│   │   └── call2go.db                   # Data Warehouse SQLite (ignorado por git)
 │   ├── raw/
-│   │   ├── spotify_metrics_2026-03-30.csv   # Snapshot Spotify (50 artistas)
-│   │   ├── youtube_videos_raw.jsonl         # 980 vídeos brutos (MJ Records removido)
-│   │   └── channel_links_scraped.json       # 52 canais (50 + 2 oficiais)
-│   └── validation/                      # Artefatos de validação
-│       ├── manual_sample.csv            # Amostra para anotação (50 vídeos, seed=42)
-│       ├── ground_truth_prefilled.csv   # Pré-anotação automática (para revisão)
-│       ├── ground_truth.csv             # Anotação humana final (preenchido pelo aluno)
-│       ├── cross_validation_report.csv  # Resultado humano vs. máquina
-│       ├── cross_validation_report_metrics.json  # Métricas de concordância
-│       ├── artist_cross_platform_profile.csv     # Perfil 50 artistas (YouTube + Spotify)
-│       ├── cross_platform_report.txt             # Relatório bidirecional detalhado
+│   │   ├── spotify_metrics_2026-03-30.csv   # 50 artistas
+│   │   ├── youtube_videos_raw.jsonl         # 980 vídeos brutos
+│   │   └── channel_links_scraped.json       # 52 canais (50 + 2 oficiais OAC)
+│   └── validation/
+│       ├── adversarial_sample.csv           # NOVO: 91 vídeos, 9 estratos (Fase 7)
+│       ├── blind_annotation.csv             # NOVO: CSV cego para anotação humana (Fase 7)
+│       ├── ground_truth_prefilled.csv       # Pré-anotação automática (CIRCULAR - evidência de auditoria)
+│       ├── ground_truth.csv                 # SERÁ SOBRESCRITO com anotação cega
+│       ├── manual_sample.csv               # Amostra original (50 vídeos, seed=42)
+│       ├── cross_validation_report.csv      # Resultado humano vs. máquina (com Kappa + IC)
+│       ├── cross_validation_report_metrics.json  # Métricas JSON
+│       ├── artist_cross_platform_profile.csv     # Perfil 49 artistas (YouTube + Spotify)
+│       ├── cross_platform_report.txt             # Relatório bidirecional
 │       ├── direction_a_youtube_to_spotify.png    # Scatter Direction A
 │       ├── direction_b_spotify_to_youtube.png    # Scatter Direction B
 │       └── bidirectional_correlation_matrix.png  # Heatmap correlações
-├── notebooks/                        # Reservado para Jupyter notebooks
+├── tests/
+│   ├── __init__.py
+│   └── test_call2go_detector.py  # 77 testes adversariais, 11 grupos
+├── notebooks/                    # Reservado para Jupyter notebooks
 ├── src/
 │   ├── __init__.py
 │   ├── collectors/
 │   │   ├── __init__.py
-│   │   ├── artist_source_builder.py  # Fonte oficial de artistas (playlists Spotify)
-│   │   ├── channel_link_scraper.py   # Web scraper: links da aba Sobre do YouTube
-│   │   ├── spotify_collector.py      # Coleta Spotify
-│   │   └── youtube_collector.py      # Coleta YouTube
+│   │   ├── artist_source_builder.py  # Fonte oficial: playlists Spotify
+│   │   ├── channel_link_scraper.py   # Web scraper: aba Sobre do YouTube
+│   │   ├── spotify_collector.py      # Coleta Spotify API
+│   │   └── youtube_collector.py      # Coleta YouTube API
 │   ├── analytics/
 │   │   ├── __init__.py
 │   │   ├── eda_analysis.py           # Análise exploratória
@@ -83,17 +101,26 @@ tcc_call2go/
 │   │   └── spotify_impact_analysis.py  # Análise cross-platform
 │   ├── db/
 │   │   ├── __init__.py
-│   │   └── db_builder.py             # Construtor do Data Warehouse
+│   │   └── db_builder.py             # Construtor do Data Warehouse SQLite
 │   ├── processors/
 │   │   ├── __init__.py
-│   │   └── call2go_detector.py       # Motor regex (classificador)
-│   └── validation/                   # ** ARTEFATO CENTRAL DO TCC **
+│   │   └── call2go_detector.py       # Motor regex (77 testes passam)
+│   └── validation/
 │       ├── __init__.py
-│       ├── sample_generator.py       # Gera amostra para anotação manual
+│       ├── sample_generator.py       # Amostra aleatória (50 vídeos)
+│       ├── adversarial_sampler.py    # NOVO: Amostra estratificada (91 vídeos, 9 estratos)
+│       ├── blind_annotator.py        # NOVO: Gera CSV cego sem sugestões
 │       ├── ground_truth_helper.py    # Pré-preenche ground truth (semi-automático)
-│       ├── cross_validator.py        # A "volta": humano vs. máquina (2 níveis)
-│       ├── cross_platform_validator.py  # Análise bidirecional YouTube ↔ Spotify
-│       └── agreement_report.py       # Matriz de confusão e métricas visuais
+│       ├── cross_validator.py        # Humano vs. máquina + Cohen's Kappa + Bootstrap IC 95%
+│       ├── cross_platform_validator.py  # Análise bidirecional YouTube <-> Spotify
+│       └── agreement_report.py       # Matrizes de confusão + métricas visuais + Kappa
+├── artigo_latex/                     # Artigo SBC (NÃO MEXER até autorização)
+│   ├── main.tex
+│   ├── references.bib
+│   ├── sbc-template.sty
+│   ├── sbc.bst
+│   └── figs/                         # Figuras para o artigo (cópias de data/plots + validation)
+├── SBC_Conferences_Template_.../     # Template referência (.gitignore exclui)
 └── memory-bank/                      # Contexto persistente do projeto
 ```
 
@@ -110,20 +137,24 @@ tcc_call2go/
   - 29/50 artistas com Spotify no About, 2/50 canais OAC
   - Rate limiting: 2s entre requests, 0.5s entre fases do mesmo canal
 
-## Dados de Qualidade (31/03/2026)
+## Dados de Qualidade (07/04/2026 — Pós-Auditoria Fase 7)
 | Métrica | Valor |
 |---------|-------|
-| Total de artistas | 50 (Top 50 BR) |
-| Total de vídeos | 1.000 (20 mais visualizados/artista) |
-| Vídeos auto-gerados | 40 (4%) |
-| Canais OAC | 2/50 (4%) |
-| Artistas com Spotify no About | 29/50 (58%) |
-| Vídeos com link_direto | 528 (52.8%) |
-| Vídeos com texto_implicito | 48 (4.8%) |
-| Vídeos sem Call2Go (nenhum) | 424 (42.4%) |
-| Call2Go via canal (fonte) | 475 |
-| Call2Go via vídeo (fonte) | 101 |
-| Vídeos orgânicos | 960 (96%) |
+| Total de artistas | 49 (Top 50 BR, MJ Records removido) |
+| Total de vídeos | 980 (20 mais visualizados/artista) |
+| Vídeos auto-gerados | 40 (4.1%) |
+| Canais OAC | 2/52 (3.8%) |
+| Artistas com Spotify no About | 29/52 (55.8%) |
+| Vídeos com link_direto | 575 (58.7%) |
+| Vídeos com texto_implicito | 0 (0%) |
+| Vídeos sem Call2Go (nenhum) | 405 (41.3%) |
+| Call2Go via canal (fonte) | 494 (50.4%) |
+| Call2Go via ambos (fonte) | 66 (6.7%) |
+| Call2Go via vídeo (fonte) | 15 (1.5%) |
+| Vídeos orgânicos | 940 (95.9%) |
+| Testes unitários | 77 (100% passam) |
+| Amostra adversarial | 91 vídeos, 9 estratos |
+| Pipeline encoding | cp1252-safe (sem emojis) |
 
 ## Limitações Técnicas Conhecidas
 - YouTube API tem quota diária limitada (10.000 unidades/dia, reset meia-noite Pacific)

@@ -57,7 +57,7 @@ def collect_spotify_data():
     os.makedirs("data/raw", exist_ok=True)
     output_file = f"data/raw/spotify_metrics_{today_date}.csv"
     df_results.to_csv(output_file, index=False)
-    print(f"\n✅ Dados do Spotify salvos com sucesso em: {output_file}")
+    print(f"\n[OK] Dados do Spotify salvos com sucesso em: {output_file}")
 
 
 if __name__ == "__main__":

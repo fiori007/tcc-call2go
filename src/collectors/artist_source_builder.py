@@ -56,7 +56,7 @@ def build_from_playlists(sp, playlist_ids):
                         }
                     all_artists[aid]['occurrence_count'] += 1
             print(
-                f"  [OK] {len(items)} faixas → {len(all_artists)} artistas acumulados")
+                f"  [OK] {len(items)} faixas -> {len(all_artists)} artistas acumulados")
         except Exception as e:
             print(f"  [FALHA] {e}")
     return all_artists
@@ -74,7 +74,7 @@ def search_playlists_br(sp):
                 if pl and pl.get('tracks', {}).get('total', 0) >= 30:
                     found.append({'id': pl['id'], 'name': pl['name']})
                     print(
-                        f"    Encontrada: {pl['name']} ({pl['id']}) — {pl['tracks']['total']} faixas")
+                        f"    Encontrada: {pl['name']} ({pl['id']}) -- {pl['tracks']['total']} faixas")
         except Exception as e:
             print(f"    [FALHA] busca '{q}': {e}")
     return found
@@ -109,7 +109,7 @@ def _validate_and_deduplicate(sp, enriched, min_followers_threshold=5000):
     """
     Valida e deduplica artistas após enriquecimento do Spotify.
 
-    1. Agrupa por nome normalizado — se houver duplicatas, mantém o de maior followers.
+    1. Agrupa por nome normalizado -- se houver duplicatas, mantém o de maior followers.
     2. Para artistas com followers suspeitamente baixo (< threshold), busca o perfil
        correto via Spotify Search e substitui se encontrar um melhor.
 
@@ -144,7 +144,7 @@ def _validate_and_deduplicate(sp, enriched, min_followers_threshold=5000):
         if artist['followers'] < min_followers_threshold:
             name = artist['artist_name']
             print(
-                f"  [VALIDAÇÃO] {name}: apenas {artist['followers']:,} seg — buscando perfil correto...", end=' ')
+                f"  [VALIDAÇÃO] {name}: apenas {artist['followers']:,} seg -- buscando perfil correto...", end=' ')
             try:
                 results = sp.search(q=name, type='artist',
                                     market='BR', limit=5)
@@ -166,7 +166,7 @@ def _validate_and_deduplicate(sp, enriched, min_followers_threshold=5000):
                     artist['genres'] = '; '.join(best.get('genres', [])[:3])
                     fixes += 1
                     print(
-                        f"CORRIGIDO → {artist['followers']:,} seg (era {old_followers:,})")
+                        f"CORRIGIDO -> {artist['followers']:,} seg (era {old_followers:,})")
                 else:
                     print(f"mantido (sem perfil melhor encontrado)")
             except Exception as e:
@@ -253,7 +253,7 @@ def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
         5. Ordena por total de views no YouTube (descendente)
     """
     print("=" * 60)
-    print("CONSTRUÇÃO DA BASE DE ARTISTAS — TOP 50 BR (SPOTIFY × YOUTUBE)")
+    print("CONSTRUÇÃO DA BASE DE ARTISTAS -- TOP 50 BR (SPOTIFY x YOUTUBE)")
     print("=" * 60)
 
     sp = get_spotify_client()
@@ -347,9 +347,9 @@ def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
             artist['extraction_date'] = today
             artist['selection_criteria'] = 'Top 50 Brasil Playlists + YouTube Views'
             final_artists.append(artist)
-            print(f"✓ {channel_id} ({total_views:,} views)")
+            print(f"[v] {channel_id} ({total_views:,} views)")
         else:
-            print(f"✗ canal não encontrado")
+            print(f"[X] canal não encontrado")
 
     print(f"\n  Artistas com canal YouTube encontrado: {len(final_artists)}")
 
@@ -359,7 +359,7 @@ def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
 
     df = pd.DataFrame(final_artists)
 
-    # Ordena por total de views no YouTube (descendente) — ranking real
+    # Ordena por total de views no YouTube (descendente) -- ranking real
     df = df.sort_values('total_youtube_views',
                         ascending=False).reset_index(drop=True)
 
@@ -371,7 +371,7 @@ def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
     df.to_csv(output_file, index=False, encoding='utf-8')
 
     print(f"\n{'=' * 60}")
-    print(f"BASE DE ARTISTAS TOP 50 BR — RESULTADO FINAL")
+    print(f"BASE DE ARTISTAS TOP 50 BR -- RESULTADO FINAL")
     print(f"{'=' * 60}")
     print(f"  Total: {len(df)} artistas")
     print(f"  Salvo em: {output_file}")

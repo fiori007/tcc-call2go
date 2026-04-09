@@ -90,7 +90,7 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
     """
     print("=" * 60)
     print("PRÉ-ANOTAÇÃO AUTOMÁTICA DO GROUND TRUTH")
-    print("(Semi-automático — revisão humana obrigatória)")
+    print("(Semi-automático -- revisão humana obrigatória)")
     print("=" * 60)
 
     if not os.path.exists(sample_file):
@@ -159,7 +159,7 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
         video_has, video_type = detect_call2go(description)
         # Aplica detector no canal (texto)
         channel_has, channel_type = detect_call2go_channel(channel_desc)
-        # Aplica detector no canal (scraped links — mais confiável)
+        # Aplica detector no canal (scraped links -- mais confiável)
         scraped_has, scraped_type = detect_call2go_channel_scraped(
             channel_id, scraped_data)
 
@@ -274,8 +274,8 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
 
     # Resumo
     total = len(df_result)
-    print(f"\n✅ Ground truth pré-preenchido: {total} vídeos")
-    print(f"✅ Arquivo salvo em: {output_file}")
+    print(f"\n[OK] Ground truth pré-preenchido: {total} vídeos")
+    print(f"[OK] Arquivo salvo em: {output_file}")
 
     print(f"\n--- DISTRIBUIÇÃO SUGERIDA ---")
     print(f"  link_direto:      {stats['link_direto']}")
@@ -296,14 +296,14 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
     if len(low_conf) > 0:
         print(f"\n--- VÍDEOS QUE PRECISAM DE REVISÃO ({len(low_conf)}) ---")
         for _, row in low_conf.iterrows():
-            print(f"  🔍 {row['video_id']} ({row['artist_name']})")
+            print(f"  [?] {row['video_id']} ({row['artist_name']})")
             print(
                 f"     Sugestão: {row['manual_call2go_type']} (fonte: {row['call2go_source']})")
             if row['evidence']:
                 print(f"     Evidência: {row['evidence'][:120]}")
 
     print(f"\n{'=' * 60}")
-    print(f"🔴 AÇÃO NECESSÁRIA DO ALUNO:")
+    print(f"[!] AÇÃO NECESSÁRIA DO ALUNO:")
     print(f"   1. Abra: {output_file}")
     print(f"   2. Revise as classificações (especialmente confiança MEDIA/BAIXA)")
     print(f"   3. Corrija 'manual_call2go_type' e 'manual_channel_call2go_type' se necessário")

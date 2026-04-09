@@ -19,7 +19,7 @@ Desenvolver e avaliar a confiabilidade de um sistema automatizado (baseado em re
 - **Volume:** ~50 vídeos mais recentes por artista
 - **Método de detecção:** Regex sobre descrições dos vídeos
 - **Validação:** Anotação manual humana (ground truth) + validação cruzada automatizada
-- **Métricas de confiabilidade:** Acurácia, Precisão, Recall, F1-Score, Matriz de Confusão
+- **Métricas de confiabilidade:** Acurácia, Precisão, Recall, F1-Score, Matriz de Confusão, Cohen's Kappa + Bootstrap IC 95%
 - **Teste estatístico:** Mann-Whitney U (não paramétrico), α = 0.05
 
 ## Classificação Call2Go

@@ -64,8 +64,8 @@ def build_database():
     conn.close()
 
     print(
-        f"\n✅ Banco de dados construído e populado com sucesso em: {db_path}")
-    print("✅ Tabelas disponíveis: dim_artist, fact_yt_videos, fact_spotify_metrics")
+        f"\n[OK] Banco de dados construído e populado com sucesso em: {db_path}")
+    print("[OK] Tabelas disponíveis: dim_artist, fact_yt_videos, fact_spotify_metrics")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,16 @@
     "matches": 30,
     "discordances": 20,
     "accuracy": 0.6,
+    "accuracy_ci95": [
+      0.46,
+      0.74
+    ],
+    "cohens_kappa": 0.2743,
+    "kappa_ci95": [
+      0.1206,
+      0.4607
+    ],
+    "kappa_interpretation": "razoavel",
     "per_class": {
       "link_direto": {
         "true_positives": 9,
@@ -36,6 +46,16 @@
     "matches": 50,
     "discordances": 0,
     "accuracy": 1.0,
+    "accuracy_ci95": [
+      1.0,
+      1.0
+    ],
+    "cohens_kappa": 1.0,
+    "kappa_ci95": [
+      1.0,
+      1.0
+    ],
+    "kappa_interpretation": "quase perfeito",
     "per_class": {
       "link_direto": {
         "true_positives": 29,
@@ -68,6 +88,16 @@
     "matches": 50,
     "discordances": 0,
     "accuracy": 1.0,
+    "accuracy_ci95": [
+      1.0,
+      1.0
+    ],
+    "cohens_kappa": 1.0,
+    "kappa_ci95": [
+      1.0,
+      1.0
+    ],
+    "kappa_interpretation": "quase perfeito",
     "per_class": {
       "link_direto": {
         "true_positives": 23,

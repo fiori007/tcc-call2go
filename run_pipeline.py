@@ -1,5 +1,5 @@
 """
-TCC Call2Go — Pipeline Orquestrador
+TCC Call2Go -- Pipeline Orquestrador
 
 Executa todo o pipeline de dados do início ao fim, na ordem correta:
 
@@ -13,7 +13,7 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     8. Testes de Hipótese (Mann-Whitney U)
     9. Análise de Impacto Cross-Platform
    10. Geração de amostra para validação manual
-   11. Validação Cross-Platform Bidirecional (YouTube ↔ Spotify)
+   11. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
 
 Uso:
     python run_pipeline.py                  # pipeline completo
@@ -66,7 +66,7 @@ def run_step(step_func, step_name):
 
 
 def step_01_build_artist_base():
-    """Constrói base de artistas Top 50 BR (Spotify × YouTube)."""
+    """Constrói base de artistas Top 50 BR (Spotify x YouTube)."""
     from src.collectors.artist_source_builder import build_artist_base
 
     playlists = [
@@ -148,7 +148,7 @@ def step_11_cross_platform_validation():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="TCC Call2Go — Pipeline Orquestrador")
+        description="TCC Call2Go -- Pipeline Orquestrador")
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
@@ -160,7 +160,7 @@ def main():
 
     print("\n" + "#" * 60)
     print("#" + " " * 58 + "#")
-    print("#    TCC CALL2GO — PIPELINE DE DADOS COMPLETO" + " " * 13 + "#")
+    print("#    TCC CALL2GO -- PIPELINE DE DADOS COMPLETO" + " " * 13 + "#")
     print("#" + " " * 58 + "#")
     print("#" * 60)
     print(f"\n  Início: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -191,7 +191,7 @@ def main():
         (8, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_08_hypothesis_testing, True),
         (9, "ANÁLISE IMPACTO CROSS-PLATFORM", step_09_spotify_impact, True),
         (10, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_10_generate_sample, True),
-        (11, "VALIDAÇÃO BIDIRECIONAL (YouTube ↔ Spotify)",
+        (11, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
          step_11_cross_platform_validation, True),
     ]
 
@@ -228,7 +228,8 @@ def main():
 
     for step_num, title, _, _ in steps:
         status = results.get(step_num, "N/A")
-        icon = {"OK": "✅", "FALHA": "❌", "SKIP": "⏭️"}.get(status, "❓")
+        icon = {"OK": "[OK]", "FALHA": "[FALHA]",
+                "SKIP": "[SKIP]"}.get(status, "[?]")
         print(f"  {icon} {step_num:2d}. {title:<40} {status}")
 
     # Verifica outputs finais
@@ -252,9 +253,9 @@ def main():
         if os.path.exists(f):
             size = os.path.getsize(f)
             size_str = f"{size/1024:.1f}KB" if size > 1024 else f"{size}B"
-            print(f"  ✅ {f} ({size_str})")
+            print(f"  [OK] {f} ({size_str})")
         else:
-            print(f"  ❌ {f}")
+            print(f"  [FALTA] {f}")
 
     print(f"\n  Fim: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("#" * 60)

@@ -53,7 +53,7 @@ def run_spotify_impact_test():
 
     plot_path = "data/plots/scatter_cross_platform.png"
     plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-    print(f"✅ Gráfico de dispersão salvo para o TCC em: {plot_path}\n")
+    print(f"[OK] Gráfico de dispersão salvo para o TCC em: {plot_path}\n")
 
     # ---------------------------------------------------------
     # 2. Teste Estatístico (Popularidade no Spotify)
