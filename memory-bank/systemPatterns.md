@@ -17,7 +17,8 @@ Fonte Oficial → Coleta (APIs) → Processamento (Regex) → VALIDAÇÃO → Ar
 | **Validate** | `src/validation/sample_generator.py` | JSONL bruto | `data/validation/manual_sample.csv` |
 | **Validate** | `src/validation/ground_truth_helper.py` | Sample + JSONL bruto | `data/validation/ground_truth_prefilled.csv` |
 | **Validate** | `src/validation/adversarial_sampler.py` | JSONL bruto | `data/validation/adversarial_sample.csv` (91 vídeos, 9 estratos) |
-| **Validate** | `src/validation/blind_annotator.py` | Amostra adversarial + JSONL | `data/validation/blind_annotation.csv` (sem sugestões do detector) |
+| **Validate** | `src/validation/blind_annotator.py` | Amostra adversarial + JSONL + scraped JSON | `data/validation/blind_annotation.csv` (cego, com bio+links do canal) |
+| **Validate** | `src/validation/excel_formatter.py` | blind_annotation.csv | `data/validation/blind_annotation.xlsx` (Excel formatado com dropdowns) |
 | **Validate** | `src/validation/cross_validator.py` | Ground truth + JSONL | `data/validation/cross_validation_report.csv` (Kappa + Bootstrap CI) |
 | **Validate** | `src/validation/agreement_report.py` | Report CSV + métricas | Gráficos de concordância + Kappa + IC95% |
 | **Validate** | `src/validation/cross_platform_validator.py` | Flagged CSV + Spotify CSV | Relatório bidirecional + gráficos |

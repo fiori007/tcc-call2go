@@ -16,6 +16,7 @@
 | SciPy | 1.17.1 | Testes estatísticos |
 | statsmodels | 0.14.6 | Modelos estatísticos |
 | scikit-learn | 1.8.0 | Cohen's Kappa (concordância inter-anotador) |
+| openpyxl | 3.1.5 | Formatação Excel para anotação humana |
 | pytest | 9.0.3 | Testes unitários adversariais |
 
 ## APIs Externas
@@ -71,7 +72,8 @@ tcc_call2go/
 │   │   └── channel_links_scraped.json       # 52 canais (50 + 2 oficiais OAC)
 │   └── validation/
 │       ├── adversarial_sample.csv           # NOVO: 91 vídeos, 9 estratos (Fase 7)
-│       ├── blind_annotation.csv             # NOVO: CSV cego para anotação humana (Fase 7)
+│       ├── blind_annotation.csv             # CSV cego v2: +channel_url +channel_bio com links (Fase 7)
+│       ├── blind_annotation.xlsx            # NOVO: Excel formatado para anotação humana (Fase 7)
 │       ├── ground_truth_prefilled.csv       # Pré-anotação automática (CIRCULAR - evidência de auditoria)
 │       ├── ground_truth.csv                 # SERÁ SOBRESCRITO com anotação cega
 │       ├── manual_sample.csv               # Amostra original (50 vídeos, seed=42)
@@ -109,7 +111,8 @@ tcc_call2go/
 │       ├── __init__.py
 │       ├── sample_generator.py       # Amostra aleatória (50 vídeos)
 │       ├── adversarial_sampler.py    # NOVO: Amostra estratificada (91 vídeos, 9 estratos)
-│       ├── blind_annotator.py        # NOVO: Gera CSV cego sem sugestões
+│       ├── blind_annotator.py        # CSV cego v2: +channel_url +channel_bio com links
+│       ├── excel_formatter.py        # NOVO: Gera Excel formatado (.xlsx) para anotacao
 │       ├── ground_truth_helper.py    # Pré-preenche ground truth (semi-automático)
 │       ├── cross_validator.py        # Humano vs. máquina + Cohen's Kappa + Bootstrap IC 95%
 │       ├── cross_platform_validator.py  # Análise bidirecional YouTube <-> Spotify

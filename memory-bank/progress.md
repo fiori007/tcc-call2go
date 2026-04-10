@@ -155,11 +155,20 @@
 #### Soluções Implementadas
 1. **tests/test_call2go_detector.py** — 77 testes adversariais em 11 grupos (100% passam)
 2. **src/validation/adversarial_sampler.py** — Amostra estratificada de 91 vídeos cobrindo todos os edge cases
-3. **src/validation/blind_annotator.py** — Gera CSV cego sem sugestões do detector
-4. **cross_validator.py atualizado** — Cohen's Kappa + Bootstrap IC 95% + suporte a formato novo
-5. **agreement_report.py atualizado** — Kappa + IC no resumo
-6. **requirements.txt** — Todas as versões pinadas + scikit-learn + pytest adicionados
-7. **Encoding fix** — 14 arquivos: emojis/caracteres não-cp1252 substituídos por ASCII
+3. **src/validation/blind_annotator.py** — CSV cego v2:
+   - +`youtube_channel_url` (URL do canal do artista)
+   - +`channel_bio` substituiu `channel_description` (descrição + links da aba Sobre scrapeados)
+   - Fallback por `artist_name` para channel_id mismatches (Anitta, Panda, etc.)
+   - Resultado: 91/91 com links, 56/91 com Spotify na bio, 0 ausentes
+4. **src/validation/excel_formatter.py** — NOVO: Gera Excel formatado (.xlsx) para anotação humana
+   - Cabeçalho azul escuro, colunas de dados cinza, colunas de anotação amarelo
+   - Dropdowns (link_direto/texto_implicito/nenhum), freeze panes, zebra striping
+   - Aba README com instruções de preenchimento
+   - Dependência: openpyxl==3.1.5
+5. **cross_validator.py atualizado** — Cohen's Kappa + Bootstrap IC 95% + suporte a formato novo
+6. **agreement_report.py atualizado** — Kappa + IC no resumo
+7. **requirements.txt** — Todas as versões pinadas + scikit-learn + openpyxl + pytest adicionados
+8. **Encoding fix** — 14 arquivos: emojis/caracteres não-cp1252 substituídos por ASCII
    - Pipeline agora roda sem PYTHONIOENCODING no Windows
 
 #### Dados da Amostra Adversarial (91 vídeos)
