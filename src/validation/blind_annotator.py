@@ -185,7 +185,8 @@ def generate_blind_csv(
     print("  2. Para CADA video, leia as colunas 'description' e 'channel_bio'")
     print("     - channel_bio inclui descricao do canal + links da aba Sobre")
     print("     - Links apos '---LINKS---' sao os links reais da aba Sobre do YouTube")
-    print("     - Links com '[Canal Oficial]' vem do canal oficial (para artistas com OAC)")
+    print(
+        "     - Links com '[Canal Oficial]' vem do canal oficial (para artistas com OAC)")
     print("  3. Se necessario, abra 'youtube_url' (video) ou 'youtube_channel_url' (canal)")
     print("  4. Preencha as colunas:")
     print("     - manual_call2go_video: classificacao da DESCRICAO DO VIDEO")

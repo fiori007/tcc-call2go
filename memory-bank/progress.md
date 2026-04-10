@@ -132,15 +132,50 @@
   - **Classificação: UNIDIRECIONAL Spotify → YouTube** (α=0.1)
   - Outputs: direction_a, direction_b, heatmap, cross_platform_report.txt, artist_cross_platform_profile.csv
 
-### 🔲 Pendente (Ações Imediatas — Em Ordem)
-1. 🔴 **ALUNO:** Anotar `blind_annotation.csv` (91 vídeos, amostra adversarial estratificada)
-   - NÃO usar ground_truth_prefilled.csv — validação circular confirmada
-   - Preencher: manual_call2go_video, manual_call2go_canal, manual_call2go_combinado, confianca
-2. 🔴 **ALUNO:** Salvar como `data/validation/ground_truth.csv`
-3. [ ] Rodar `cross_validator.py` — gerar métricas honestas (com Kappa + IC 95%)
-4. [ ] Rodar `agreement_report.py` — gerar visualizações atualizadas
-5. 🔴 **ALUNO:** Alinhar com orientador sobre interpretação da Direção B (correlação vs. links reais)
-6. [ ] Escrever capítulo de Metodologia do TCC documentando todo o fluxo
+### ✅ Concluído (Fase 8 — A Volta: Cross-Validation Real, 10/04/2026)
+
+#### Anotação Humana Cega
+- Aluno anotou 91 vídeos adversariais em Excel formatado
+- Formato: SIM/NÃO binário (válido: texto_implicito=0 no dataset)
+- Lógica combinado: AND (vídeo E canal) — diferente do detector que usa OR
+- 100% confiança ALTA, 0 notas
+- Distribuição: video=13 SIM/70 NÃO, canal=54 SIM/29 NÃO, combinado=12 SIM/71 NÃO
+
+#### Adaptações de Código
+- cross_validator.py reescrito: auto-detect sep (`;`), mapeamento binário (SIM/NÃO → com_call2go/sem_call2go), 3 níveis independentes
+- agreement_report.py adaptado: labels binários, 3 matrizes de confusão (vídeo, canal, combinado)
+- Novas funções: `_map_to_binary()`, `_detect_separator()`
+
+#### RESULTADOS REAIS — Humano vs. Máquina (91 vídeos adversariais)
+- **Nível 1 (Vídeo):** Acurácia 82.4% [74.7%, 90.1%], **Kappa 0.4493 [0.24, 0.64] — MODERADO**
+  - 16 FPs: detector marca com_call2go mas humano diz sem_call2go
+  - com_call2go: P=36% R=100% F1=53% | sem_call2go: P=100% R=80.5% F1=89%
+- **Nível 2 (Canal):** Acurácia 90.1% [83.5%, 95.6%], **Kappa 0.8040 [0.68, 0.91] — SUBSTANCIAL**
+  - 9 FNs: humano vê Spotify mas detector não pega (Anitta lnk.to, Panda sem scraping)
+  - com_call2go: P=100% R=82.4% F1=90% | sem_call2go: P=81.6% R=100% F1=90%
+- **Nível 3 (Combinado):** Acurácia 45.1% [35.2%, 54.9%], **Kappa 0.0947 [0.03, 0.17] — FRACO**
+  - 50 discordâncias: ARTEFATO METODOLÓGICO (humano AND vs detector OR)
+  - NÃO é falha do detector — diferença de definição de "combinado"
+
+#### Interpretação
+- Nível 1 (Vídeo): detector é CONSERVADOR — recall perfeito mas precisão baixa (FPs por regex broad)
+- Nível 2 (Canal): detector é CONFIÁVEL — Kappa substancial, quase perfeito
+- Nível 3 (Combinado): Kappa fraco é explicado pela diferença AND/OR, não por falha
+- Resultado honesto: detector regex é confiável para canal (Kappa 0.80), moderado para vídeo (Kappa 0.45)
+
+#### Artefatos Gerados
+- `data/validation/cross_validation_report.csv` — 91 linhas, 3 níveis
+- `data/validation/cross_validation_report_metrics.json` — Kappa + IC 95% para cada nível
+- `data/plots/confusion_matrix_combined.png` — Humano AND vs Detector OR
+- `data/plots/confusion_matrix_video_only.png` — Humano vs Detector (vídeo)
+- `data/plots/confusion_matrix_channel_only.png` — Humano vs Detector (canal)
+- `data/plots/validation_metrics_per_class.png` — P/R/F1 por classe
+- 77 testes unitários continuam passando
+
+### 🟨 Pendente (Ações Imediatas — Em Ordem)
+1. 🔴 **ALUNO:** Alinhar com orientador sobre interpretação da Direção B (correlação vs. links reais)
+2. [ ] Escrever capítulo de Metodologia do TCC documentando validação circular + correção
+3. [ ] Escrever capítulo de Resultados com as métricas reais
 
 ### ✅ Concluído (Fase 7 — Auditoria Profissional, 07/04/2026)
 

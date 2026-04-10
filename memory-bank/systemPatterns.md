@@ -19,8 +19,8 @@ Fonte Oficial → Coleta (APIs) → Processamento (Regex) → VALIDAÇÃO → Ar
 | **Validate** | `src/validation/adversarial_sampler.py` | JSONL bruto | `data/validation/adversarial_sample.csv` (91 vídeos, 9 estratos) |
 | **Validate** | `src/validation/blind_annotator.py` | Amostra adversarial + JSONL + scraped JSON | `data/validation/blind_annotation.csv` (cego, com bio+links do canal) |
 | **Validate** | `src/validation/excel_formatter.py` | blind_annotation.csv | `data/validation/blind_annotation.xlsx` (Excel formatado com dropdowns) |
-| **Validate** | `src/validation/cross_validator.py` | Ground truth + JSONL | `data/validation/cross_validation_report.csv` (Kappa + Bootstrap CI) |
-| **Validate** | `src/validation/agreement_report.py` | Report CSV + métricas | Gráficos de concordância + Kappa + IC95% |
+| **Validate** | `src/validation/cross_validator.py` | Ground truth + JSONL | `data/validation/cross_validation_report.csv` (Kappa + Bootstrap CI, 3 níveis binários) |
+| **Validate** | `src/validation/agreement_report.py` | Report CSV + métricas | 3 matrizes de confusão (vídeo/canal/combinado) + P/R/F1 binário |
 | **Validate** | `src/validation/cross_platform_validator.py` | Flagged CSV + Spotify CSV | Relatório bidirecional + gráficos |
 | Load | `src/db/db_builder.py` | CSVs processados | `data/processed/call2go.db` (SQLite) |
 | Analyze | `src/analytics/eda_analysis.py` | SQLite DB | Gráficos PNG + stats no console |

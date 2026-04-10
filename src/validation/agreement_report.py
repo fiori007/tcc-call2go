@@ -36,17 +36,29 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     df = pd.read_csv(validation_file)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Detecta se usa formato novo (auto_combined_type) ou legado (auto_call2go_type)
-    auto_col = 'auto_combined_type' if 'auto_combined_type' in df.columns else 'auto_call2go_type'
+    # Detecta formato: binário (com_call2go/sem_call2go) ou legado (3-classe)
+    is_binary = 'manual_combinado' in df.columns or 'manual_video' in df.columns
+
+    if is_binary:
+        labels = ['sem_call2go', 'com_call2go']
+        manual_combined_col = 'manual_combinado' if 'manual_combinado' in df.columns else 'manual_video'
+        auto_combined_col = 'auto_combinado' if 'auto_combinado' in df.columns else 'auto_video'
+        manual_video_col = 'manual_video'
+        auto_video_col = 'auto_video'
+    else:
+        labels = ['nenhum', 'texto_implicito', 'link_direto']
+        manual_combined_col = 'manual_call2go_type'
+        auto_combined_col = 'auto_combined_type' if 'auto_combined_type' in df.columns else 'auto_call2go_type'
+        manual_video_col = 'manual_call2go_type'
+        auto_video_col = 'auto_video_type'
 
     # 1. Matriz de Confusão -- Nível Combinado (vídeo + canal)
-    labels = ['nenhum', 'texto_implicito', 'link_direto']
     present_labels = [
-        l for l in labels if l in df['manual_call2go_type'].values or l in df[auto_col].values]
+        l for l in labels if l in df[manual_combined_col].values or l in df[auto_combined_col].values]
 
     confusion = pd.crosstab(
-        df['manual_call2go_type'],
-        df[auto_col],
+        df[manual_combined_col],
+        df[auto_combined_col],
         rownames=['Humano (Ground Truth)'],
         colnames=['Detector Automatizado (Vídeo + Canal)']
     )
@@ -65,7 +77,8 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     sns.heatmap(confusion, annot=True, fmt='d', cmap='Blues',
                 xticklabels=present_labels, yticklabels=present_labels,
                 linewidths=0.5, linecolor='gray')
-    plt.title("Matriz de Confusão: Humano vs. Detector (Vídeo + Canal)",
+    combined_title = "Humano (AND) vs. Detector (OR)" if is_binary else "Humano vs. Detector (Vídeo + Canal)"
+    plt.title(f"Matriz de Confusão: {combined_title}",
               fontsize=11, fontweight='bold')
     plt.ylabel("Classificação Humana", fontsize=10)
     plt.xlabel("Classificação Automatizada", fontsize=10)
@@ -77,13 +90,13 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
     print(f"[OK] Matriz de confusão (combinado) salva em: {cm_path}")
 
     # 1b. Matriz de Confusão -- Nível Vídeo Apenas (se coluna existe)
-    if 'auto_video_type' in df.columns:
+    if auto_video_col in df.columns and manual_video_col in df.columns:
         present_labels_v = [
-            l for l in labels if l in df['manual_call2go_type'].values or l in df['auto_video_type'].values]
+            l for l in labels if l in df[manual_video_col].values or l in df[auto_video_col].values]
 
         confusion_v = pd.crosstab(
-            df['manual_call2go_type'],
-            df['auto_video_type'],
+            df[manual_video_col],
+            df[auto_video_col],
             rownames=['Humano (Ground Truth)'],
             colnames=['Detector Automatizado (Só Vídeo)']
         )
@@ -109,6 +122,42 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
         plt.savefig(cm_v_path, dpi=300, bbox_inches='tight')
         plt.close()
         print(f"[OK] Matriz de confusão (só vídeo) salva em: {cm_v_path}")
+
+    # 1c. Matriz de Confusão -- Nível Canal (se colunas existem)
+    if is_binary and 'manual_canal' in df.columns and 'auto_canal' in df.columns:
+        df_canal = df[df['manual_canal'].notna()]
+        if len(df_canal) > 0:
+            present_labels_ch = [
+                l for l in labels if l in df_canal['manual_canal'].values or l in df_canal['auto_canal'].values]
+
+            confusion_ch = pd.crosstab(
+                df_canal['manual_canal'],
+                df_canal['auto_canal'],
+                rownames=['Humano (Ground Truth)'],
+                colnames=['Detector Automatizado (Só Canal)']
+            )
+            for l in present_labels_ch:
+                if l not in confusion_ch.index:
+                    confusion_ch.loc[l] = 0
+                if l not in confusion_ch.columns:
+                    confusion_ch[l] = 0
+            confusion_ch = confusion_ch.reindex(
+                index=present_labels_ch, columns=present_labels_ch, fill_value=0)
+
+            plt.figure(figsize=(6, 4))
+            sns.heatmap(confusion_ch, annot=True, fmt='d', cmap='Greens',
+                        xticklabels=present_labels_ch, yticklabels=present_labels_ch,
+                        linewidths=0.5, linecolor='gray')
+            plt.title("Matriz de Confusão: Humano vs. Detector (Só Canal)",
+                      fontsize=11, fontweight='bold')
+            plt.ylabel("Classificação Humana", fontsize=10)
+            plt.xlabel("Classificação Automatizada", fontsize=10)
+            plt.tight_layout()
+
+            cm_ch_path = os.path.join(output_dir, "confusion_matrix_channel_only.png")
+            plt.savefig(cm_ch_path, dpi=300, bbox_inches='tight')
+            plt.close()
+            print(f"[OK] Matriz de confusão (só canal) salva em: {cm_ch_path}")
 
     # 2. Métricas por classe (se o arquivo de métricas existir)
     if os.path.exists(metrics_file):

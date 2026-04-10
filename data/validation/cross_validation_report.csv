@@ -1,51 +1,92 @@
-video_id,artist_name,title,manual_call2go_type,auto_video_type,auto_channel_type,auto_combined_type,auto_source,match_video_only,match_combined,description_length,manual_channel_type,match_channel
-gatLaul3wbE,Luan Pereira,LUAN PEREIRA - LEMBRAR DE MIM (Ao vivo),link_direto,nenhum,link_direto,link_direto,canal,False,True,1214,link_direto,True
-hSPIbfXCvrc,Luan Santana,Luan Santana - CANTADA (Registro Histórico),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,4945,nenhum,True
-8NtcwGnB5ck,Gusttavo Lima,"Gusttavo Lima - Culpa | DVD ""Feito à Mão""",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,1113,nenhum,True
-hQnZm124p1s,MC Ryan SP,"Pódio - MC Ryan SP, TZ da Coronel, L7NNON e Djonga (Vídeo Clipe Oficial)",link_direto,nenhum,link_direto,link_direto,canal,False,True,4205,link_direto,True
-SjdCgJpVKhc,Lauana Prado,Seu erro foi achar que ninguém faz o que cê faz… 👀🤠🎶 #lauanaprado,nenhum,nenhum,nenhum,nenhum,nenhum,True,True,0,nenhum,True
-m9WvWDFH04Y,Ferrugem,Ferrugem - Terapeuta (Sentimento),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,2868,nenhum,True
-W8nxVcEC6HQ,Panda,Panda e Os Caricas - Caranguejo Não É Peixe,link_direto,link_direto,nenhum,link_direto,video,True,True,1269,nenhum,True
-TxCOdjTyY94,LUDMILLA,LUDMILLA - Se Não Chorar com Pagode - Numanice #3,link_direto,nenhum,link_direto,link_direto,canal,False,True,3317,link_direto,True
-D7_GPQVTJms,MC Ryan SP,"MC Ryan SP, MC Cebezinho, MC IG e MC Kadu - Terra de Ninguém (Video Clipe Oficial)",link_direto,nenhum,link_direto,link_direto,canal,False,True,258,link_direto,True
-6hzdm2goo2c,Luan Santana,Luan Santana - CERTEZA (Ao Vivo na Lua),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,2777,nenhum,True
-vGLC2CsOIOo,Henrique & Juliano,Amigo Da Minha Saudade (Ao Vivo),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,458,nenhum,True
-IwgGJ4ZsB5I,MC Ryan SP,MC Ryan SP - Judas (Video Clipe Oficial) DJ Boy,link_direto,nenhum,link_direto,link_direto,canal,False,True,1399,link_direto,True
-YrB17oqmmBg,Cleber & Cauan,No Mesmo Olhar / O Cheiro Dela - Cleber e Cauan | Resenha Piri,link_direto,nenhum,link_direto,link_direto,canal,False,True,938,link_direto,True
-TBJXkqKsMfk,Natanzinho Lima,Natanzinho Lima - Que Se Chama Amor (DE BAR EM BAR 6),link_direto,nenhum,link_direto,link_direto,canal,False,True,252,link_direto,True
-w6nNddTCzTM,Anitta,"Anitta, Hitmaker, Felipe Amorim - Gostosin (Lyric Video Oficial)",link_direto,link_direto,link_direto,link_direto,video,True,True,324,link_direto,True
-Gi6lKh_tzoE,Felipe Amorim,Felipe Amorim feat MC Bruna Alves - Novinha do TKT (Áudio Oficial),link_direto,nenhum,link_direto,link_direto,canal,False,True,1136,link_direto,True
-MeYPw7q0Pcc,Léo Santana,Léo Santana - Santinha / Maravilhosa É Ela / Contatinho (Ao Vivo Em Salvador / 2025),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,4354,nenhum,True
-roj_zzKqBWk,Gusttavo Lima,"Gusttavo Lima - Transa Pendente | DVD ""Feito à Mão""",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,1102,nenhum,True
-GQ-2GJbU9P4,Gusttavo Lima,"Gusttavo Lima - Assunto Que Dói | DVD ""Feito à Mão""",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,1745,nenhum,True
-vwECwpzdj9o,Anitta,Anitta - Casi Casi (Official Music Video),link_direto,link_direto,nenhum,link_direto,video,True,True,611,nenhum,True
-i3FN3D0t1fQ,Panda,Panda e Os Caricas - A Loja Do Mestre Panda,nenhum,nenhum,nenhum,nenhum,nenhum,True,True,3101,nenhum,True
-buin_b7b3YI,Panda,"Panda e Os Caricas, Panda and Friends - Mah-Na Mah-Na",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,115,nenhum,True
-804fKBK3Xhs,Simone Mendes,Vem ouvir SAUDADE PROIBIDA #shorts #simonemendes,link_direto,nenhum,link_direto,link_direto,canal,False,True,0,link_direto,True
-OcfS9yuma9o,Felipe Amorim,"Medley Putaria 4.0 - Felipe Amorim, DJ Topo, Mc Rodrigo do CN, MC Nito",link_direto,nenhum,link_direto,link_direto,canal,False,True,3251,link_direto,True
-3epQORhNmi0,Gusttavo Lima,"Gusttavo Lima - Ainda Tem Amor | DVD ""Feito à Mão""",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,959,nenhum,True
-LDozAWfhgcg,Ícaro e Gilmar,Ícaro e Gilmar  - Imperfeitos  [ Sextou BB Ao Vivo em Goiânia ],nenhum,nenhum,nenhum,nenhum,nenhum,True,True,1127,nenhum,True
-gI4K5U-20tQ,Gustavo Mioto,Gustavo Mioto  - EU FUJO (Acústico DO NADA),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,1328,nenhum,True
-aarIsj5nS1c,Matheus Fernandes,Matheus Fernandes - Praia do Nordeste (Clipe Oficial),link_direto,nenhum,link_direto,link_direto,canal,False,True,321,link_direto,True
-Z-mj-VV2SAM,Bruno & Barretto,Macio nem tente ❌,link_direto,nenhum,link_direto,link_direto,canal,False,True,17,link_direto,True
-ndpJFdOjTE4,Clayton & Romário,Hoje é onde? 😂 #claytoneromario #sertanejo,link_direto,nenhum,link_direto,link_direto,canal,False,True,0,link_direto,True
-7lgiZwjBuZY,Léo Santana,"Cês pensaram que minha caixinha de som ia ficar fora de 2026? Que nadaaaaaa, family!",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,0,nenhum,True
-us6ux4Qjwh4,Panda,Panda e Os Caricas - Partidas De Assustar,link_direto,link_direto,nenhum,link_direto,video,True,True,1781,nenhum,True
-tnCCJO9xMxM,Murilo Huff,com mais alguém é assim também? 👀😂 #deixaeu,link_direto,nenhum,link_direto,link_direto,canal,False,True,0,link_direto,True
-tSKMmYjzsck,Felipe Amorim,"Medley Muído de Vaquejada - Felipe Amorim, Zé Vaqueiro, Xand Avião, Talita Mel e Mc Lekão",link_direto,nenhum,link_direto,link_direto,canal,False,True,4060,link_direto,True
-lDqHGGY0Hbk,Lauana Prado,LAUANA PRADO - EU JURO/ MIL RAZÕES PARA CHORAR/ TE QUERO PRA MIM,nenhum,nenhum,nenhum,nenhum,nenhum,True,True,2731,nenhum,True
-OCUL9ofFpEc,Eric Land,VEM DESESTRESSAR - Eric Land e MC PH (Clipe Oficial),link_direto,link_direto,nenhum,link_direto,video,True,True,2517,nenhum,True
-427Jpzw9x8M,Raphaela Santos,Raphaela Santos A Favorita - Dona do Seu Lar [DVD Paradise],nenhum,nenhum,nenhum,nenhum,nenhum,True,True,603,nenhum,True
-CKtHg1jBREY,Marília Mendonça,Marília Mendonça - Graveto (Todos Os Cantos - Ao Vivo),link_direto,nenhum,link_direto,link_direto,canal,False,True,1275,link_direto,True
-vUXEreWtUjI,Felipe e Rodrigo,Só quem tá dando muitos plays na Caos De Alguém comenta aqui,link_direto,nenhum,link_direto,link_direto,canal,False,True,0,link_direto,True
-tmAsMpFERrE,Eric Land,Eric Land e Wesley Safadão - Beijo das Galáxias - DVD Eric Land Start - Parte 1,nenhum,nenhum,nenhum,nenhum,nenhum,True,True,470,nenhum,True
-hI7GUHGCHwE,Grupo Menos É Mais,Grupo Menos É Mais - Pensando Em Você / Carta Branca / Amantes (Ao Vivo),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,2455,nenhum,True
-y-XDI_LneEs,Clayton & Romário,Tem sentimento demais nessa 👀 #claytoneromario #sertanejo,link_direto,nenhum,link_direto,link_direto,canal,False,True,0,link_direto,True
-UPEiX_iQgpw,Mari Fernandez,Mari Fernandez - PÁGINA DE EX (DVD Ao Vivo no Rio de Janeiro),link_direto,nenhum,link_direto,link_direto,canal,False,True,1935,link_direto,True
-Qqil27r0Vhc,LUDMILLA,Ludmilla - Sintomas de Prazer (Dance Video),link_direto,link_direto,link_direto,link_direto,video,True,True,2221,link_direto,True
-Tk3mNCwKkB8,Panda,Panda e Os Caricas - Quem Quer Pão?,link_direto,link_direto,nenhum,link_direto,video,True,True,2180,nenhum,True
-x2RY-k6yLTY,Mc Livinho,Mc Livinho - Ela é Espetacular ( Mulher Kamasutra 2 ),link_direto,link_direto,link_direto,link_direto,video,True,True,890,link_direto,True
-bMmKXPv4Uus,Mari Fernandez,Mari Fernandez - AMOR IMPOSSÍVEL (Clipe Oficial),link_direto,nenhum,link_direto,link_direto,canal,False,True,892,link_direto,True
-oyhlZhUjaeQ,Anitta,Anitta - Aceita,link_direto,link_direto,nenhum,link_direto,video,True,True,1592,nenhum,True
-oUUWqAfPYrY,PEDRO SAMPAIO,"PEDRO SAMPAIO, MC Meno K, Melody - JETSKI (Dance Video)",nenhum,nenhum,nenhum,nenhum,nenhum,True,True,442,nenhum,True
-3fFzhUtYD4s,Anitta,Anitta - Capa De Revista (Lyric Video),nenhum,nenhum,nenhum,nenhum,nenhum,True,True,109,nenhum,True
+video_id,artist_name,title,manual_video,manual_canal,manual_combinado,auto_video,auto_canal,auto_combinado,auto_source,auto_video_type_orig,auto_canal_type_orig,match_video,match_canal,match_combinado,description_length
+pwzNcn732ss,Anitta,Anitta - Fria (Official Audio),sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,495
+xWlK3L_32Jc,Henrique & Juliano,Excesso E Falta (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,394
+m3p4TX0sWqw,Pablo,Pablo Alborán - La llave (feat. Piso 21) (Videoclip Oficial),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,2632
+edBUiPx0jfE,Bruno & Barretto,Quam ai tem uma desses em casa?🤠,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,32
+sOixCF5XWnM,NATTAN,"Assista agora Homem é Homeme, Moleque é Moleque 🎰🇺🇸🍸",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+_4jtjmdNnyU,Simone Mendes,E já está disponível pra vcs! #meamaoumelarga #shorts #simonemendes,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+e4RWAJMI46E,Panda,Panda e Os Caricas - Mosca Sai,sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,1503
+OrcRaShjGQk,MC Ryan SP,"Se Eu Ficar Pá Nem Me Testa - J9, Ryan SP,  Don Juan, IG, Negão Original, Menor Richard, Alan JR",sem_call2go,com_call2go,sem_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,False,True,False,651
+IKM0nU6rqBs,Ana Castela,Ana Castela ft. @GustavoMioto - Fronteira (DVD Boiadeira Internacional),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,991
+V1CSxlstA8A,Mc Livinho,MC Livinho - Companheira (Lyric Video),com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,True,True,True,1378
+IwgGJ4ZsB5I,MC Ryan SP,MC Ryan SP - Judas (Video Clipe Oficial) DJ Boy,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1399
+4HQect5dM-g,MC Ryan SP,MC Ryan SP e MC Daniel - Namora Aí (Video Clipe Oficial),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,881
+z1sClA106IY,Ferrugem,ONDE VOCÊ ANDA ? 👀🚶🏻‍♂️ #samba #familia #ferrugem,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+rUW7ev79fTA,Ana Castela,ANA CASTELA - DONA DE MIM (OFICIAL),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1536
+BlMfJGCIttQ,Bruno & Barretto,Daquele Modelo 😂,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,16
+JD_W6dLHPW8,Anitta,Anitta - ROMEO (Official Video),sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,4005
+4RAkHxuX9oQ,Felipe Araújo,"Felipe Araújo - Realista | Eu, Felipe Araújo",com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,True,True,True,1137
+o6ii4p0X2IM,Grupo Menos É Mais,Ramon Alvarenga trazendo mais molho para o P do Pecado 😮‍💨🤌 #menosemais #simonemendes,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+AQa9RjdJLdg,PEDRO SAMPAIO,// eles entregaram TUDO! ✨🔮 #pedrosampaio #sequenciafeiticeira #shorts,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+s9F9Zgdn320,Sorriso Maroto,"Quando É Amor/ Dói Demais/ Depois do Prazer - Sorriso, Alexandre Pires (SMEuGostoNo PagodeVol4)",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,2657
+W8nxVcEC6HQ,Panda,Panda e Os Caricas - Caranguejo Não É Peixe,sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,1269
+nmRsGILGMT0,LUDMILLA,LUDMILLA - Numanice #3 Ao Vivo (completo),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,2544
+oYQwySDMl9w,MC Ryan SP,"MC Ryan SP, Orochi, Oruam, MC Hariel - Perfeita (Video Clipe Oficial)",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,3626
+UdI6RNyK0Zw,Matheus & Kauan,Carona (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,418
+7uAG7X59pE0,MC Ryan SP,"MC Ryan SP, MC Caveirinha, KayBlack e Vulgo FK - Mágoa e Rancor (Video Clipe Oficial)",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1887
+FG_GBOMGjtw,Matheus & Kauan,A Nossa Praia (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,405
+Zjx6uqT2XkE,Clayton & Romário,Quem mais é assim? 🤣 #claytoneromario #sertanejo,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+R2ucfJmeaPU,Kamisa 10,Kamisa 10 - Quem Tá Contigo Não Dorme part. Léo Santana | DVD Ao Vivo Em Brasília,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,True,True,True,1127
+AtHet50A5L4,Jorge & Mateus,Jorge & Mateus - Tem Que Sorrir (Clipe Oficial) [Álbum Tudo Em Paz],sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1676
+aMtjR7oT_Q0,Mayke & Rodrigo,davi brito falou q nao gasta dinheiro com farra e foi refutado,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+ApA-DovZ-Q0,Sorriso Maroto,"Primeiro Amor/ Domingo/ Você Virou Saudade - Sorriso, Alexandre Pires (SMEuGostoNoPagodeVol4)",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,3069
+4G1UaXq9NjU,MC Ryan SP,"MC Ryan SP, MC IG, MC GP e MC Tuto - Zero Amor (Vídeo Clipe Oficial)",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,2468
+CnxmshbJSiU,Xand Avião,"Se o primeiro TAMO JUNTO do ano não foi loucura por cima de loucura, eu não sei mais de nada… 😂😂😂",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+9qB_Ia64Gns,Henrique & Juliano,Novo Eu (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,448
+bydRD0taXIY,Eric Land,CHOREI NA VAQUEJADA - Eric Land e @tarcisiodoacordeon (Clipe Oficial),sem_call2go,sem_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,True,False,1664
+Flo1s4gGuOs,AgroPlay,"AgroPlay, @anacastelaoficial - Vida Loka (AgroPlay Verão 2)",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,1122
+22NO1nC8-v8,Zé Felipe,Eu ouvi PAPAI! 🥰💙,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+jiZJM0S3rzU,Bruno & Barretto,"Que dormir que nada, cuiudo faz assim 😂😂",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,40
+Sn4fasPLnOg,Panda,Panda e Os Caricas - Fungágá Da Bicharada,sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,1772
+nLDmm7_peNY,Bruno & Barretto,Clica no link e vem curtir o Clipe Oficial,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,47
+eCjzEt3Iyis,Priscila Senna,Priscila Senna - CD AO VIVO 2025 (Completo),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,584
+zKHHf5pHHwk,Bruno & Barretto,É DOS CUIUDO QUE ELAS GOSTA! 🤠🔥,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,31
+vcS7MXjupgk,Ana Castela,Ana Castela ft. Léo e Raphael - As Menina da Pecuária (Clipe Oficial),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,411
+cdf6v3fFWoQ,Bruno & Barretto,Cuiudo 😍😂,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,9
+IyFTnKZl7ww,Bruno & Barretto,Os cuiudo são diferenciados!🤠🔥,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,30
+QbdcQV63c2Y,MC Ryan SP,"Set DJ Japa NK 2.0 Ryan SP, Meno K, Luuky, Rodrigo do CN, IG, Jacaré, GH do 7, Lele JP, JVila, Oruam",sem_call2go,com_call2go,sem_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,False,True,False,649
+m8sQAOS6shI,Mari Fernandez,"Mari Fernandez, @lauanaprado - MALUCA (DVD Ao Vivo no Rio de Janeiro)",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1638
+gk5u3nxAn4A,Matheus & Kauan,Não Sei Se Tô Solteiro (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,533
+MjpMUc8_KHY,Felipe Araújo,"Felipe Araújo - Solteiro Seu| Eu,Felipe Araújo",com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,True,True,True,2537
+ag4MupmN34U,Felipe Araújo,"Felipe Araújo - Tem Alguém Aí | Eu, Felipe Araújo",com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,True,True,True,2555
+lc9ZEj--T3w,Mayke & Rodrigo,LUISA SONZA SE REVOLTA COM BAIXO ENGAJAMENTO E DIZ QUE FÃS NÃO A MERECEM,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,41
+77HoIHKJpeY,PEDRO SAMPAIO,"PEDRO SAMPAIO - SEQUÊNCIA COLOCADÃO feat MC GW, MC Delano, MC Meno K",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1027
+7lgiZwjBuZY,Léo Santana,"Cês pensaram que minha caixinha de som ia ficar fora de 2026? Que nadaaaaaa, family!",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+Hcgmo2_pjkI,Priscila Senna,Priscila Senna e Tayara Andreza - Se Valoriza (PRISCILA SENNA 15 ANOS),sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1266
+LCaEVpCluHE,AgroPlay,"Jet em Balneário (AgroPlay Verão 3) AgroPlay, @anacastelaoficial, @mcph.4m",com_call2go,sem_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,True,True,False,1896
+TqqpkEgrsu4,Eric Land,Descarregado - Eric Land e Matheus Fernandes (Clipe Oficial),sem_call2go,sem_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,True,False,1375
+4KF2WYjVvlo,Lauana Prado,"Essa só vale se cantar com todo o sentimento do mundo e, pelo visto, vcs também sabem disso. 🇺🇸🗣️",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+dUOpZuW1VnY,Léo Santana,Que honra é poder dividir o palco com essa lenda 🥰 Já ouviram #paggodin2?,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+Tk3mNCwKkB8,Panda,Panda e Os Caricas - Quem Quer Pão?,sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,2180
+oyhlZhUjaeQ,Anitta,Anitta - Aceita,sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,1592
+0k_nobZbaiM,Israel & Rodolffo,"Cês já pegaram a letra e tão cantando ela bonitinho nos shows, hein? Coisa linda meu povo!😍",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+TAcoCebC1tA,Zé Felipe,Zé Felipe - Entre a Serpente é a Estrela | Country Sessions Vol.2,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,402
+JeUzJAu1wVo,Henrique & Juliano,Seja Ex (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,423
+cDvrHwCTMQg,Henrique & Juliano,Logo Logo (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,423
+-XGHBV1p5lw,Pablo,Pablo Alborán - No vaya a ser (Videoclip Oficial),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,1982
+us6ux4Qjwh4,Panda,Panda e Os Caricas - Partidas De Assustar,com_call2go,com_call2go,com_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,True,False,True,1781
+hlSF3R3t3SU,Henrique & Juliano,Ce Me Conhece Eu Me Conheço (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,433
+iYjz1Ap1VvU,Grupo Menos É Mais,"Grupo Menos É Mais, NATTAN - Pela Última Vez (Ao Vivo)",sem_call2go,sem_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,True,False,3352
+ZmSrdCubfDw,Henrique & Juliano,Só Eu Senti (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,416
+9JVh2ZCsPNA,Gustavo Mioto,Gustavo Mioto - Amor é Pra Poucos feat. @fabiojroficial (Atemporal),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,1354
+1jlDqubhZvU,Clayton & Romário,Clayton & Romário part. Zé Neto & Cristiano - Não Namora (DVD Por Vocês),sem_call2go,com_call2go,sem_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,False,True,False,890
+DqKhl_FqfdY,Bruno & Barretto,🚨😂,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,2
+_emKD9Pz1WY,Kamisa 10,Kamisa 10 - Primeiramente part. Israel e Rodolffo,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1059
+7UwpRe23u9U,Clayton & Romário,Essa faz sentir demais ❤️ #claytoneromario #sertanejo,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+Q-HdNVRHgEk,NATTAN,Bora entrar no clima de final de semana com essa daqui 🔥 #nattan #menosemais  #pagode,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+kdXWS9KPvmQ,Ícaro e Gilmar,"12 Horas /Pra Você Acreditar - Ícaro e Gilmar, Humberto e Ronaldo,Panda [DVD Cê tá doido]",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,527
+__ur8Ykcivw,Luísa Sonza,Luísa Sonza - CACHORRINHAS (Clipe Oficial),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,4867
+5R2KCJGsOUw,Matheus & Kauan,Ilusão De Ótica (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,468
+jQJ9xj7Wf9I,Manu,"Manu Bahtidão, Clara - Agora Aguenta Coração (DVD Destino)",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,1025
+Up2_BDrsbCk,Sorriso Maroto,Assista agora ao documentário Sorriso Maroto - Do Quintal Ao Grammy 🎬,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+dhDy4Sr7pt8,Luan Pereira,"Isso que importa! Obrigado, Deus. 🥹🙏🏻",sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,0
+gfiZKUzZAN4,Clayton & Romário,"Clayton & Romário, Zé Felipe  - Se Eu Te Perdoar (LYRIC VIDEO)",sem_call2go,com_call2go,sem_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,False,True,False,1352
+CeujGNFkyIE,Panda,Panda e Os Caricas - Ginástica Com O Panda,sem_call2go,com_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,False,False,1948
+PNuwSvmsMWw,Bruno & Barretto,É ou não é assim!? 😂😂😂,sem_call2go,com_call2go,sem_call2go,sem_call2go,com_call2go,com_call2go,canal,nenhum,link_direto,True,True,False,22
+iHqgiabimdw,Matheus & Kauan,Desfecho De Classe (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,506
+NwEoKpE5Sx4,Mc Livinho,MC Livinho e MC Bruninho - Beijinho Gostoso (Videoclipe Oficial),com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,com_call2go,video,link_direto,link_direto,True,True,True,952
+Gg-sG1NmRD4,Matheus & Kauan,Não Sirvo (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,454
+l9oQmAvyops,Mayke & Rodrigo,julio cocielo e donos do podpah são processados por fazer piada com PCD,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,0
+Sck0ayLyzD8,Grupo Menos É Mais,Grupo Menos É Mais - Tarde Demais / Mágica / Oh! Chuva (Ao Vivo),sem_call2go,sem_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,False,True,False,2460
+XwIY-S81MEA,AgroPlay,"Fivela da Lacoste - MC PH, Luan Pereira, MC Ryan SP, AgroPlay (Clipe Oficial)",sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,sem_call2go,nenhum,nenhum,nenhum,True,True,True,3445
+YrlPvYsEEuA,Eric Land,Eric Land - Cidade Inteira [EP Cidade Inteira],com_call2go,sem_call2go,sem_call2go,com_call2go,sem_call2go,com_call2go,video,link_direto,nenhum,True,True,False,295
