@@ -81,46 +81,82 @@ _ANNOTATION_COLS = {
 _WRAP_COLS = {'description', 'channel_bio', 'notas'}
 
 
-def _create_readme_sheet(wb):
+def _create_readme_sheet(wb, census_mode=False):
     """Cria aba README com instrucoes de preenchimento."""
     ws = wb.create_sheet("README", 0)
 
-    instructions = [
-        ["INSTRUCOES PARA ANOTACAO HUMANA CEGA"],
-        [""],
-        ["Este arquivo contem 91 videos da amostra adversarial estratificada."],
-        ["Voce deve classificar CADA video manualmente, sem consultar o detector."],
-        [""],
-        ["COLUNAS DE DADOS (cinza):"],
-        ["  video_id           - Identificador unico do video no YouTube"],
-        ["  artist_name        - Nome do artista"],
-        ["  title              - Titulo do video"],
-        ["  youtube_url        - Link direto para o video (abra no navegador se necessario)"],
-        ["  youtube_channel_url- Link para o canal do artista no YouTube"],
-        ["  description        - Descricao COMPLETA do video"],
-        ["  channel_bio        - Bio COMPLETA do canal (descricao + links da aba Sobre)"],
-        ["                       Links apos '---LINKS---' sao os links reais da aba Sobre"],
-        ["                       Links com '[Canal Oficial]' vem do canal oficial (artistas com OAC)"],
-        [""],
-        ["COLUNAS DE ANOTACAO (amarelo) - PREENCHER:"],
-        ["  manual_call2go_video    - Classificacao da DESCRICAO DO VIDEO:"],
-        ["                            'link_direto'     = contem link do Spotify"],
-        ["                            'texto_implicito' = menciona Spotify como CTA"],
-        ["                            'nenhum'          = sem Call2Go na descricao"],
-        ["  manual_call2go_canal    - Classificacao da BIO DO CANAL:"],
-        ["                            mesmas opcoes acima"],
-        ["  manual_call2go_combinado- Classificacao FINAL:"],
-        ["                            se video OU canal tem Call2Go -> combinado tambem tem"],
-        ["                            prevalencia: link_direto > texto_implicito > nenhum"],
-        ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
-        ["  notas                   - Qualquer observacao relevante (opcional)"],
-        [""],
-        ["APOS CONCLUIR:"],
-        ["  1. Salve como: data/validation/ground_truth.csv (File > Save As > CSV UTF-8)"],
-        ["  2. Execute: python -m src.validation.cross_validator"],
-        [""],
-        ["IMPORTANTE: NAO consulte ground_truth_prefilled.csv (validacao circular)."],
-    ]
+    if census_mode:
+        instructions = [
+            ["INSTRUCOES PARA ANOTACAO HUMANA -- CENSO COMPLETO"],
+            [""],
+            ["Este arquivo contem TODOS os videos coletados do YouTube."],
+            ["Voce deve classificar CADA video manualmente, sem consultar o detector."],
+            [""],
+            ["COLUNAS DE DADOS (cinza):"],
+            ["  video_id           - Identificador unico do video no YouTube"],
+            ["  artist_name        - Nome do artista"],
+            ["  title              - Titulo do video"],
+            ["  youtube_url        - Link direto para o video (abra no navegador se necessario)"],
+            ["  youtube_channel_url- Link para o canal do artista no YouTube"],
+            ["  description        - Descricao COMPLETA do video"],
+            ["  channel_bio        - Bio COMPLETA do canal (descricao + links da aba Sobre)"],
+            ["                       Links apos '---LINKS---' sao os links reais da aba Sobre"],
+            ["                       Links com '[Canal Oficial]' vem do canal oficial (artistas com OAC)"],
+            [""],
+            ["COLUNAS DE ANOTACAO (amarelo) - PREENCHER:"],
+            ["  manual_call2go_video    - A DESCRICAO DO VIDEO contem Call2Go?"],
+            ["                            'SIM' = contem link Spotify ou CTA (ouca no Spotify)"],
+            ["                            'NAO' = nao tem Call2Go na descricao"],
+            ["  manual_call2go_canal    - A BIO DO CANAL contem Call2Go?"],
+            ["                            mesma logica: SIM ou NAO"],
+            ["  manual_call2go_combinado- QUALQUER fonte tem Call2Go?"],
+            ["                            SIM se video OU canal = SIM"],
+            ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
+            ["  notas                   - Qualquer observacao relevante (opcional)"],
+            [""],
+            ["APOS CONCLUIR:"],
+            ["  1. Salve como: data/validation/ground_truth.csv (File > Save As > CSV UTF-8)"],
+            ["  2. Execute: python -m src.validation.cross_validator"],
+            [""],
+            ["IMPORTANTE: NAO consulte o detector automatizado antes de anotar."],
+        ]
+    else:
+        instructions = [
+            ["INSTRUCOES PARA ANOTACAO HUMANA CEGA"],
+            [""],
+            ["Este arquivo contem 91 videos da amostra adversarial estratificada."],
+            ["Voce deve classificar CADA video manualmente, sem consultar o detector."],
+            [""],
+            ["COLUNAS DE DADOS (cinza):"],
+            ["  video_id           - Identificador unico do video no YouTube"],
+            ["  artist_name        - Nome do artista"],
+            ["  title              - Titulo do video"],
+            ["  youtube_url        - Link direto para o video (abra no navegador se necessario)"],
+            ["  youtube_channel_url- Link para o canal do artista no YouTube"],
+            ["  description        - Descricao COMPLETA do video"],
+            ["  channel_bio        - Bio COMPLETA do canal (descricao + links da aba Sobre)"],
+            ["                       Links apos '---LINKS---' sao os links reais da aba Sobre"],
+            ["                       Links com '[Canal Oficial]' vem do canal oficial (artistas com OAC)"],
+            [""],
+            ["COLUNAS DE ANOTACAO (amarelo) - PREENCHER:"],
+            ["  manual_call2go_video    - Classificacao da DESCRICAO DO VIDEO:"],
+            ["                            'link_direto'     = contem link do Spotify"],
+            ["                            'texto_implicito' = menciona Spotify como CTA"],
+            ["                            'nenhum'          = sem Call2Go na descricao"],
+            ["  manual_call2go_canal    - Classificacao da BIO DO CANAL:"],
+            ["                            mesmas opcoes acima"],
+            ["  manual_call2go_combinado- Classificacao FINAL:"],
+            ["                            se video OU canal tem Call2Go -> combinado tambem tem"],
+            ["                            prevalencia: link_direto > texto_implicito > nenhum"],
+            ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
+            ["  notas                   - Qualquer observacao relevante (opcional)"],
+            [""],
+            ["APOS CONCLUIR:"],
+            ["  1. Salve como: data/validation/ground_truth.csv (File > Save As > CSV UTF-8)"],
+            ["  2. Execute: python -m src.validation.cross_validator"],
+            [""],
+            ["IMPORTANTE: NAO consulte ground_truth_prefilled.csv (validacao circular)."],
+        ]
 
     title_font = Font(name="Calibri", size=14, bold=True, color="1F4E79")
     section_font = Font(name="Calibri", size=11, bold=True, color="333333")
@@ -145,7 +181,8 @@ def _create_readme_sheet(wb):
 
 def format_blind_annotation(
     input_csv="data/validation/blind_annotation.csv",
-    output_xlsx="data/validation/blind_annotation.xlsx"
+    output_xlsx="data/validation/blind_annotation.xlsx",
+    census_mode=False
 ):
     """
     Le o CSV cego e gera versao Excel formatada para anotacao humana.
@@ -153,12 +190,15 @@ def format_blind_annotation(
     Args:
         input_csv: Caminho do CSV de entrada (blind_annotation.csv).
         output_xlsx: Caminho do XLSX de saida formatado.
+        census_mode: Se True, usa dropdowns SIM/NAO (censo completo).
 
     Returns:
         Caminho do arquivo gerado, ou None em caso de erro.
     """
     print("=" * 60)
     print("FORMATADOR EXCEL PARA ANOTACAO HUMANA")
+    if census_mode:
+        print("  (MODO CENSO -- dropdowns SIM/NAO)")
     print("=" * 60)
 
     if not os.path.exists(input_csv):
@@ -175,7 +215,7 @@ def format_blind_annotation(
     wb = Workbook()
 
     # Aba README primeiro
-    _create_readme_sheet(wb)
+    _create_readme_sheet(wb, census_mode=census_mode)
 
     # Remove sheet padrao e cria aba de dados
     if "Sheet" in wb.sheetnames:
@@ -231,7 +271,15 @@ def format_blind_annotation(
     last_row = len(df) + 1
 
     # Dropdown para colunas manual_call2go_*
-    call2go_options = '"link_direto,texto_implicito,nenhum"'
+    if census_mode:
+        call2go_options = '"SIM,NAO"'
+        call2go_error = "Escolha: SIM ou NAO"
+        call2go_prompt = "Selecione SIM (tem Call2Go) ou NAO"
+    else:
+        call2go_options = '"link_direto,texto_implicito,nenhum"'
+        call2go_error = "Escolha: link_direto, texto_implicito, ou nenhum"
+        call2go_prompt = "Selecione a classificacao Call2Go"
+
     for col_name in ['manual_call2go_video', 'manual_call2go_canal',
                      'manual_call2go_combinado']:
         if col_name in columns:
@@ -242,10 +290,10 @@ def format_blind_annotation(
                 allow_blank=True,
                 showErrorMessage=True,
                 errorTitle="Valor invalido",
-                error="Escolha: link_direto, texto_implicito, ou nenhum",
+                error=call2go_error,
                 showInputMessage=True,
                 promptTitle=col_name,
-                prompt="Selecione a classificacao Call2Go"
+                prompt=call2go_prompt
             )
             dv.add(f"{col_letter}2:{col_letter}{last_row}")
             ws.add_data_validation(dv)
@@ -286,4 +334,12 @@ def format_blind_annotation(
 
 
 if __name__ == "__main__":
-    format_blind_annotation()
+    import sys
+    if '--census' in sys.argv:
+        format_blind_annotation(
+            input_csv="data/validation/blind_annotation_census.csv",
+            output_xlsx="data/validation/blind_annotation_census.xlsx",
+            census_mode=True
+        )
+    else:
+        format_blind_annotation()

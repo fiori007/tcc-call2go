@@ -206,5 +206,115 @@ def generate_blind_csv(
     return df
 
 
+def generate_census_csv(
+    raw_file="data/raw/youtube_videos_raw.jsonl",
+    scraped_file="data/raw/channel_links_scraped.json",
+    output_file="data/validation/blind_annotation_census.csv"
+):
+    """
+    Gera CSV cego com TODOS os videos do JSONL para anotacao humana censitaria.
+
+    Diferente de generate_blind_csv() que filtra por amostra, este funcao
+    inclui todos os videos coletados -- permitindo validacao censitaria
+    completa do detector.
+
+    Args:
+        raw_file: JSONL bruto do YouTube com todos os videos.
+        scraped_file: JSON com links scrapeados da aba Sobre dos canais.
+        output_file: CSV de saida para anotacao humana cega (todos os videos).
+
+    Returns:
+        pd.DataFrame com o CSV gerado, ou None em caso de erro.
+    """
+    print("=" * 60)
+    print("GERADOR DE CSV CEGO -- CENSO COMPLETO (TODOS OS VIDEOS)")
+    print("=" * 60)
+
+    if not os.path.exists(raw_file):
+        print(f"[ERRO] Dados brutos nao encontrados: {raw_file}")
+        return None
+
+    # 1. Carrega TODOS os videos do JSONL
+    all_videos = []
+    with open(raw_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                all_videos.append(json.loads(line))
+    print(f"  Videos carregados do JSONL: {len(all_videos)}")
+
+    # 2. Carrega links scrapeados da aba Sobre dos canais
+    scraped_data = {}
+    if os.path.exists(scraped_file):
+        with open(scraped_file, 'r', encoding='utf-8') as f:
+            scraped_data = json.load(f)
+        print(f"  Canais scrapeados carregados: {len(scraped_data)}")
+    else:
+        print(f"  [AVISO] Scraped data nao encontrado: {scraped_file}")
+        print("  A coluna channel_bio tera apenas a descricao da API (sem links).")
+
+    # 3. Monta CSV cego com todos os videos
+    rows = []
+    for video in all_videos:
+        vid = video.get('video_id', '')
+        artist_name = video.get('artist_name', '')
+        title = video.get('title', '')
+        description = video.get('description', '') or ''
+        channel_desc = video.get('channel_description', '') or ''
+        channel_id = video.get('channel_id', '') or ''
+
+        # Bio completa = descricao + links da aba Sobre
+        channel_bio = _build_channel_bio(
+            channel_desc, channel_id, artist_name, scraped_data
+        )
+
+        rows.append({
+            'video_id': vid,
+            'artist_name': artist_name,
+            'title': title,
+            'youtube_url': f'https://www.youtube.com/watch?v={vid}',
+            'youtube_channel_url': f'https://www.youtube.com/channel/{channel_id}' if channel_id else '',
+            'description': description,
+            'channel_bio': channel_bio,
+            # Colunas para preenchimento humano (SIM / NAO)
+            'manual_call2go_video': '',
+            'manual_call2go_canal': '',
+            'manual_call2go_combinado': '',
+            'confianca': '',
+            'notas': '',
+        })
+
+    df = pd.DataFrame(rows)
+
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    df.to_csv(output_file, index=False, encoding='utf-8')
+
+    print(f"\n  CSV censo gerado: {output_file}")
+    print(f"  Total de videos: {len(df)}")
+    artistas_unicos = df['artist_name'].nunique()
+    print(f"  Artistas unicos: {artistas_unicos}")
+    print(f"\n  --- INSTRUCOES PARA O ANOTADOR ---")
+    print("  1. Abra o arquivo XLSX (blind_annotation_census.xlsx)")
+    print("  2. Para CADA video, leia as colunas 'description' e 'channel_bio'")
+    print("  3. Preencha as colunas com SIM ou NAO:")
+    print("     - manual_call2go_video: a DESCRICAO DO VIDEO contem Call2Go?")
+    print("       -> SIM = contem link Spotify ou mencao tipo CTA")
+    print("       -> NAO = nao tem Call2Go na descricao")
+    print("     - manual_call2go_canal: a BIO DO CANAL contem Call2Go?")
+    print("       -> mesma logica, aplicada a bio do canal")
+    print("     - manual_call2go_combinado: QUALQUER uma das fontes tem Call2Go?")
+    print("       -> SIM se video OU canal tem = SIM")
+    print("     - confianca: 'alta', 'media', ou 'baixa'")
+    print("     - notas: qualquer observacao relevante")
+    print("  4. Salve como: data/validation/ground_truth.csv")
+    print("  5. Execute: python -m src.validation.cross_validator")
+
+    return df
+
+
 if __name__ == "__main__":
-    generate_blind_csv()
+    import sys
+    if '--census' in sys.argv:
+        generate_census_csv()
+    else:
+        generate_blind_csv()

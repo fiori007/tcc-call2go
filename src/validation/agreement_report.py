@@ -154,7 +154,8 @@ def generate_agreement_report(validation_file="data/validation/cross_validation_
             plt.xlabel("Classificação Automatizada", fontsize=10)
             plt.tight_layout()
 
-            cm_ch_path = os.path.join(output_dir, "confusion_matrix_channel_only.png")
+            cm_ch_path = os.path.join(
+                output_dir, "confusion_matrix_channel_only.png")
             plt.savefig(cm_ch_path, dpi=300, bbox_inches='tight')
             plt.close()
             print(f"[OK] Matriz de confusão (só canal) salva em: {cm_ch_path}")

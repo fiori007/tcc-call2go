@@ -143,16 +143,20 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
         return None
 
     # Mapeia todas as anotações humanas para binário
-    df_gt['manual_video_bin'] = df_gt['manual_call2go_video'].apply(_map_to_binary)
+    df_gt['manual_video_bin'] = df_gt['manual_call2go_video'].apply(
+        _map_to_binary)
     if has_channel_gt:
-        df_gt['manual_canal_bin'] = df_gt['manual_call2go_canal'].apply(_map_to_binary)
+        df_gt['manual_canal_bin'] = df_gt['manual_call2go_canal'].apply(
+            _map_to_binary)
     if has_combined_gt:
-        df_gt['manual_combinado_bin'] = df_gt['manual_call2go_combinado'].apply(_map_to_binary)
+        df_gt['manual_combinado_bin'] = df_gt['manual_call2go_combinado'].apply(
+            _map_to_binary)
 
     # Verifica preenchimento
     empty_count = df_gt['manual_video_bin'].isna().sum()
     if empty_count > 0:
-        print(f"[AVISO] {empty_count} vídeos sem anotação manual válida. Serão ignorados.")
+        print(
+            f"[AVISO] {empty_count} vídeos sem anotação manual válida. Serão ignorados.")
         df_gt = df_gt[df_gt['manual_video_bin'].notna()]
 
     gt_ids = set(df_gt['video_id'].values)
@@ -175,7 +179,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
     if scraped_data:
         print(f"  Links scrapeados carregados: {len(scraped_data)} canais")
     else:
-        print("  [AVISO] Links scrapeados não encontrados -- detecção de canal será apenas por texto")
+        print(
+            "  [AVISO] Links scrapeados não encontrados -- detecção de canal será apenas por texto")
 
     # 3. Comparação lado a lado -- detector vs. humano (tudo em binário)
     results = []
@@ -265,7 +270,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
             fn = len(valid[(valid[manual_col] == c) & (valid[auto_col] != c)])
             precision = tp / (tp + fp) if (tp + fp) > 0 else 0
             recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-            f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+            f1 = 2 * (precision * recall) / (precision +
+                                             recall) if (precision + recall) > 0 else 0
             per_class[c] = {
                 'true_positives': tp, 'false_positives': fp, 'false_negatives': fn,
                 'precision': precision, 'recall': recall, 'f1_score': f1
@@ -286,8 +292,10 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
         print(f"  Total validados: {total}")
         print(f"  Concordâncias: {matches}")
         print(f"  Discordâncias: {total - matches}")
-        print(f"  ACURÁCIA: {accuracy:.1%}  IC95%=[{acc_lo:.1%}, {acc_hi:.1%}]")
-        print(f"  COHEN'S KAPPA: {kappa:.4f}  IC95%=[{kappa_lo:.4f}, {kappa_hi:.4f}]")
+        print(
+            f"  ACURÁCIA: {accuracy:.1%}  IC95%=[{acc_lo:.1%}, {acc_hi:.1%}]")
+        print(
+            f"  COHEN'S KAPPA: {kappa:.4f}  IC95%=[{kappa_lo:.4f}, {kappa_hi:.4f}]")
         print(f"  Interpretação Kappa (Landis & Koch): {kappa_interp}")
         for c, m in per_class.items():
             print(f"    [{c}] P={m['precision']:.1%} R={m['recall']:.1%} F1={m['f1_score']:.1%} (TP={m['true_positives']} FP={m['false_positives']} FN={m['false_negatives']})")
@@ -344,7 +352,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
             print(f"\n--- DISCORDÂNCIAS -- {level_name} ({len(disc)}) ---")
             for _, d in disc.iterrows():
                 print(f"  {d['video_id']} ({d['artist_name']})")
-                print(f"    Humano: {d[manual_col]}  |  Máquina: {d[auto_col]}")
+                print(
+                    f"    Humano: {d[manual_col]}  |  Máquina: {d[auto_col]}")
 
     # 6. Salva relatório CSV
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
