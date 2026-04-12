@@ -39,9 +39,6 @@ _ANNOTATION_FILL_ODD = PatternFill(start_color="FFF2CC", end_color="FFF2CC",
 _ANNOTATION_FILL_EVEN = PatternFill(start_color="FFFDE7", end_color="FFFDE7",
                                     fill_type="solid")
 
-_NOTES_FILL = PatternFill(start_color="FFFFFF", end_color="FFFFFF",
-                          fill_type="solid")
-
 _DATA_FONT = Font(name="Calibri", size=10, color="333333")
 _ANNOTATION_FONT = Font(name="Calibri", size=10, bold=True, color="333333")
 
@@ -68,17 +65,16 @@ _COLUMN_WIDTHS = {
     'manual_call2go_canal': 22,
     'manual_call2go_combinado': 24,
     'confianca': 14,
-    'notas': 35,
 }
 
 # Colunas de anotacao humana (destaque amarelo)
 _ANNOTATION_COLS = {
     'manual_call2go_video', 'manual_call2go_canal',
-    'manual_call2go_combinado', 'confianca', 'notas'
+    'manual_call2go_combinado', 'confianca'
 }
 
 # Colunas com wrap text (descricoes longas)
-_WRAP_COLS = {'description', 'channel_bio', 'notas'}
+_WRAP_COLS = {'description', 'channel_bio'}
 
 
 def _create_readme_sheet(wb, census_mode=False):
@@ -112,7 +108,6 @@ def _create_readme_sheet(wb, census_mode=False):
             ["  manual_call2go_combinado- QUALQUER fonte tem Call2Go?"],
             ["                            SIM se video OU canal = SIM"],
             ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
-            ["  notas                   - Qualquer observacao relevante (opcional)"],
             [""],
             ["APOS CONCLUIR:"],
             ["  1. Salve como: data/validation/ground_truth.csv (File > Save As > CSV UTF-8)"],
@@ -149,7 +144,6 @@ def _create_readme_sheet(wb, census_mode=False):
             ["                            se video OU canal tem Call2Go -> combinado tambem tem"],
             ["                            prevalencia: link_direto > texto_implicito > nenhum"],
             ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
-            ["  notas                   - Qualquer observacao relevante (opcional)"],
             [""],
             ["APOS CONCLUIR:"],
             ["  1. Salve como: data/validation/ground_truth.csv (File > Save As > CSV UTF-8)"],
@@ -182,7 +176,8 @@ def _create_readme_sheet(wb, census_mode=False):
 def format_blind_annotation(
     input_csv="data/validation/blind_annotation.csv",
     output_xlsx="data/validation/blind_annotation.xlsx",
-    census_mode=False
+    census_mode=False,
+    readonly_mode=False
 ):
     """
     Le o CSV cego e gera versao Excel formatada para anotacao humana.
@@ -191,13 +186,16 @@ def format_blind_annotation(
         input_csv: Caminho do CSV de entrada (blind_annotation.csv).
         output_xlsx: Caminho do XLSX de saida formatado.
         census_mode: Se True, usa dropdowns SIM/NAO (censo completo).
+        readonly_mode: Se True, nao adiciona dropdowns (arquivo de referencia).
 
     Returns:
         Caminho do arquivo gerado, ou None em caso de erro.
     """
     print("=" * 60)
     print("FORMATADOR EXCEL PARA ANOTACAO HUMANA")
-    if census_mode:
+    if readonly_mode:
+        print("  (MODO REFERENCIA -- respostas do detector, sem dropdowns)")
+    elif census_mode:
         print("  (MODO CENSO -- dropdowns SIM/NAO)")
     print("=" * 60)
 
@@ -267,53 +265,54 @@ def format_blind_annotation(
     last_col = get_column_letter(len(columns))
     ws.auto_filter.ref = f"A1:{last_col}{len(df) + 1}"
 
-    # -- Data validation (dropdowns) --
+    # -- Data validation (dropdowns) -- somente para modo interativo
     last_row = len(df) + 1
 
-    # Dropdown para colunas manual_call2go_*
-    if census_mode:
-        call2go_options = '"SIM,NAO"'
-        call2go_error = "Escolha: SIM ou NAO"
-        call2go_prompt = "Selecione SIM (tem Call2Go) ou NAO"
-    else:
-        call2go_options = '"link_direto,texto_implicito,nenhum"'
-        call2go_error = "Escolha: link_direto, texto_implicito, ou nenhum"
-        call2go_prompt = "Selecione a classificacao Call2Go"
+    if not readonly_mode:
+        # Dropdown para colunas manual_call2go_*
+        if census_mode:
+            call2go_options = '"SIM,NAO"'
+            call2go_error = "Escolha: SIM ou NAO"
+            call2go_prompt = "Selecione SIM (tem Call2Go) ou NAO"
+        else:
+            call2go_options = '"link_direto,texto_implicito,nenhum"'
+            call2go_error = "Escolha: link_direto, texto_implicito, ou nenhum"
+            call2go_prompt = "Selecione a classificacao Call2Go"
 
-    for col_name in ['manual_call2go_video', 'manual_call2go_canal',
-                     'manual_call2go_combinado']:
-        if col_name in columns:
-            col_letter = get_column_letter(columns.index(col_name) + 1)
-            dv = DataValidation(
+        for col_name in ['manual_call2go_video', 'manual_call2go_canal',
+                         'manual_call2go_combinado']:
+            if col_name in columns:
+                col_letter = get_column_letter(columns.index(col_name) + 1)
+                dv = DataValidation(
+                    type="list",
+                    formula1=call2go_options,
+                    allow_blank=True,
+                    showErrorMessage=True,
+                    errorTitle="Valor invalido",
+                    error=call2go_error,
+                    showInputMessage=True,
+                    promptTitle=col_name,
+                    prompt=call2go_prompt
+                )
+                dv.add(f"{col_letter}2:{col_letter}{last_row}")
+                ws.add_data_validation(dv)
+
+        # Dropdown para confianca
+        if 'confianca' in columns:
+            col_letter = get_column_letter(columns.index('confianca') + 1)
+            dv_conf = DataValidation(
                 type="list",
-                formula1=call2go_options,
+                formula1='"alta,media,baixa"',
                 allow_blank=True,
                 showErrorMessage=True,
                 errorTitle="Valor invalido",
-                error=call2go_error,
+                error="Escolha: alta, media, ou baixa",
                 showInputMessage=True,
-                promptTitle=col_name,
-                prompt=call2go_prompt
+                promptTitle="confianca",
+                prompt="Selecione o nivel de confianca"
             )
-            dv.add(f"{col_letter}2:{col_letter}{last_row}")
-            ws.add_data_validation(dv)
-
-    # Dropdown para confianca
-    if 'confianca' in columns:
-        col_letter = get_column_letter(columns.index('confianca') + 1)
-        dv_conf = DataValidation(
-            type="list",
-            formula1='"alta,media,baixa"',
-            allow_blank=True,
-            showErrorMessage=True,
-            errorTitle="Valor invalido",
-            error="Escolha: alta, media, ou baixa",
-            showInputMessage=True,
-            promptTitle="confianca",
-            prompt="Selecione o nivel de confianca"
-        )
-        dv_conf.add(f"{col_letter}2:{col_letter}{last_row}")
-        ws.add_data_validation(dv_conf)
+            dv_conf.add(f"{col_letter}2:{col_letter}{last_row}")
+            ws.add_data_validation(dv_conf)
 
     # -- Altura das linhas (ajustar para descricoes longas) --
     for row_idx in range(2, last_row + 1):
@@ -335,7 +334,14 @@ def format_blind_annotation(
 
 if __name__ == "__main__":
     import sys
-    if '--census' in sys.argv:
+    if '--detector-answers' in sys.argv:
+        format_blind_annotation(
+            input_csv="data/validation/detector_answers_census.csv",
+            output_xlsx="data/validation/detector_answers_census.xlsx",
+            census_mode=True,
+            readonly_mode=True
+        )
+    elif '--census' in sys.argv:
         format_blind_annotation(
             input_csv="data/validation/blind_annotation_census.csv",
             output_xlsx="data/validation/blind_annotation_census.xlsx",

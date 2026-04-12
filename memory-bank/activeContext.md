@@ -1,43 +1,36 @@
 # Active Context — TCC Call2Go
 
-## Foco Atual (Fase 8 — A Volta: Cross-Validation Real, 10/04/2026)
-Anotação humana cega de 91 vídeos adversariais concluída. Cross-validation executada com resultados REAIS:
-- **Canal: Kappa 0.80 (substancial)** — detector confiável
-- **Vídeo: Kappa 0.45 (moderado)** — detector conservador (recall 100%, precisão 36%)
-- **Combinado: Kappa 0.09 (fraco)** — artefato metodológico AND vs OR, não falha do detector
+## Foco Atual (Fase 9 — Re-execução + Censo Completo, 11/04/2026)
+Pipeline re-executado do zero com dados frescos das APIs. XLSX censo gerado com 920 vídeos para anotação humana completa.
 
-**Próximo passo:** Escrita do TCC (Metodologia + Resultados) e alinhamento com orientador.
+**Próximo passo:** 🔴 Aluno anota TODOS os 920 vídeos no XLSX censo (SIM/NÃO), salva como ground_truth.csv, e roda cross_validator.
 
-## Estado do Projeto (07/04/2026)
+## Estado do Projeto (11/04/2026)
 
-### Coleta de Dados ✅
-- **Artistas:** 49 artistas brasileiros (MJ Records REMOVIDO — canal incorreto)
-- **Vídeos YouTube:** 980 vídeos (20 mais visualizados por artista), 0 erros
-- **Spotify:** Métricas coletadas para 50 artistas (popularity + followers)
-- **Canal scraping:** 52 canais processados, 29 com link Spotify no About, 2 OAC detectados
+### Coleta de Dados ✅ (Re-executada 11/04/2026)
+- **Artistas:** 50 artistas brasileiros via playlists dinâmicas do Spotify
+  - Playlists hardcoded (Top 50 Brasil, Viral 50, Top Hits) retornaram 404
+  - Fallback dinâmico encontrou 5 playlists alternativas → 340 candidatos → Top 50 por views
+- **Vídeos YouTube:** 920 vídeos (20 mais visualizados por artista), 46 artistas com vídeos
+- **Spotify:** Métricas coletadas para 50 artistas (2026-04-11)
+- **Canal scraping:** 51 canais processados com links da aba Sobre
 
 ### Detector Call2Go ✅
-- 575 link_direto (58.7%), 0 texto_implicito (0%), 405 nenhum (41.3%)
-- Fontes: 494 canal, 66 ambos, 15 video, 405 nenhum
-- 77 testes unitários adversariais — 100% passam
-- Determinístico e reprodutível (SHA256 verificado)
+- 100% regex (re.search), sem IA/ML
+- 77 testes unitários — todos passam
 
-### Análises Estatísticas ✅
-- **Mann-Whitney:** U=118004, p=0.36 — NÃO REJEITA H0
-- **Cross-platform:** U=104647.5, p=0.997 — NÃO REJEITA H0
-- **Bidirecional:** UNIDIRECIONAL Spotify -> YouTube (rho=0.392, p=0.005)
+### Análises Estatísticas ✅ (Re-executadas 11/04/2026)
+- Pipeline 11 etapas concluído em 5.6 min
+- Boxplot, scatter, heatmap bidirecional, relatórios gerados
 
-### Validação — CONCLUÍDA (Fases 7 + 8)
-- **PROBLEMA (Fase 7):** ground_truth.csv == ground_truth_prefilled.csv (validação circular)
-- **CORREÇÃO (Fase 7):** amostra adversarial (91), anotação cega, Kappa + bootstrap CI
-- **RESULTADO REAL (Fase 8 — 10/04/2026):**
-  - Nível Vídeo: Kappa 0.4493 [0.24, 0.64] — moderado (16 FPs, detector broad)
-  - Nível Canal: Kappa 0.8040 [0.68, 0.91] — substancial (9 FNs, links não scrapeados)
-  - Nível Combinado: Kappa 0.0947 [0.03, 0.17] — fraco (AND vs OR: artefato, não falha)
+### Validação — EM ANDAMENTO
+- **Fase 8:** Amostra adversarial (91 videos) — Kappa canal 0.80, vídeo 0.45, combinado 0.09
+- **Fase 9:** XLSX censo com 920 vídeos gerado para anotação humana completa (SIM/NÃO)
+  - `data/validation/blind_annotation_census.xlsx` — 920 linhas, dropdowns SIM/NÃO
+  - Após anotação: cross_validator.py já aceita formato SIM/NÃO via `_map_to_binary()`
 
-### Testes ✅ (NOVO)
-- tests/test_call2go_detector.py: 77 testes em 11 grupos — todos passam
-- Cobertura: links diretos, redirects, texto implícito, narrativas, edge cases, auto-gerado, canal, scraped
+### Testes ✅
+- 77 testes em `tests/test_call2go_detector.py` — todos passam
 
 ### Pipeline ✅
 - Roda sem erros em Windows cp1252 (encoding fix aplicado)

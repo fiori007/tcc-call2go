@@ -173,9 +173,35 @@
 - 77 testes unitários continuam passando
 
 ### 🟨 Pendente (Ações Imediatas — Em Ordem)
-1. 🔴 **ALUNO:** Alinhar com orientador sobre interpretação da Direção B (correlação vs. links reais)
-2. [ ] Escrever capítulo de Metodologia do TCC documentando validação circular + correção
-3. [ ] Escrever capítulo de Resultados com as métricas reais
+1. 🔴 **ALUNO:** Anotar TODOS os 920 vídeos em `data/validation/blind_annotation_census.xlsx` (SIM/NÃO)
+2. 🔴 **ALUNO:** Salvar anotação como `data/validation/ground_truth.csv` (CSV UTF-8)
+3. [ ] Rodar `python -m src.validation.cross_validator` para validação censitária
+4. [ ] Alinhar com orientador sobre interpretação dos resultados
+5. [ ] Escrever capítulo de Metodologia do TCC
+6. [ ] Escrever capítulo de Resultados com as métricas da validação censitária
+
+### ✅ Concluído (Fase 9 — Re-execução + Censo Completo, 11/04/2026)
+
+#### Re-execução do Pipeline
+- Pipeline completo re-executado do zero: 11 etapas em 5.6 min
+- Playlists Spotify hardcoded (Top 50 Brasil, Viral 50, Top Hits) retornaram 404
+- Fallback dinâmico encontrou 5 playlists alternativas → 340 candidatos únicos
+- Filtro: popularity ≥ 60, canal YouTube válido → 217 candidatos → Top 50 por views
+- **920 vídeos** coletados (20 mais visualizados × 46 artistas com vídeos)
+- 51 canais scrapeados, métricas Spotify atualizadas (2026-04-11)
+
+#### Adaptação para Censo Completo
+- `blind_annotator.py`: nova função `generate_census_csv()` — lê TODOS os vídeos do JSONL (não apenas amostra)
+- `excel_formatter.py`: novo modo `census_mode=True` com dropdowns SIM/NÃO binários
+- Ambos suportam `--census` na CLI
+- cross_validator.py já aceitava formato SIM/NÃO via `_map_to_binary()` (sem mudanças)
+
+#### Artefatos Gerados
+- `data/validation/blind_annotation_census.csv` — 920 vídeos, 46 artistas, 12 colunas
+- `data/validation/blind_annotation_census.xlsx` — XLSX formatado com dropdowns SIM/NÃO, aba README, freeze panes
+- Todos os 12 outputs do pipeline regenerados (ver relatório final)
+- 77 testes passando
+- Commit `653f3e9`, push OK
 
 ### ✅ Concluído (Fase 7 — Auditoria Profissional, 07/04/2026)
 

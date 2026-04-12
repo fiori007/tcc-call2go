@@ -170,7 +170,6 @@ def generate_blind_csv(
             'manual_call2go_canal': '',       # link_direto / texto_implicito / nenhum
             'manual_call2go_combinado': '',   # link_direto / texto_implicito / nenhum
             'confianca': '',                  # alta / media / baixa
-            'notas': '',                      # observacoes do anotador
         })
 
     df = pd.DataFrame(rows)
@@ -199,7 +198,6 @@ def generate_blind_csv(
     print("       -> se video OU canal tem Call2Go, o combinado tambem tem")
     print("       -> tipo prevalece: link_direto > texto_implicito > nenhum")
     print("     - confianca: 'alta', 'media', ou 'baixa'")
-    print("     - notas: qualquer observacao relevante")
     print("  5. Salve como: data/validation/ground_truth.csv")
     print("  6. Execute: python -m src.validation.cross_validator")
 
@@ -281,7 +279,6 @@ def generate_census_csv(
             'manual_call2go_canal': '',
             'manual_call2go_combinado': '',
             'confianca': '',
-            'notas': '',
         })
 
     df = pd.DataFrame(rows)
@@ -305,16 +302,140 @@ def generate_census_csv(
     print("     - manual_call2go_combinado: QUALQUER uma das fontes tem Call2Go?")
     print("       -> SIM se video OU canal tem = SIM")
     print("     - confianca: 'alta', 'media', ou 'baixa'")
-    print("     - notas: qualquer observacao relevante")
     print("  4. Salve como: data/validation/ground_truth.csv")
     print("  5. Execute: python -m src.validation.cross_validator")
 
     return df
 
 
+def generate_detector_answers(
+    raw_file="data/raw/youtube_videos_raw.jsonl",
+    scraped_file="data/raw/channel_links_scraped.json",
+    output_file="data/validation/detector_answers_census.csv"
+):
+    """
+    Gera CSV com as respostas do detector regex para TODOS os videos.
+
+    Usa as mesmas funcoes do detector (detect_call2go,
+    detect_call2go_channel_scraped) para classificar cada video
+    automaticamente, servindo como referencia/regressao para comparar
+    com a anotacao humana.
+
+    Args:
+        raw_file: JSONL bruto do YouTube com todos os videos.
+        scraped_file: JSON com links scrapeados da aba Sobre dos canais.
+        output_file: CSV de saida com respostas do detector.
+
+    Returns:
+        pd.DataFrame com o CSV gerado, ou None em caso de erro.
+    """
+    from src.processors.call2go_detector import (
+        detect_call2go, detect_call2go_channel_scraped
+    )
+    from src.collectors.channel_link_scraper import load_cached_channel_links
+
+    print("=" * 60)
+    print("RESPOSTAS DO DETECTOR -- CENSO COMPLETO (TODOS OS VIDEOS)")
+    print("=" * 60)
+
+    if not os.path.exists(raw_file):
+        print(f"[ERRO] Dados brutos nao encontrados: {raw_file}")
+        return None
+
+    # 1. Carrega TODOS os videos do JSONL
+    all_videos = []
+    with open(raw_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                all_videos.append(json.loads(line))
+    print(f"  Videos carregados do JSONL: {len(all_videos)}")
+
+    # 2. Carrega links scrapeados da aba Sobre dos canais
+    scraped_data = load_cached_channel_links(scraped_file)
+    print(f"  Canais scrapeados carregados: {len(scraped_data)}")
+
+    # 3. Carrega scraped_data original para _build_channel_bio
+    scraped_data_bio = {}
+    if os.path.exists(scraped_file):
+        with open(scraped_file, 'r', encoding='utf-8') as f:
+            scraped_data_bio = json.load(f)
+
+    # 4. Executa detector para cada video e preenche respostas
+    rows = []
+    count_video_sim = 0
+    count_canal_sim = 0
+    count_combinado_sim = 0
+
+    for video in all_videos:
+        vid = video.get('video_id', '')
+        artist_name = video.get('artist_name', '')
+        title = video.get('title', '')
+        description = video.get('description', '') or ''
+        channel_desc = video.get('channel_description', '') or ''
+        channel_id = video.get('channel_id', '') or ''
+
+        # Bio completa para contexto visual
+        channel_bio = _build_channel_bio(
+            channel_desc, channel_id, artist_name, scraped_data_bio
+        )
+
+        # Detector: nivel video
+        has_video, _ = detect_call2go(description)
+        # Detector: nivel canal (links scrapeados)
+        has_channel, _ = detect_call2go_channel_scraped(
+            channel_id, scraped_data
+        )
+        # Detector: nivel combinado (OR)
+        has_combined = has_video or has_channel
+
+        video_label = 'SIM' if has_video else 'NAO'
+        canal_label = 'SIM' if has_channel else 'NAO'
+        combinado_label = 'SIM' if has_combined else 'NAO'
+
+        if has_video:
+            count_video_sim += 1
+        if has_channel:
+            count_canal_sim += 1
+        if has_combined:
+            count_combinado_sim += 1
+
+        rows.append({
+            'video_id': vid,
+            'artist_name': artist_name,
+            'title': title,
+            'youtube_url': f'https://www.youtube.com/watch?v={vid}',
+            'youtube_channel_url': f'https://www.youtube.com/channel/{channel_id}' if channel_id else '',
+            'description': description,
+            'channel_bio': channel_bio,
+            'manual_call2go_video': video_label,
+            'manual_call2go_canal': canal_label,
+            'manual_call2go_combinado': combinado_label,
+            'confianca': 'alta',
+        })
+
+    df = pd.DataFrame(rows)
+
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    df.to_csv(output_file, index=False, encoding='utf-8')
+
+    total = len(df)
+    print(f"\n  CSV detector gerado: {output_file}")
+    print(f"  Total de videos: {total}")
+    print(f"  Artistas unicos: {df['artist_name'].nunique()}")
+    print(f"\n  --- DISTRIBUICAO DETECTOR ---")
+    print(f"  Video:     {count_video_sim} SIM ({count_video_sim*100/total:.1f}%) | {total - count_video_sim} NAO ({(total - count_video_sim)*100/total:.1f}%)")
+    print(f"  Canal:     {count_canal_sim} SIM ({count_canal_sim*100/total:.1f}%) | {total - count_canal_sim} NAO ({(total - count_canal_sim)*100/total:.1f}%)")
+    print(f"  Combinado: {count_combinado_sim} SIM ({count_combinado_sim*100/total:.1f}%) | {total - count_combinado_sim} NAO ({(total - count_combinado_sim)*100/total:.1f}%)")
+
+    return df
+
+
 if __name__ == "__main__":
     import sys
-    if '--census' in sys.argv:
+    if '--detector-answers' in sys.argv:
+        generate_detector_answers()
+    elif '--census' in sys.argv:
         generate_census_csv()
     else:
         generate_blind_csv()
