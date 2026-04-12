@@ -10,78 +10,78 @@ Métricas do Spotify correlacionam com engajamento no YouTube, mas Call2Go no Yo
 ------------------------------------------------------------
 DIREÇÃO A: YouTube -> Spotify
 ------------------------------------------------------------
-  call2go_vs_popularity: {'rho': np.float64(-0.07575560117607268), 'p': np.float64(0.616807889584917)}
-  call2go_vs_followers: {'rho': np.float64(-0.16366777611059674), 'p': np.float64(0.27710359834120074)}
-  views_mannwhitney: {'U': np.float64(102966.0), 'p': np.float64(0.3329286729446762), 'median_with': np.float64(6088357.0), 'median_without': np.float64(4627296.0)}
+  call2go_vs_popularity: {'rho': np.float64(0.17482372090285384), 'p': np.float64(0.24521255957822877)}
+  call2go_vs_followers: {'rho': np.float64(0.08608746448155241), 'p': np.float64(0.5694492188012237)}
+  views_mannwhitney: {'U': np.float64(21318.0), 'p': np.float64(0.4889623000974108), 'median_with': np.float64(7603179.5), 'median_without': np.float64(5245743.5)}
 
 ------------------------------------------------------------
 DIREÇÃO B: Spotify -> YouTube (A VOLTA)
 ------------------------------------------------------------
-  popularity_vs_avg_views: {'rho': np.float64(0.34567319059807516), 'p': np.float64(0.01862287426652524)}
-  popularity_vs_avg_engagement: {'rho': np.float64(0.24724463293224236), 'p': np.float64(0.097605061697071)}
-  followers_vs_avg_views: {'rho': np.float64(0.25550416281221094), 'p': np.float64(0.08656582432058692)}
-  followers_vs_total_views: {'rho': np.float64(0.25550416281221094), 'p': np.float64(0.08656582432058692)}
-  followers_vs_avg_engagement: {'rho': np.float64(0.2694418748072772), 'p': np.float64(0.07017120264971843)}
-  per_video_pop_vs_views: {'rho': np.float64(0.3032142778022693), 'p': np.float64(5.11593806809281e-21), 'n': 920}
+  popularity_vs_avg_views: {'rho': np.float64(0.34567319059807516), 'p': np.float64(0.018622874266525223)}
+  popularity_vs_avg_engagement: {'rho': np.float64(0.24724463293224236), 'p': np.float64(0.09760506169707091)}
+  followers_vs_avg_views: {'rho': np.float64(0.25550416281221094), 'p': np.float64(0.08656582432058686)}
+  followers_vs_total_views: {'rho': np.float64(0.25550416281221094), 'p': np.float64(0.08656582432058686)}
+  followers_vs_avg_engagement: {'rho': np.float64(0.2694418748072772), 'p': np.float64(0.07017120264971846)}
+  per_video_pop_vs_views: {'rho': np.float64(0.3032142778022693), 'p': np.float64(5.1159380680928316e-21), 'n': 920}
 
 ------------------------------------------------------------
 PERFIL POR ARTISTA
 ------------------------------------------------------------
 
   AgroPlay:
-    YouTube: 20 vídeos, 15% Call2Go, avg views 39,259,940
+    YouTube: 20 vídeos, 0% Call2Go, avg views 39,259,940
     Spotify: pop=68, followers=1,142,177
-    Views COM Call2Go: 16,733,253 | SEM: 43,235,238
+    Views COM Call2Go: 0 | SEM: 39,259,940
 
   Ana Castela:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 91,007,519
+    YouTube: 20 vídeos, 10% Call2Go, avg views 91,007,519
     Spotify: pop=78, followers=10,098,418
-    Views COM Call2Go: 91,007,519 | SEM: 0
+    Views COM Call2Go: 61,022,990 | SEM: 94,339,134
 
   Anitta:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 23,158,020
+    YouTube: 20 vídeos, 70% Call2Go, avg views 23,158,020
     Spotify: pop=80, followers=13,404,169
-    Views COM Call2Go: 23,158,020 | SEM: 0
+    Views COM Call2Go: 19,537,628 | SEM: 31,605,602
 
   BIN:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 29,150,573
+    YouTube: 20 vídeos, 0% Call2Go, avg views 29,150,573
     Spotify: pop=66, followers=2,191,752
-    Views COM Call2Go: 29,150,573 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 29,150,573
 
   Bruno & Barretto:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 28,161
+    YouTube: 20 vídeos, 0% Call2Go, avg views 28,161
     Spotify: pop=64, followers=2,935,365
-    Views COM Call2Go: 28,161 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 28,161
 
   Clayton & Romário:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 2,577,535
+    YouTube: 20 vídeos, 25% Call2Go, avg views 2,577,535
     Spotify: pop=70, followers=912,894
-    Views COM Call2Go: 2,577,535 | SEM: 0
+    Views COM Call2Go: 6,769,058 | SEM: 1,180,361
 
   Cleber & Cauan:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 3,201,943
+    YouTube: 20 vídeos, 0% Call2Go, avg views 3,201,943
     Spotify: pop=64, followers=1,909,384
-    Views COM Call2Go: 3,201,943 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 3,201,943
 
   Eric Land:
-    YouTube: 20 vídeos, 40% Call2Go, avg views 31,423,035
+    YouTube: 20 vídeos, 0% Call2Go, avg views 31,423,035
     Spotify: pop=60, followers=1,295,982
-    Views COM Call2Go: 22,972,170 | SEM: 37,056,946
+    Views COM Call2Go: 0 | SEM: 31,423,035
 
   Felipe Amorim:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 10,502,903
+    YouTube: 20 vídeos, 0% Call2Go, avg views 10,502,903
     Spotify: pop=72, followers=3,478,357
-    Views COM Call2Go: 10,502,903 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 10,502,903
 
   Felipe Araújo:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 1,735,947
+    YouTube: 20 vídeos, 45% Call2Go, avg views 1,735,947
     Spotify: pop=64, followers=5,889,582
-    Views COM Call2Go: 1,735,947 | SEM: 0
+    Views COM Call2Go: 2,811,051 | SEM: 856,317
 
   Felipe e Rodrigo:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 3,387,615
+    YouTube: 20 vídeos, 0% Call2Go, avg views 3,387,615
     Spotify: pop=74, followers=654,957
-    Views COM Call2Go: 3,387,615 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 3,387,615
 
   Ferrugem:
     YouTube: 20 vídeos, 0% Call2Go, avg views 1,612,865
@@ -89,14 +89,14 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 1,612,865
 
   Fiduma & Jeca:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 10,278,819
+    YouTube: 20 vídeos, 0% Call2Go, avg views 10,278,819
     Spotify: pop=65, followers=662,810
-    Views COM Call2Go: 10,278,819 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 10,278,819
 
   Grupo Menos É Mais:
-    YouTube: 20 vídeos, 10% Call2Go, avg views 15,019,852
+    YouTube: 20 vídeos, 0% Call2Go, avg views 15,019,852
     Spotify: pop=83, followers=7,579,065
-    Views COM Call2Go: 92,227,716 | SEM: 6,441,201
+    Views COM Call2Go: 0 | SEM: 15,019,852
 
   Gustavo Mioto:
     YouTube: 20 vídeos, 0% Call2Go, avg views 6,517,414
@@ -109,19 +109,19 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 13,232,328
 
   Jorge & Mateus:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 126,432,738
+    YouTube: 20 vídeos, 0% Call2Go, avg views 126,432,738
     Spotify: pop=81, followers=25,378,873
-    Views COM Call2Go: 126,432,738 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 126,432,738
 
   Kamisa 10:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 6,478,651
+    YouTube: 20 vídeos, 15% Call2Go, avg views 6,478,651
     Spotify: pop=69, followers=782,897
-    Views COM Call2Go: 6,478,651 | SEM: 0
+    Views COM Call2Go: 2,341,615 | SEM: 7,208,717
 
   LUDMILLA:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 31,814,147
+    YouTube: 20 vídeos, 10% Call2Go, avg views 31,814,147
     Spotify: pop=73, followers=8,584,924
-    Views COM Call2Go: 31,814,147 | SEM: 0
+    Views COM Call2Go: 11,649,542 | SEM: 34,054,658
 
   Lauana Prado:
     YouTube: 20 vídeos, 0% Call2Go, avg views 855,270
@@ -129,14 +129,14 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 855,270
 
   Leonardo:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 1,922,564
+    YouTube: 20 vídeos, 0% Call2Go, avg views 1,922,564
     Spotify: pop=67, followers=2,536,352
-    Views COM Call2Go: 1,922,564 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 1,922,564
 
   Luan Pereira:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 14,478,743
+    YouTube: 20 vídeos, 0% Call2Go, avg views 14,478,743
     Spotify: pop=74, followers=3,566,125
-    Views COM Call2Go: 14,478,743 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 14,478,743
 
   Luan Santana:
     YouTube: 20 vídeos, 0% Call2Go, avg views 13,474,180
@@ -154,24 +154,24 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 3,020,425
 
   MC Ryan SP:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 37,095,557
+    YouTube: 20 vídeos, 15% Call2Go, avg views 37,095,557
     Spotify: pop=85, followers=8,310,788
-    Views COM Call2Go: 37,095,557 | SEM: 0
+    Views COM Call2Go: 49,862,434 | SEM: 34,842,578
 
   Manu:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 22,956,228
+    YouTube: 20 vídeos, 0% Call2Go, avg views 22,956,228
     Spotify: pop=62, followers=1,023,028
-    Views COM Call2Go: 22,956,228 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 22,956,228
 
   Mari Fernandez:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 31,240,768
+    YouTube: 20 vídeos, 0% Call2Go, avg views 31,240,768
     Spotify: pop=71, followers=4,173,310
-    Views COM Call2Go: 31,240,768 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 31,240,768
 
   Marília Mendonça:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 368,226,822
+    YouTube: 20 vídeos, 0% Call2Go, avg views 368,226,822
     Spotify: pop=79, followers=39,803,931
-    Views COM Call2Go: 368,226,822 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 368,226,822
 
   Matheus & Kauan:
     YouTube: 20 vídeos, 0% Call2Go, avg views 2,754,216
@@ -179,9 +179,9 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 2,754,216
 
   Matheus Fernandes:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 7,775,630
+    YouTube: 20 vídeos, 0% Call2Go, avg views 7,775,630
     Spotify: pop=67, followers=989,427
-    Views COM Call2Go: 7,775,630 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 7,775,630
 
   Mayke & Rodrigo:
     YouTube: 20 vídeos, 0% Call2Go, avg views 755,131
@@ -189,9 +189,9 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 755,131
 
   Murilo Huff:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 10,641,390
+    YouTube: 20 vídeos, 0% Call2Go, avg views 10,641,390
     Spotify: pop=76, followers=2,818,886
-    Views COM Call2Go: 10,641,390 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 10,641,390
 
   NATTAN:
     YouTube: 20 vídeos, 0% Call2Go, avg views 2,696,155
@@ -199,29 +199,29 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 2,696,155
 
   Natanzinho Lima:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 46,947,397
+    YouTube: 20 vídeos, 0% Call2Go, avg views 46,947,397
     Spotify: pop=78, followers=2,692,806
-    Views COM Call2Go: 46,947,397 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 46,947,397
 
   PEDRO SAMPAIO:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 39,051,151
+    YouTube: 20 vídeos, 0% Call2Go, avg views 39,051,151
     Spotify: pop=77, followers=3,483,593
-    Views COM Call2Go: 39,051,151 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 39,051,151
 
   Pablo:
-    YouTube: 20 vídeos, 10% Call2Go, avg views 81,194,668
+    YouTube: 20 vídeos, 0% Call2Go, avg views 81,194,668
     Spotify: pop=72, followers=2,427,467
-    Views COM Call2Go: 26,932,305 | SEM: 87,223,819
+    Views COM Call2Go: 0 | SEM: 81,194,668
 
   Panda:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 6,196,801
+    YouTube: 20 vídeos, 40% Call2Go, avg views 6,196,801
     Spotify: pop=83, followers=637,274
-    Views COM Call2Go: 6,196,801 | SEM: 0
+    Views COM Call2Go: 6,526,752 | SEM: 5,976,834
 
   Priscila Senna:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 5,863,851
+    YouTube: 20 vídeos, 0% Call2Go, avg views 5,863,851
     Spotify: pop=63, followers=279,498
-    Views COM Call2Go: 5,863,851 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 5,863,851
 
   Raphaela Santos:
     YouTube: 20 vídeos, 0% Call2Go, avg views 29,300,277
@@ -229,14 +229,14 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 29,300,277
 
   Simone Mendes:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 13,731,804
+    YouTube: 20 vídeos, 0% Call2Go, avg views 13,731,804
     Spotify: pop=75, followers=4,103,691
-    Views COM Call2Go: 13,731,804 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 13,731,804
 
   Sorriso Maroto:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 6,748,665
+    YouTube: 20 vídeos, 0% Call2Go, avg views 6,748,665
     Spotify: pop=75, followers=4,055,545
-    Views COM Call2Go: 6,748,665 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 6,748,665
 
   Turma do Pagode:
     YouTube: 20 vídeos, 0% Call2Go, avg views 10,992,945
@@ -244,9 +244,9 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 0 | SEM: 10,992,945
 
   Xand Avião:
-    YouTube: 20 vídeos, 100% Call2Go, avg views 1,360,856
+    YouTube: 20 vídeos, 0% Call2Go, avg views 1,360,856
     Spotify: pop=70, followers=3,516,166
-    Views COM Call2Go: 1,360,856 | SEM: 0
+    Views COM Call2Go: 0 | SEM: 1,360,856
 
   Zé Felipe:
     YouTube: 20 vídeos, 0% Call2Go, avg views 10,745,481

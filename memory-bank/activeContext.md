@@ -1,45 +1,39 @@
 # Active Context — TCC Call2Go
 
-## Foco Atual (Fase 9 — Re-execução + Censo Completo, 11/04/2026)
-Pipeline re-executado do zero com dados frescos das APIs. XLSX censo gerado com 920 vídeos para anotação humana completa.
+## Estado Atual (12/04/2026 — Fase 9c Completa)
+Projeto limpo, consistente e preparado para futura re-execução. Lógica combinado corrigida para AND (vídeo E canal), detecção de canal normalizada via seed (artistas.csv). XLSX censo com 920 vídeos pronto para anotação humana.
 
-**Próximo passo:** 🔴 Aluno anota TODOS os 920 vídeos no XLSX censo (SIM/NÃO), salva como ground_truth.csv, e roda cross_validator.
+**Próximo passo:** 🔴 Alinhar com orientador, depois anotar TODOS os 920 vídeos no XLSX censo (SIM/NÃO), salvar como ground_truth.csv, e rodar cross_validator.
 
-## Estado do Projeto (11/04/2026)
+## Dados Atuais
+- **Artistas:** 50 no seed, 46 com vídeos coletados
+- **Vídeos:** 920 (20 mais visualizados por artista)
+- **Spotify:** Métricas coletadas em 11/04/2026
+- **Canais scrapeados:** 51 canais com links da aba Sobre
+- **Testes:** 77 unitários — todos passam
 
-### Coleta de Dados ✅ (Re-executada 11/04/2026)
-- **Artistas:** 50 artistas brasileiros via playlists dinâmicas do Spotify
-  - Playlists hardcoded (Top 50 Brasil, Viral 50, Top Hits) retornaram 404
-  - Fallback dinâmico encontrou 5 playlists alternativas → 340 candidatos → Top 50 por views
-- **Vídeos YouTube:** 920 vídeos (20 mais visualizados por artista), 46 artistas com vídeos
-- **Spotify:** Métricas coletadas para 50 artistas (2026-04-11)
-- **Canal scraping:** 51 canais processados com links da aba Sobre
+## Lógica de Detecção
+- **Vídeo:** regex na descrição do vídeo (detect_call2go)
+- **Canal:** links estruturados scrapeados da aba Sobre (detect_call2go_channel_scraped)
+  - Prioridade: canal oficial do seed (artistas.csv), fallback pelo channel_id do JSONL
+- **Combinado:** AND — vídeo E canal devem ter Call2Go (has_call2go AND final_channel_has)
+- **Fonte:** `ambos` quando combinado=True, senão `nenhum`
 
-### Detector Call2Go ✅
-- 100% regex (re.search), sem IA/ML
-- 77 testes unitários — todos passam
-
-### Análises Estatísticas ✅ (Re-executadas 11/04/2026)
-- Pipeline 11 etapas concluído em 5.6 min
-- Boxplot, scatter, heatmap bidirecional, relatórios gerados
-
-### Validação — EM ANDAMENTO
-- **Fase 8:** Amostra adversarial (91 videos) — Kappa canal 0.80, vídeo 0.45, combinado 0.09
-- **Fase 9:** XLSX censo com 920 vídeos gerado para anotação humana completa (SIM/NÃO)
-  - `data/validation/blind_annotation_census.xlsx` — 920 linhas, dropdowns SIM/NÃO
-  - Após anotação: cross_validator.py já aceita formato SIM/NÃO via `_map_to_binary()`
-
-### Testes ✅
-- 77 testes em `tests/test_call2go_detector.py` — todos passam
-
-### Pipeline ✅
-- Roda sem erros em Windows cp1252 (encoding fix aplicado)
-- 11 etapas, 5.9s (skip-collect)
-- requirements.txt totalmente pinado + scikit-learn + pytest
+## Artefatos Prontos
+- `data/validation/blind_annotation_census.xlsx` — 920 vídeos, dropdowns SIM/NÃO
+- `data/validation/detector_answers_census.xlsx` — respostas do detector (referência)
+- `data/processed/youtube_call2go_flagged.csv` — flags de detecção
+- `data/processed/call2go.db` — Data Warehouse SQLite
 
 ## Próximas Ações (Prioridade)
-1. 🔴 **ALUNO:** Alinhar com orientador sobre Direção B (correlação vs. links reais Spotify→YouTube)
-2. [ ] Escrever capítulo de Metodologia documentando validação circular + correção + resultados reais
-3. [ ] Escrever capítulo de Resultados com Kappa 3 níveis + IC 95% + matrizes de confusão
-4. [ ] Analisar os 16 FPs do nível Vídeo — entender por que o detector marca mas o humano não
-5. [ ] Analisar os 9 FNs do nível Canal — links Spotify não scrapeados (lnk.to, etc.)
+1. [P0] 🔴 **Alinhar com orientador** sobre resultados e interpretação
+2. [P1] 🔴 **Anotar 920 vídeos** em blind_annotation_census.xlsx → salvar como ground_truth.csv
+3. [P2] Rodar `python -m src.validation.cross_validator` para validação censitária
+4. [P3] Escrever capítulo de Metodologia (validação circular → correção → AND)
+5. [P4] Escrever capítulo de Resultados com Kappa 3 níveis + IC 95%
+
+## Referência — Fase 8 (91 vídeos, Amostra Adversarial)
+Resultados com lógica OR (OBSOLETOS — detector usava OR, humano usava AND):
+- Vídeo: Kappa 0.4493 (moderado)
+- Canal: Kappa 0.8040 (substancial)
+- Combinado: Kappa 0.0947 (fraco — artefato AND/OR)

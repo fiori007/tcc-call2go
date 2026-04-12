@@ -1,6 +1,18 @@
+"""
+DEPRECATED -- Este modulo causa VALIDACAO CIRCULAR.
+
+O ground_truth_prefilled.csv gerado por este script usa o proprio detector
+para pre-preencher as respostas. Se o aluno aceitar sem revisar, o
+cross_validator compara o detector consigo mesmo (Fase 8 audit finding).
+
+Use blind_annotator.py + anotacao manual independente ao inves deste modulo.
+Mantido apenas como evidencia de auditoria (referenciado no TCC).
+"""
+
 import os
 import json
 import re
+import warnings
 import pandas as pd
 from src.processors.call2go_detector import (
     detect_call2go, detect_call2go_channel, detect_call2go_channel_scraped,
@@ -72,6 +84,8 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
                          raw_file="data/raw/youtube_videos_raw.jsonl",
                          output_file="data/validation/ground_truth_prefilled.csv"):
     """
+    DEPRECATED -- Causa validacao circular. Use blind_annotator.py.
+
     Pré-preenche o ground truth automaticamente para revisão humana.
 
     Cruza a amostra de validação com os dados brutos (descrição completa +
@@ -88,6 +102,12 @@ def prefill_ground_truth(sample_file="data/validation/manual_sample.csv",
         5. Calcula nível de confiança da classificação
         6. Salva CSV pré-preenchido para revisão humana
     """
+    warnings.warn(
+        "ground_truth_helper.py esta DEPRECATED -- causa validacao circular. "
+        "Use blind_annotator.py + anotacao manual independente.",
+        DeprecationWarning,
+        stacklevel=2
+    )
     print("=" * 60)
     print("PRÉ-ANOTAÇÃO AUTOMÁTICA DO GROUND TRUTH")
     print("(Semi-automático -- revisão humana obrigatória)")

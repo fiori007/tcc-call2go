@@ -92,8 +92,7 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
     Compara em 3 níveis independentes:
       1. Vídeo: humano vs. detector na descrição do vídeo
       2. Canal: humano vs. detector no perfil do canal (About page)
-      3. Combinado: humano vs. detector (vídeo OU canal)
-         NOTA: humano usou lógica AND; detector usa OR -- discordância documentada.
+      3. Combinado: humano vs. detector (vídeo E canal -- lógica AND)
 
     Args:
         ground_truth_file: CSV com anotações manuais.
@@ -172,6 +171,7 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
                     'description': video.get('description', ''),
                     'channel_description': video.get('channel_description', ''),
                     'channel_id': video.get('channel_id', ''),
+                    'artist_name': video.get('artist_name', ''),
                 }
 
     # 2b. Carrega links scrapeados dos canais (About page)
@@ -181,6 +181,16 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
     else:
         print(
             "  [AVISO] Links scrapeados não encontrados -- detecção de canal será apenas por texto")
+
+    # 2c. Carrega mapeamento artist_name -> seed channel_id (normalização)
+    seed_channels = {}
+    seed_file = "data/seed/artistas.csv"
+    if os.path.exists(seed_file):
+        df_seed = pd.read_csv(seed_file)
+        if 'youtube_channel_id' in df_seed.columns:
+            seed_channels = dict(
+                zip(df_seed['artist_name'], df_seed['youtube_channel_id']))
+        print(f"  Seed channels carregados: {len(seed_channels)} artistas")
 
     # 3. Comparação lado a lado -- detector vs. humano (tudo em binário)
     results = []
@@ -195,16 +205,25 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
         auto_video_bin = 'com_call2go' if auto_has_video else 'sem_call2go'
 
         # Detector no canal -- links estruturados scraped (Nível 2)
-        auto_has_channel, auto_type_channel = detect_call2go_channel_scraped(
-            channel_id, scraped_data)
+        # Prioridade: canal oficial do seed, fallback pelo channel_id do JSONL
+        raw_artist = raw.get('artist_name', row.get('artist_name', ''))
+        seed_ch = seed_channels.get(raw_artist, '')
+        if seed_ch:
+            auto_has_channel, auto_type_channel = detect_call2go_channel_scraped(
+                seed_ch, scraped_data)
+        else:
+            auto_has_channel, auto_type_channel = detect_call2go_channel_scraped(
+                channel_id, scraped_data)
+        # Fallback: tenta channel_id do JSONL se diferente do seed
+        if not auto_has_channel and channel_id and channel_id != seed_ch:
+            auto_has_channel, auto_type_channel = detect_call2go_channel_scraped(
+                channel_id, scraped_data)
         auto_channel_bin = 'com_call2go' if auto_has_channel else 'sem_call2go'
 
-        # Combinado detector: lógica OR (vídeo OU canal)
-        auto_has_combined = auto_has_video or auto_has_channel
+        # Combinado detector: lógica AND (vídeo E canal)
+        auto_has_combined = auto_has_video and auto_has_channel
         auto_combined_bin = 'com_call2go' if auto_has_combined else 'sem_call2go'
-        auto_source = ('video' if auto_has_video else
-                       'canal' if auto_has_channel else
-                       'nenhum')
+        auto_source = ('ambos' if auto_has_combined else 'nenhum')
 
         result = {
             'video_id': vid,

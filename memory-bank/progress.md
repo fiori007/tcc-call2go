@@ -1,5 +1,11 @@
 # Progress — TCC Call2Go
 
+## Estado Atual (12/04/2026)
+- **Fase 9c completa:** Combinado AND, normalização canal seed, memory bank atualizado
+- **920 vídeos** coletados, XLSX pronto para anotação humana (blind_annotation_census.xlsx)
+- **77 testes** passando, pipeline funcional
+- **Próximo passo:** 🔴 Alinhar com orientador → anotar 920 vídeos → cross_validator
+
 ## Histórico de Marcos
 
 ### ✅ Concluído (Fase 1 — Pipeline Original)
@@ -172,13 +178,39 @@
 - `data/plots/validation_metrics_per_class.png` — P/R/F1 por classe
 - 77 testes unitários continuam passando
 
-### 🟨 Pendente (Ações Imediatas — Em Ordem)
-1. 🔴 **ALUNO:** Anotar TODOS os 920 vídeos em `data/validation/blind_annotation_census.xlsx` (SIM/NÃO)
-2. 🔴 **ALUNO:** Salvar anotação como `data/validation/ground_truth.csv` (CSV UTF-8)
-3. [ ] Rodar `python -m src.validation.cross_validator` para validação censitária
-4. [ ] Alinhar com orientador sobre interpretação dos resultados
-5. [ ] Escrever capítulo de Metodologia do TCC
-6. [ ] Escrever capítulo de Resultados com as métricas da validação censitária
+### 🟨 Pendente (Em Ordem de Prioridade)
+1. [P0] 🔴 **Alinhar com orientador** sobre resultados e próximos passos
+2. [P1] 🔴 **Anotar 920 vídeos** em `blind_annotation_census.xlsx` (SIM/NÃO) → salvar como `ground_truth.csv`
+3. [P2] Rodar `python -m src.validation.cross_validator` para validação censitária
+4. [P3] Escrever capítulo de Metodologia do TCC (validação circular → correção → AND)
+5. [P4] Escrever capítulo de Resultados com Kappa 3 níveis + IC 95%
+
+### ✅ Concluído (Fase 9c — Limpeza e Consistência, 12/04/2026)
+
+#### Correções de Lógica
+- **Combinado OR → AND** em 3 arquivos: `call2go_detector.py`, `cross_validator.py`, `blind_annotator.py`
+  - Antes: combinado = vídeo OU canal (OR) — inflava taxa para 58.3%
+  - Agora: combinado = vídeo E canal (AND) — interseção real
+- **Normalização de canal via seed:** detecção de canal agora usa `artistas.csv` como fonte primária
+  - Prioridade: canal oficial do seed → fallback pelo channel_id do JSONL
+  - Resolve mismatch Anitta: seed `UCqjjyPUghDSSKFBABM_CXMw` (com Spotify) vs JSONL `UCtumXDPrqd3lhGEVyIex1lw` (sem)
+- **excel_formatter.py:** instruções README corrigidas ("OU" → "E", removida referência a ground_truth_prefilled.csv)
+
+#### Depreciação
+- `ground_truth_helper.py` marcado como DEPRECATED (causa validação circular, Fase 8 audit)
+  - Docstring de aviso + `warnings.warn(DeprecationWarning)` adicionados
+  - Mantido como evidência de auditoria
+
+#### Memory Bank
+- `activeContext.md` reescrito com estado atual (12/04/2026)
+- `systemPatterns.md` atualizado: tabela ETL, dados Fase 9, lógica AND
+- `techContext.md` atualizado: datas corrigidas, listagem de arquivos atualizada
+- `progress.md` atualizado: sumário executivo no topo, Fase 9c adicionada
+- `projectbrief.md` ajustado: "~50 recentes" → "20 mais visualizados", playlists
+
+#### Limpeza
+- Removido `data/raw/spotify_metrics_2026-03-30.csv` (superseded)
+- Artefatos regenerados: flagged CSV, DB, plots, censo XLSX
 
 ### ✅ Concluído (Fase 9 — Re-execução + Censo Completo, 11/04/2026)
 

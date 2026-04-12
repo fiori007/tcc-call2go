@@ -56,30 +56,25 @@ tcc_call2go/
 ├── .gitignore                    # Python, venv, .env, LaTeX, SBC template, .db
 ├── data/
 │   ├── seed/
-│   │   └── artistas.csv              # 49 artistas (MJ Records removido)
+│   │   └── artistas.csv              # 50 artistas (Top 50 BR via fallback dinâmico)
 │   ├── plots/                        # Gráficos gerados (PNG, DPI 300)
 │   │   ├── boxplot_call2go_views.png
-│   │   ├── confusion_matrix_combined.png
-│   │   ├── confusion_matrix_video_only.png
-│   │   ├── scatter_cross_platform.png
-│   │   └── validation_metrics_per_class.png
+│   │   └── scatter_cross_platform.png
 │   ├── processed/
-│   │   ├── youtube_call2go_flagged.csv  # 980 vídeos + flags Call2Go
+│   │   ├── youtube_call2go_flagged.csv  # 920 vídeos + flags Call2Go (combinado=AND)
 │   │   └── call2go.db                   # Data Warehouse SQLite (ignorado por git)
 │   ├── raw/
-│   │   ├── spotify_metrics_2026-03-30.csv   # 50 artistas
-│   │   ├── youtube_videos_raw.jsonl         # 980 vídeos brutos
-│   │   └── channel_links_scraped.json       # 52 canais (50 + 2 oficiais OAC)
+│   │   ├── spotify_metrics_2026-04-11.csv   # 50 artistas (snapshot mais recente)
+│   │   ├── youtube_videos_raw.jsonl         # 920 vídeos brutos
+│   │   └── channel_links_scraped.json       # 51 canais scrapeados
 │   └── validation/
-│       ├── adversarial_sample.csv           # NOVO: 91 vídeos, 9 estratos (Fase 7)
-│       ├── blind_annotation.csv             # CSV cego v2: +channel_url +channel_bio com links (Fase 7)
-│       ├── blind_annotation.xlsx            # NOVO: Excel formatado para anotação humana (Fase 7)
-│       ├── ground_truth_prefilled.csv       # Pré-anotação automática (CIRCULAR - evidência de auditoria)
-│       ├── ground_truth.csv                 # SERÁ SOBRESCRITO com anotação cega
+│       ├── blind_annotation_census.csv      # CSV cego: 920 vídeos para anotação humana
+│       ├── blind_annotation_census.xlsx     # XLSX formatado com dropdowns SIM/NÃO
+│       ├── detector_answers_census.csv      # Respostas do detector (referência)
+│       ├── detector_answers_census.xlsx     # XLSX de referência (sem dropdowns)
+│       ├── ground_truth.csv                 # Será sobrescrito com anotação humana
 │       ├── manual_sample.csv               # Amostra original (50 vídeos, seed=42)
-│       ├── cross_validation_report.csv      # Resultado humano vs. máquina (com Kappa + IC)
-│       ├── cross_validation_report_metrics.json  # Métricas JSON
-│       ├── artist_cross_platform_profile.csv     # Perfil 49 artistas (YouTube + Spotify)
+│       ├── artist_cross_platform_profile.csv     # Perfil artistas (YouTube + Spotify)
 │       ├── cross_platform_report.txt             # Relatório bidirecional
 │       ├── direction_a_youtube_to_spotify.png    # Scatter Direction A
 │       ├── direction_b_spotify_to_youtube.png    # Scatter Direction B
@@ -111,9 +106,9 @@ tcc_call2go/
 │       ├── __init__.py
 │       ├── sample_generator.py       # Amostra aleatória (50 vídeos)
 │       ├── adversarial_sampler.py    # NOVO: Amostra estratificada (91 vídeos, 9 estratos)
-│       ├── blind_annotator.py        # CSV cego v2: +channel_url +channel_bio com links
-│       ├── excel_formatter.py        # NOVO: Gera Excel formatado (.xlsx) para anotacao
-│       ├── ground_truth_helper.py    # Pré-preenche ground truth (semi-automático)
+│       ├── blind_annotator.py        # Gera CSV/XLSX cego para anotação (censo + detector answers)
+│       ├── excel_formatter.py        # Gera Excel formatado (.xlsx) com dropdowns SIM/NÃO
+│       ├── ground_truth_helper.py    # [DEPRECATED] Pré-preenche ground truth (validação circular)
 │       ├── cross_validator.py        # Humano vs. máquina + Cohen's Kappa + Bootstrap IC 95%
 │       ├── cross_platform_validator.py  # Análise bidirecional YouTube <-> Spotify
 │       └── agreement_report.py       # Matrizes de confusão + métricas visuais + Kappa
@@ -143,26 +138,19 @@ tcc_call2go/
 ## Dados de Qualidade (07/04/2026 — Pós-Auditoria Fase 7)
 | Métrica | Valor |
 |---------|-------|
-| Total de artistas | 49 (Top 50 BR, MJ Records removido) |
-| Total de vídeos | 980 (20 mais visualizados/artista) |
-| Vídeos auto-gerados | 40 (4.1%) |
-| Canais OAC | 2/52 (3.8%) |
-| Artistas com Spotify no About | 29/52 (55.8%) |
-| Vídeos com link_direto | 575 (58.7%) |
-| Vídeos com texto_implicito | 0 (0%) |
-| Vídeos sem Call2Go (nenhum) | 405 (41.3%) |
-| Call2Go via canal (fonte) | 494 (50.4%) |
-| Call2Go via ambos (fonte) | 66 (6.7%) |
-| Call2Go via vídeo (fonte) | 15 (1.5%) |
-| Vídeos orgânicos | 940 (95.9%) |
+| Total de artistas | 50 no seed, 46 com vídeos coletados |
+| Total de vídeos | 920 (20 mais visualizados/artista) |
+| Canais scrapeados | 51 (com links da aba Sobre) |
+| Lógica combinado | AND (vídeo E canal) |
+| Canal: prioridade | Seed (artistas.csv), fallback channel_id JSONL |
 | Testes unitários | 77 (100% passam) |
-| Amostra adversarial | 91 vídeos, 9 estratos |
+| Censo para anotação | 920 vídeos (XLSX formatado com SIM/NÃO) |
 | Pipeline encoding | cp1252-safe (sem emojis) |
 
 ## Limitações Técnicas Conhecidas
 - YouTube API tem quota diária limitada (10.000 unidades/dia, reset meia-noite Pacific)
 - Spotify Popularity Score é opaco — não se sabe exatamente como é calculado
-- Coleta do Spotify é snapshot pontual (30/03/2026), não série temporal contínua
+- Coleta do Spotify é snapshot pontual (11/04/2026), não série temporal contínua
 - YouTube API NÃO expõe links estruturados da aba Sobre → necessário web scraping
 - Spotify API NÃO expõe links externos do perfil do artista → impossível coletar links Spotify→YouTube programaticamente
 - Canais OAC (auto-gerados pelo YouTube) não têm links personalizados nem descrição

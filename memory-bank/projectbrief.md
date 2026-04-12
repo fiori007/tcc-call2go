@@ -15,8 +15,8 @@ Desenvolver e avaliar a confiabilidade de um sistema automatizado (baseado em re
 - **H3 (Secundária — Cross-Platform):** O uso de Call2Go no YouTube impacta a popularidade no Spotify.
 
 ## Escopo
-- **Amostra de artistas:** Extraída de playlists OFICIAIS do Spotify (Top 50 Brasil, Viral 50 Brasil) — fonte reprodutível e verificável
-- **Volume:** ~50 vídeos mais recentes por artista
+- **Amostra de artistas:** Extraída de playlists do Spotify (Top 50 Brasil, Viral 50 Brasil, Top Hits Brasil, entre outras via fallback dinâmico) — fonte reprodutível e verificável
+- **Volume:** 20 vídeos mais visualizados por artista
 - **Método de detecção:** Regex sobre descrições dos vídeos
 - **Validação:** Anotação manual humana (ground truth) + validação cruzada automatizada
 - **Métricas de confiabilidade:** Acurácia, Precisão, Recall, F1-Score, Matriz de Confusão, Cohen's Kappa + Bootstrap IC 95%

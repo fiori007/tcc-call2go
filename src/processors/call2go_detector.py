@@ -215,37 +215,34 @@ def process_videos():
             has_call2go, call_type = detect_call2go(description)
 
             # Nível 2: Links estruturados scrapeados da aba Sobre (About page)
-            # Tenta pelo channel_id do vídeo E pelo channel_id do seed (podem divergir)
-            has_scraped, scraped_type = detect_call2go_channel_scraped(
-                channel_id, scraped_data)
-
-            # Fallback: tenta pelo channel_id do seed (resolve mismatches de canal)
+            # Prioridade: canal oficial do seed (artistas.csv), fallback pelo channel_id do JSONL
             artist_name = video.get('artist_name', '')
-            if not has_scraped and artist_name in seed_channels:
-                seed_ch = seed_channels[artist_name]
-                if seed_ch != channel_id:
-                    has_scraped, scraped_type = detect_call2go_channel_scraped(
-                        seed_ch, scraped_data)
+            seed_ch = seed_channels.get(artist_name, '')
+            if seed_ch:
+                has_scraped, scraped_type = detect_call2go_channel_scraped(
+                    seed_ch, scraped_data)
+            else:
+                has_scraped, scraped_type = detect_call2go_channel_scraped(
+                    channel_id, scraped_data)
+
+            # Fallback: tenta pelo channel_id do JSONL se diferente do seed
+            if not has_scraped and channel_id and channel_id != seed_ch:
+                has_scraped, scraped_type = detect_call2go_channel_scraped(
+                    channel_id, scraped_data)
 
             # Canal: apenas links estruturados
             final_channel_has = has_scraped
             final_channel_type = scraped_type if has_scraped else 'nenhum'
 
-            # Classificação combinada: vídeo prevalece, canal complementa
-            combined_has = has_call2go or final_channel_has
-            if has_call2go and final_channel_has:
+            # Classificação combinada: AND -- ambas as fontes devem ter Call2Go
+            combined_has = has_call2go and final_channel_has
+            if combined_has:
                 # Ambas as fontes têm Call2Go -- usa o tipo mais forte
                 type_priority = {'link_direto': 2,
                                  'texto_implicito': 1, 'nenhum': 0}
                 combined_type = call_type if type_priority.get(call_type, 0) >= type_priority.get(
                     final_channel_type, 0) else final_channel_type
                 combined_source = 'ambos'
-            elif has_call2go:
-                combined_type = call_type
-                combined_source = 'video'
-            elif final_channel_has:
-                combined_type = final_channel_type
-                combined_source = 'canal'
             else:
                 combined_type = 'nenhum'
                 combined_source = 'nenhum'

@@ -195,7 +195,7 @@ def generate_blind_csv(
     print("     - manual_call2go_canal: classificacao da BIO DO CANAL (descricao + links)")
     print("       -> mesmas opcoes acima, aplicadas a bio completa do canal")
     print("     - manual_call2go_combinado: classificacao FINAL do video")
-    print("       -> se video OU canal tem Call2Go, o combinado tambem tem")
+    print("       -> se video E canal tem Call2Go, o combinado tambem tem")
     print("       -> tipo prevalece: link_direto > texto_implicito > nenhum")
     print("     - confianca: 'alta', 'media', ou 'baixa'")
     print("  5. Salve como: data/validation/ground_truth.csv")
@@ -299,8 +299,8 @@ def generate_census_csv(
     print("       -> NAO = nao tem Call2Go na descricao")
     print("     - manual_call2go_canal: a BIO DO CANAL contem Call2Go?")
     print("       -> mesma logica, aplicada a bio do canal")
-    print("     - manual_call2go_combinado: QUALQUER uma das fontes tem Call2Go?")
-    print("       -> SIM se video OU canal tem = SIM")
+    print("     - manual_call2go_combinado: AMBAS as fontes tem Call2Go?")
+    print("       -> SIM se video E canal = SIM")
     print("     - confianca: 'alta', 'media', ou 'baixa'")
     print("  4. Salve como: data/validation/ground_truth.csv")
     print("  5. Execute: python -m src.validation.cross_validator")
@@ -361,6 +361,17 @@ def generate_detector_answers(
         with open(scraped_file, 'r', encoding='utf-8') as f:
             scraped_data_bio = json.load(f)
 
+    # 3b. Carrega mapeamento artist_name -> seed channel_id (normalizacao)
+    seed_channels = {}
+    seed_file = "data/seed/artistas.csv"
+    if os.path.exists(seed_file):
+        import pandas as _pd_seed
+        df_seed = _pd_seed.read_csv(seed_file)
+        if 'youtube_channel_id' in df_seed.columns:
+            seed_channels = dict(
+                zip(df_seed['artist_name'], df_seed['youtube_channel_id']))
+    print(f"  Seed channels carregados: {len(seed_channels)} artistas")
+
     # 4. Executa detector para cada video e preenche respostas
     rows = []
     count_video_sim = 0
@@ -383,11 +394,23 @@ def generate_detector_answers(
         # Detector: nivel video
         has_video, _ = detect_call2go(description)
         # Detector: nivel canal (links scrapeados)
-        has_channel, _ = detect_call2go_channel_scraped(
-            channel_id, scraped_data
-        )
-        # Detector: nivel combinado (OR)
-        has_combined = has_video or has_channel
+        # Prioridade: canal oficial do seed, fallback pelo channel_id do JSONL
+        seed_ch = seed_channels.get(artist_name, '')
+        if seed_ch:
+            has_channel, _ = detect_call2go_channel_scraped(
+                seed_ch, scraped_data
+            )
+        else:
+            has_channel, _ = detect_call2go_channel_scraped(
+                channel_id, scraped_data
+            )
+        # Fallback: tenta channel_id do JSONL se diferente do seed
+        if not has_channel and channel_id and channel_id != seed_ch:
+            has_channel, _ = detect_call2go_channel_scraped(
+                channel_id, scraped_data
+            )
+        # Detector: nivel combinado (AND -- video E canal)
+        has_combined = has_video and has_channel
 
         video_label = 'SIM' if has_video else 'NAO'
         canal_label = 'SIM' if has_channel else 'NAO'

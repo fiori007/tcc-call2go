@@ -105,8 +105,8 @@ def _create_readme_sheet(wb, census_mode=False):
             ["                            'NAO' = nao tem Call2Go na descricao"],
             ["  manual_call2go_canal    - A BIO DO CANAL contem Call2Go?"],
             ["                            mesma logica: SIM ou NAO"],
-            ["  manual_call2go_combinado- QUALQUER fonte tem Call2Go?"],
-            ["                            SIM se video OU canal = SIM"],
+            ["  manual_call2go_combinado- AMBAS as fontes tem Call2Go?"],
+            ["                            SIM se video E canal = SIM"],
             ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
             [""],
             ["APOS CONCLUIR:"],
@@ -141,7 +141,7 @@ def _create_readme_sheet(wb, census_mode=False):
             ["  manual_call2go_canal    - Classificacao da BIO DO CANAL:"],
             ["                            mesmas opcoes acima"],
             ["  manual_call2go_combinado- Classificacao FINAL:"],
-            ["                            se video OU canal tem Call2Go -> combinado tambem tem"],
+            ["                            se video E canal tem Call2Go -> combinado tambem tem"],
             ["                            prevalencia: link_direto > texto_implicito > nenhum"],
             ["  confianca               - Nivel de confianca: 'alta', 'media', ou 'baixa'"],
             [""],
@@ -149,7 +149,7 @@ def _create_readme_sheet(wb, census_mode=False):
             ["  1. Salve como: data/validation/ground_truth.csv (File > Save As > CSV UTF-8)"],
             ["  2. Execute: python -m src.validation.cross_validator"],
             [""],
-            ["IMPORTANTE: NAO consulte ground_truth_prefilled.csv (validacao circular)."],
+            ["IMPORTANTE: NAO consulte o detector automatizado antes de anotar."],
         ]
 
     title_font = Font(name="Calibri", size=14, bold=True, color="1F4E79")
