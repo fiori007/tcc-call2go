@@ -1,48 +1,35 @@
-# Active Context — TCC Call2Go
+﻿# Active Context — TCC Call2Go
 
-## Estado Atual (18/04/2026 — Fase 10: Pipeline Completo Executado)
-Pipeline completo de 12 etapas executado com sucesso para a nova base temporal.
-67 artistas consolidados (71 interseção - 4 labels detectados automaticamente).
-1.641 vídeos coletados, detecção Call2Go aplicada, análises estatísticas geradas,
-Census Excel para validação manual gerado.
+## Estado Atual (18/04/2026)
+Pipeline 12 etapas executado com sucesso. Base temporal Q1 2026 consolidada.
+**67 artistas x 30 videos = 1.641 videos analisados.**
 
-**Resultado: ★ 67 artistas × até 30 vídeos = 1.641 vídeos analisados**
+## Dados em Uso
+| Arquivo | Conteudo |
+|---------|----------|
+| `data/seed/artistas.csv` | 67 artistas com channel_id |
+| `data/raw/youtube_videos_raw.jsonl` | 1.641 videos brutos |
+| `data/raw/spotify_metrics_2026-04-18.csv` | 67 artistas (metricas atuais) |
+| `data/raw/channel_links_scraped.json` | 75 canais (67 + 9 OAC oficiais) |
+| `data/processed/youtube_call2go_flagged.csv` | 1.641 videos com flags Call2Go |
+| `data/processed/call2go.db` | SQLite (dim_artist, fact_yt_videos, fact_spotify) |
 
-## Detecção de Labels (2 camadas)
-- **Camada 1 (`chart_processor.py`):** regex keywords + padrão artista veto + overrides
-  - Removidos: Get Records (keyword), Get Worship (override), MJ Records (keyword), Supernova Ent (keyword)
-- **Camada 2 (`artist_source_builder.py`):** avisos advisory para entidades suspeitas
-  - Torelli flagado (590 followers, sem gêneros) — apenas informativo, não excluído
-- **71 → 67 artistas** após remoção de labels
+## Distribuicao Detector
+| Nivel | SIM | NAO |
+|-------|-----|-----|
+| Video | 196 (11.9%) | 1.445 (88.1%) |
+| Canal | 891 (54.3%) | 750 (45.7%) |
+| Combinado (AND) | 186 (11.3%) | 1.455 (88.7%) |
 
-## Dados Atuais
-- **Seed:** `data/seed/artistas.csv` — 67 artistas com channel_id YouTube
-- **YouTube:** `data/raw/youtube_videos_raw.jsonl` — 1.641 vídeos (30/artista max)
-- **Spotify:** `data/raw/spotify_metrics_2026-04-18.csv` — 67 artistas coletados
-- **Scraping:** `data/raw/channel_links_scraped.json` — 67 canais + 9 OAC oficiais
-  - 33/67 com Spotify no perfil, 9 OAC detectados
-- **Detecção:** `data/processed/youtube_call2go_flagged.csv` — 1.641 vídeos flagados
-  - link_direto: 186 (11.3%), nenhum: 1.455 (88.7%)
-  - Vídeos auto-gerados: 174 (10.6%), Canais OAC: 144 (8.8%)
-  - Fallback regex na bio do canal ativo (captura "Spotify - bit.ly/...")
-- **DB:** `data/processed/call2go.db` — SQLite com 3 tabelas
-- **Plots:** boxplot_call2go_views.png, scatter_cross_platform.png
-- **Validação:** Dual Census Excel (padrão do projeto):
-  - `blind_annotation_census.xlsx` — versão cega para humano anotar (dropdowns SIM/NAO, colunas vazias)
-  - `detector_answers_census.xlsx` — gabarito do detector (SIM/NAO preenchido, sem dropdowns)
-  - Distribuição detector: Video 11.9% SIM, Canal 54.3% SIM, Combinado 11.3% SIM
+## Resultados Estatisticos
+- **Mann-Whitney (Views):** U=141605, p=0.151 -- NAO REJEITA H0
+- **Cross-Platform:** U=111388, p=0.999 -- NAO REJEITA H0
+- **Bidirecional:** UNIDIRECIONAL Spotify -> YouTube (alpha=0.1)
+  - Direcao A: Call2Go Rate <-> Pop rho=-0.111, p=0.370 -- n.s.
+  - Direcao B: Pop <-> Avg Views rho=0.508, p~0*** | Followers <-> Avg Views rho=0.676, p~0***
 
-## Resultados Estatísticos (Pipeline 18/04/2026)
-- **Mann-Whitney (Views):** U=141605, p=0.151 — **NÃO REJEITA H0**
-- **Cross-Platform:** U=141582.5, p=0.999 — **NÃO REJEITA H0**
-- **Bidirecional:** UNIDIRECIONAL Spotify → YouTube (α=0.1)
-  - Direção A (YT→Spotify): Call2Go Rate ↔ Pop ρ=-0.079, p=0.525 — NÃO significativo
-  - Direção B (Spotify→YT): Pop ↔ Avg Views ρ=0.508, p≈0*** — SIGNIFICATIVO
-  - Followers ↔ Avg Views ρ=0.676, p≈0*** — SIGNIFICATIVO
-
-## Próximas Ações (Prioridade)
-1. [P0] 🔴 **Anotar 1.641 vídeos** em `blind_annotation_census.xlsx` (SIM/NÃO) → salvar como `ground_truth.csv`
-2. [P1] Rodar `python -m src.validation.cross_validator` para validação censitária
-3. [P2] 🔴 **Alinhar com orientador** sobre resultados
-4. [P3] Escrever capítulo de Metodologia do TCC
-5. [P4] Escrever capítulo de Resultados com Kappa 3 níveis + IC 95%
+## Proximas Acoes
+1. [P0] **Anotar 1.641 videos** em `blind_annotation_census.xlsx` -> salvar como `ground_truth.csv`
+2. [P1] Rodar `python -m src.validation.cross_validator` (Kappa + Bootstrap CI 3 niveis)
+3. [P2] **Alinhar com orientador** sobre resultados
+4. [P3] Escrever capitulos Metodologia + Resultados do TCC

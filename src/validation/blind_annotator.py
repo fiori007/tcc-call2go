@@ -10,11 +10,10 @@ Isso elimina o vies de confirmacao: o anotador humano nao sabe o que
 a maquina classificou e precisa ler cada descricao manualmente.
 
 Fluxo de uso:
-    1. python -m src.validation.adversarial_sampler   (gera amostra)
-    2. python -m src.validation.blind_annotator       (gera CSV cego)
-    3. Aluno abre o CSV/XLSX e anota manualmente cada video
-    4. Salva como data/validation/ground_truth.csv
-    5. python -m src.validation.cross_validator        (calcula metricas)
+    1. python run_pipeline.py                          (gera censo completo)
+    2. Aluno abre o XLSX e anota manualmente cada video
+    3. Salva como data/validation/ground_truth.csv
+    4. python -m src.validation.cross_validator        (calcula metricas)
 """
 
 import os
@@ -100,7 +99,7 @@ def generate_blind_csv(
 
     if not os.path.exists(sample_file):
         print(f"[ERRO] Amostra nao encontrada: {sample_file}")
-        print("Execute primeiro: python -m src.validation.adversarial_sampler")
+        print("Execute primeiro: python run_pipeline.py")
         return None
 
     if not os.path.exists(raw_file):
@@ -137,7 +136,7 @@ def generate_blind_csv(
         print(f"  [AVISO] Scraped data nao encontrado: {scraped_file}")
         print("  A coluna channel_bio tera apenas a descricao da API (sem links).")
 
-    # 4. Monta CSV cego -- ordem aleatorizada (ja vem do adversarial_sampler)
+    # 4. Monta CSV cego -- ordem por artista + titulo
     rows = []
     for _, sample_row in df_sample.iterrows():
         vid = sample_row['video_id']
