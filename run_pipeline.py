@@ -159,11 +159,18 @@ def step_12_generate_census_excel():
     generate_census_csv()
     generate_detector_answers()
 
-    # Gera Excel com dropdowns para anotação manual
+    # Gera Excel com dropdowns para anotação manual (versão cega)
     format_blind_annotation(
         input_csv="data/validation/blind_annotation_census.csv",
         output_xlsx="data/validation/blind_annotation_census.xlsx",
         census_mode=True)
+
+    # Gera Excel com respostas do detector (versão gabarito, sem dropdowns)
+    format_blind_annotation(
+        input_csv="data/validation/detector_answers_census.csv",
+        output_xlsx="data/validation/detector_answers_census.xlsx",
+        census_mode=True,
+        readonly_mode=True)
 
 
 def main():

@@ -767,4 +767,4 @@ def run_chart_processing(spotify_dir=_SPOTIFY_CHARTS_DIR,
 
 
 if __name__ == "__main__":
-    
+    run_chart_processing()

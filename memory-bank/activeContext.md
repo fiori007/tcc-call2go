@@ -26,7 +26,10 @@ Census Excel para validação manual gerado.
   - Vídeos auto-gerados: 174 (10.6%), Canais OAC: 144 (8.8%)
 - **DB:** `data/processed/call2go.db` — SQLite com 3 tabelas
 - **Plots:** boxplot_call2go_views.png, scatter_cross_platform.png
-- **Validação:** Census Excel com 1.641 vídeos para anotação manual
+- **Validação:** Dual Census Excel (padrão do projeto):
+  - `blind_annotation_census.xlsx` — versão cega para humano anotar (dropdowns SIM/NAO, colunas vazias)
+  - `detector_answers_census.xlsx` — gabarito do detector (SIM/NAO preenchido, sem dropdowns)
+  - Distribuição detector: Video 11.9% SIM, Canal 52.5% SIM, Combinado 10.2% SIM
 
 ## Resultados Estatísticos (Pipeline 18/04/2026)
 - **Mann-Whitney (Views):** U=129940, p=0.143 — **NÃO REJEITA H0**
