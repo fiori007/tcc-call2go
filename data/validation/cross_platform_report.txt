@@ -10,19 +10,19 @@ Métricas do Spotify correlacionam com engajamento no YouTube, mas Call2Go no Yo
 ------------------------------------------------------------
 DIREÇÃO A: YouTube -> Spotify
 ------------------------------------------------------------
-  call2go_vs_popularity: {'rho': np.float64(-0.07897867624345857), 'p': np.float64(0.5252353849895596)}
-  call2go_vs_followers: {'rho': np.float64(-0.05294588664444222), 'p': np.float64(0.6704549746071551)}
-  views_mannwhitney: {'U': np.float64(129940.0), 'p': np.float64(0.2860824003833369), 'median_with': np.float64(1646309.0), 'median_without': np.float64(1189899.0)}
+  call2go_vs_popularity: {'rho': np.float64(-0.11119711213322847), 'p': np.float64(0.3703375142488091)}
+  call2go_vs_followers: {'rho': np.float64(-0.08701627223239551), 'p': np.float64(0.48381195407063904)}
+  views_mannwhitney: {'U': np.float64(141605.0), 'p': np.float64(0.30134579431936614), 'median_with': np.float64(1594029.0), 'median_without': np.float64(1216199.0)}
 
 ------------------------------------------------------------
 DIREÇÃO B: Spotify -> YouTube (A VOLTA)
 ------------------------------------------------------------
-  popularity_vs_avg_views: {'rho': np.float64(0.5083063301899038), 'p': np.float64(1.126392068964238e-05)}
-  popularity_vs_avg_engagement: {'rho': np.float64(0.431270241316254), 'p': np.float64(0.00026890285970462054)}
-  followers_vs_avg_views: {'rho': np.float64(0.6759118844281268), 'p': np.float64(3.477256054281977e-10)}
-  followers_vs_total_views: {'rho': np.float64(0.6830553116769096), 'p': np.float64(1.9159768916357868e-10)}
-  followers_vs_avg_engagement: {'rho': np.float64(0.6493335461728791), 'p': np.float64(2.7825588376308742e-09)}
-  per_video_pop_vs_views: {'rho': np.float64(0.4393680087234387), 'p': np.float64(2.0606480454443004e-78), 'n': 1641}
+  popularity_vs_avg_views: {'rho': np.float64(0.5083063301899038), 'p': np.float64(1.1263920689642356e-05)}
+  popularity_vs_avg_engagement: {'rho': np.float64(0.431270241316254), 'p': np.float64(0.00026890285970462027)}
+  followers_vs_avg_views: {'rho': np.float64(0.6759118844281268), 'p': np.float64(3.4772560542819807e-10)}
+  followers_vs_total_views: {'rho': np.float64(0.6830553116769096), 'p': np.float64(1.9159768916357884e-10)}
+  followers_vs_avg_engagement: {'rho': np.float64(0.6493335461728791), 'p': np.float64(2.7825588376308838e-09)}
+  per_video_pop_vs_views: {'rho': np.float64(0.4393680087234387), 'p': np.float64(2.0606480454442857e-78), 'n': 1641}
 
 ------------------------------------------------------------
 PERFIL POR ARTISTA
@@ -129,9 +129,9 @@ PERFIL POR ARTISTA
     Views COM Call2Go: 17,897,519 | SEM: 1,998,461
 
   Júnior e Cézar:
-    YouTube: 30 vídeos, 0% Call2Go, avg views 2,205,770
+    YouTube: 30 vídeos, 60% Call2Go, avg views 2,205,770
     Spotify: pop=66, followers=134,745
-    Views COM Call2Go: 0 | SEM: 2,205,770
+    Views COM Call2Go: 3,051,006 | SEM: 937,916
 
   Léo Santana:
     YouTube: 20 vídeos, 0% Call2Go, avg views 3,020,425

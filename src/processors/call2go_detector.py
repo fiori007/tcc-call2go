@@ -230,9 +230,19 @@ def process_videos():
                 has_scraped, scraped_type = detect_call2go_channel_scraped(
                     channel_id, scraped_data)
 
-            # Canal: apenas links estruturados
+            # Canal: links estruturados + fallback regex na bio
             final_channel_has = has_scraped
             final_channel_type = scraped_type if has_scraped else 'nenhum'
+
+            # Fallback: se scraped não detectou, aplica regex na bio do canal
+            # Captura padrões como "Spotify - https://bit.ly/..." que o scraper
+            # não reconhece (URL não é domínio Spotify, mas rótulo indica CTA)
+            if not final_channel_has:
+                channel_desc = video.get('channel_description', '') or ''
+                bio_has, bio_type = detect_call2go_channel(channel_desc)
+                if bio_has:
+                    final_channel_has = bio_has
+                    final_channel_type = bio_type
 
             # Classificação combinada: AND -- ambas as fontes devem ter Call2Go
             combined_has = has_call2go and final_channel_has

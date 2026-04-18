@@ -3,7 +3,8 @@
 ## Estado Atual (18/04/2026)
 - **Fase 10 concluída:** Pipeline completo executado com sucesso (67 artistas, 1.641 vídeos)
 - **Detecção de Labels:** 71 → 67 artistas (4 labels removidos automaticamente)
-- **Resultados:** Mann-Whitney p=0.143, NÃO rejeita H0. Relação UNIDIRECIONAL Spotify→YouTube.
+- **Fallback regex na bio:** +30 canais detectados, +18 combinados (Spotify + bit.ly capturado)
+- **Resultados:** Mann-Whitney p=0.151, NÃO rejeita H0. Relação UNIDIRECIONAL Spotify→YouTube.
 - **Próximo passo:** 🔴 Anotar 1.641 vídeos no Census Excel para validação manual
 
 ## Histórico de Marcos
@@ -228,12 +229,13 @@
   - Step 2: YouTube — 1.641 vídeos (30/artista max, 13 resumidos de runs anteriores)
   - Step 3: Spotify — 67/67 coletados (Pop range: 55-97)
   - Step 4: Channel scraping — 67 canais, 33 com Spotify, 9 OAC detectados (286.3s)
-  - Step 5: Detecção Call2Go — 168 link_direto (10.2%), 1.473 nenhum (89.8%)
+  - Step 5: Detecção Call2Go — 186 link_direto (11.3%), 1.455 nenhum (88.7%)
     - 174 auto-gerados (10.6%), 144 OAC (8.8%)
+    - Fallback regex na bio do canal: +30 canais detectados via "Spotify - bit.ly/..."
   - Step 6: DB build — call2go.db (3 tabelas)
   - Step 7: EDA — link_direto média 8.6M views vs nenhum 14M
-  - Step 8: Mann-Whitney — U=129940, p=0.143 — **NÃO REJEITA H0**
-  - Step 9: Cross-platform — U=138828.5, p=0.986 — **NÃO REJEITA H0**
+  - Step 8: Mann-Whitney — U=141605, p=0.151 — **NÃO REJEITA H0**
+  - Step 9: Cross-platform — U=141582.5, p=0.999 — **NÃO REJEITA H0**
   - Step 10: Amostra — 50 vídeos (seed=42)
   - Step 11: Bidirecional — UNIDIRECIONAL Spotify→YouTube (ρ=0.508***, α=0.1)
   - Step 12: Census Excel — 1.641 vídeos com dropdowns SIM/NÃO

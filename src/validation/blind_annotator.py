@@ -330,7 +330,7 @@ def generate_detector_answers(
         pd.DataFrame com o CSV gerado, ou None em caso de erro.
     """
     from src.processors.call2go_detector import (
-        detect_call2go, detect_call2go_channel_scraped
+        detect_call2go, detect_call2go_channel, detect_call2go_channel_scraped
     )
     from src.collectors.channel_link_scraper import load_cached_channel_links
 
@@ -409,6 +409,9 @@ def generate_detector_answers(
             has_channel, _ = detect_call2go_channel_scraped(
                 channel_id, scraped_data
             )
+        # Fallback: se scraped não detectou, aplica regex na bio do canal
+        if not has_channel and channel_desc:
+            has_channel, _ = detect_call2go_channel(channel_desc)
         # Detector: nivel combinado (AND -- video E canal)
         has_combined = has_video and has_channel
 

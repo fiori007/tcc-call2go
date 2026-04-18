@@ -22,18 +22,19 @@ Census Excel para validação manual gerado.
 - **Scraping:** `data/raw/channel_links_scraped.json` — 67 canais + 9 OAC oficiais
   - 33/67 com Spotify no perfil, 9 OAC detectados
 - **Detecção:** `data/processed/youtube_call2go_flagged.csv` — 1.641 vídeos flagados
-  - link_direto: 168 (10.2%), nenhum: 1.473 (89.8%)
+  - link_direto: 186 (11.3%), nenhum: 1.455 (88.7%)
   - Vídeos auto-gerados: 174 (10.6%), Canais OAC: 144 (8.8%)
+  - Fallback regex na bio do canal ativo (captura "Spotify - bit.ly/...")
 - **DB:** `data/processed/call2go.db` — SQLite com 3 tabelas
 - **Plots:** boxplot_call2go_views.png, scatter_cross_platform.png
 - **Validação:** Dual Census Excel (padrão do projeto):
   - `blind_annotation_census.xlsx` — versão cega para humano anotar (dropdowns SIM/NAO, colunas vazias)
   - `detector_answers_census.xlsx` — gabarito do detector (SIM/NAO preenchido, sem dropdowns)
-  - Distribuição detector: Video 11.9% SIM, Canal 52.5% SIM, Combinado 10.2% SIM
+  - Distribuição detector: Video 11.9% SIM, Canal 54.3% SIM, Combinado 11.3% SIM
 
 ## Resultados Estatísticos (Pipeline 18/04/2026)
-- **Mann-Whitney (Views):** U=129940, p=0.143 — **NÃO REJEITA H0**
-- **Cross-Platform:** U=138828.5, p=0.986 — **NÃO REJEITA H0**
+- **Mann-Whitney (Views):** U=141605, p=0.151 — **NÃO REJEITA H0**
+- **Cross-Platform:** U=141582.5, p=0.999 — **NÃO REJEITA H0**
 - **Bidirecional:** UNIDIRECIONAL Spotify → YouTube (α=0.1)
   - Direção A (YT→Spotify): Call2Go Rate ↔ Pop ρ=-0.079, p=0.525 — NÃO significativo
   - Direção B (Spotify→YT): Pop ↔ Avg Views ρ=0.508, p≈0*** — SIGNIFICATIVO
