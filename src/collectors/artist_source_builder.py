@@ -386,6 +386,170 @@ def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
     return df
 
 
+def build_seed_from_chart_intersection(
+        intersection_csv="data/processed/cross_platform_persistent_artists.csv",
+        output_file="data/seed/artistas.csv"):
+    """
+    Constrói base de artistas a partir da interseção cross-platform dos charts.
+
+    Para cada artista do CSV de interseção filtrado:
+      1. Busca perfil no Spotify (ID, followers, popularity, genres)
+      2. Busca canal oficial no YouTube (channel_id, total_views)
+      3. Valida se entidade parece ser artista real (Layer 2 — advisory)
+
+    Args:
+        intersection_csv: path do CSV com artistas consolidados
+        output_file: path para salvar o seed CSV
+
+    Returns:
+        pandas.DataFrame com os artistas enriquecidos
+    """
+    print("=" * 60)
+    print("  SEED BUILDER — Base de Artistas via Charts Cross-Platform")
+    print("=" * 60)
+
+    sp = get_spotify_client()
+    youtube = get_youtube_client()
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+
+    # Lê CSV de interseção
+    df_intersection = pd.read_csv(intersection_csv)
+    print(f"\n  Artistas no CSV de interseção: {len(df_intersection)}")
+
+    artists = []
+    warnings = []
+    quota_exhausted = False
+
+    for idx, row in df_intersection.iterrows():
+        # Usa nome do Spotify como referência principal
+        name = row['artist_name_spotify']
+        total_chart_weeks = row.get('spotify_weeks', 0) + \
+            row.get('youtube_weeks', 0)
+
+        print(f"\n  [{idx + 1}/{len(df_intersection)}] {name}")
+
+        # ── Fase 1: Spotify Search ──
+        spotify_id = None
+        followers = 0
+        popularity = 0
+        genres = ''
+
+        try:
+            results = sp.search(q=name, type='artist', market='BR', limit=5)
+            candidates = results.get('artists', {}).get('items', [])
+
+            # Match por nome (case-insensitive, substring)
+            best = None
+            name_lower = name.strip().lower()
+            for c in candidates:
+                c_name = c['name'].strip().lower()
+                if c_name == name_lower or c_name in name_lower \
+                        or name_lower in c_name:
+                    if best is None or \
+                            c['followers']['total'] > best['followers']['total']:
+                        best = c
+
+            # Fallback: pega primeiro resultado se nenhum match por nome
+            if not best and candidates:
+                best = candidates[0]
+
+            if best:
+                spotify_id = best['id']
+                followers = best['followers']['total']
+                popularity = best['popularity']
+                genres = '; '.join(best.get('genres', [])[:3])
+                print(f"    Spotify: {spotify_id} | "
+                      f"{followers:,} seg | pop={popularity} | "
+                      f"{genres or '(sem gêneros)'}")
+
+                # Layer 2: Advisory — verifica se parece artista real
+                if not best.get('genres') and followers < 1000:
+                    msg = (f"    ⚠ AVISO: {name} — sem gêneros e "
+                           f"{followers:,} seg (possível label/entidade "
+                           f"não-artística)")
+                    print(msg)
+                    warnings.append(msg)
+            else:
+                msg = f"    ⚠ AVISO: {name} — perfil não encontrado no Spotify"
+                print(msg)
+                warnings.append(msg)
+        except Exception as e:
+            msg = f"    [ERRO Spotify] {name}: {e}"
+            print(msg)
+            warnings.append(msg)
+
+        # ── Fase 2: YouTube Channel ──
+        channel_id = None
+        total_views = 0
+
+        if not quota_exhausted:
+            channel_id, total_views = find_youtube_channel(youtube, name)
+
+            if channel_id == 'QUOTA_EXHAUSTED':
+                print(f"    [QUOTA ESGOTADA] YouTube — continuando sem canal")
+                quota_exhausted = True
+                channel_id = None
+                total_views = 0
+            elif channel_id:
+                print(f"    YouTube: {channel_id} | "
+                      f"{total_views:,} views")
+            else:
+                print(f"    YouTube: canal não encontrado")
+
+        artists.append({
+            'artist_name': name,
+            'spotify_id': spotify_id or '',
+            'followers': followers,
+            'popularity': popularity,
+            'genres': genres,
+            'source': 'Charts Q1 2026',
+            'occurrence_count': total_chart_weeks,
+            'youtube_channel_id': channel_id or '',
+            'total_youtube_views': total_views,
+            'extraction_date': today,
+            'selection_criteria':
+                'Persistência temporal 3 meses × 2 plataformas',
+        })
+
+    # Ordena por total de views no YouTube (descendente)
+    df = pd.DataFrame(artists)
+    df = df.sort_values('total_youtube_views',
+                        ascending=False).reset_index(drop=True)
+
+    # Salva
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    df.to_csv(output_file, index=False, encoding='utf-8')
+
+    # Relatório final
+    with_spotify = df['spotify_id'].astype(bool).sum()
+    with_youtube = df['youtube_channel_id'].astype(bool).sum()
+
+    print(f"\n{'=' * 60}")
+    print(f"  SEED BUILDER — RESULTADO FINAL")
+    print(f"{'=' * 60}")
+    print(f"  Total artistas: {len(df)}")
+    print(f"  Com Spotify ID: {with_spotify}")
+    print(f"  Com canal YouTube: {with_youtube}")
+    print(f"  Salvo em: {output_file}")
+    print(f"  Data de extração: {today}")
+
+    if warnings:
+        print(f"\n  ⚠ AVISOS ({len(warnings)}):")
+        for w in warnings:
+            print(f"  {w}")
+
+    print(f"\n  Top 10 por views no YouTube:")
+    for i, (_, r) in enumerate(df.head(10).iterrows()):
+        yt_views = r.get('total_youtube_views', 0)
+        print(f"    {i + 1}. {r['artist_name']} | "
+              f"YT={yt_views:,.0f} views | "
+              f"Spotify pop={r['popularity']} | "
+              f"{r['followers']:,} seg")
+
+    print(f"{'=' * 60}")
+    return df
+
+
 if __name__ == "__main__":
     OFFICIAL_PLAYLISTS = [
         {'id': '37i9dQZEVXbMXbN3EUUhlg', 'name': 'Top 50 Brasil'},

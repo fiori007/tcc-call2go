@@ -1,10 +1,10 @@
 # Progress — TCC Call2Go
 
-## Estado Atual (12/04/2026)
-- **Fase 9c completa:** Combinado AND, normalização canal seed, memory bank atualizado
-- **920 vídeos** coletados, XLSX pronto para anotação humana (blind_annotation_census.xlsx)
-- **77 testes** passando, pipeline funcional
-- **Próximo passo:** 🔴 Alinhar com orientador → anotar 920 vídeos → cross_validator
+## Estado Atual (18/04/2026)
+- **Fase 10 concluída:** Pipeline completo executado com sucesso (67 artistas, 1.641 vídeos)
+- **Detecção de Labels:** 71 → 67 artistas (4 labels removidos automaticamente)
+- **Resultados:** Mann-Whitney p=0.143, NÃO rejeita H0. Relação UNIDIRECIONAL Spotify→YouTube.
+- **Próximo passo:** 🔴 Anotar 1.641 vídeos no Census Excel para validação manual
 
 ## Histórico de Marcos
 
@@ -178,11 +178,87 @@
 - `data/plots/validation_metrics_per_class.png` — P/R/F1 por classe
 - 77 testes unitários continuam passando
 
+### ✅ Concluído (Fase 10 — Nova Base Temporal + Pipeline Completo, 16-18/04/2026)
+
+#### Etapa 1: Identificação de artistas por persistência cross-platform
+- **`src/processors/chart_processor.py`** — NOVO: processador de charts completo
+  - Processa 13 CSVs Spotify (Top 200 BR) + 13 CSVs YouTube (Top 100 BR), Q1 2026
+  - Extrai artistas de cada track: Spotify split por `,`, YouTube split por ` & `
+  - **Duo-aware split** para YouTube: identifica 38 duplas/grupos do Spotify
+    (29 com `&`: Diego & Victor Hugo; 9 com `e`: Felipe e Rodrigo)
+    e protege esses nomes antes de splittar por `&`
+  - Normalização cross-platform: case-insensitive + `&` ↔ `e`
+  - Presença binária: artista ≥1 aparição no mês = presente
+
+#### Resultados
+- **Spotify:** 420 artistas únicos → JAN=293, FEV=324, MAR=326 → **210 persistentes** (3 meses)
+- **YouTube:** 329 artistas únicos → JAN=208, FEV=192, MAR=216 → **104 persistentes** (3 meses)
+- **Interseção cross-platform:** Só Spotify=139, Só YouTube=33, **★ Interseção=71**
+- Spot-check ✅: Pedro Sampaio, Diego & Victor Hugo, MC Ryan SP, Vitinho Imperador,
+  Henrique & Juliano, Grupo Menos É Mais, Felipe e Rodrigo, Taylor Swift
+
+#### Bug Fix Detectado e Corrigido
+- Duplas com `e` no Spotify (ex: `Felipe e Rodrigo`) não eram reconhecidas
+  como duplas para proteger no YouTube (que usa `Felipe & Rodrigo`)
+- Fix: `_extract_known_duos()` agora gera variante `&` de duos com `e`
+- Resultado: 70 → **71** artistas na interseção (Felipe e Rodrigo adicionado)
+
+#### CSVs Gerados
+- `data/processed/spotify_persistent_artists.csv` — 210 artistas
+- `data/processed/youtube_persistent_artists.csv` — 104 artistas
+- `data/processed/cross_platform_persistent_artists.csv` — 71 artistas
+
+#### Próximos Passos
+1. Gerar novo `data/seed/artistas.csv` com os 71 artistas
+2. Re-executar pipeline (youtube_collector → call2go_detector → DB → análises)
+3. Análise comparativa COM vs SEM Call2Go
+4. Caracterização de grupos
+5. Investigar Call2Go reverso + Last.fm
+
+#### Etapa 2: Detecção de Labels e Pipeline Completo (17-18/04/2026)
+- **`chart_processor.py`** — Detecção de labels em 2 camadas:
+  - Camada 1: regex keywords (`records`, `music`, `entertainment`, `ent`, `publishing`) + padrão artista veto + overrides
+  - Removidos: Get Records (keyword), Get Worship (override), MJ Records (keyword), Supernova Ent (keyword)
+  - **71 → 67 artistas**
+- **`artist_source_builder.py`** — `build_seed_from_chart_intersection()`:
+  - Resolve channel_id via YouTube Search API
+  - Camada 2: avisos advisory (Torelli: 590 followers, sem gêneros)
+- **Pipeline completo (12 etapas)** executado em 464.1s (7.7 min):
+  - Step 1: Seed building — 67 artistas
+  - Step 2: YouTube — 1.641 vídeos (30/artista max, 13 resumidos de runs anteriores)
+  - Step 3: Spotify — 67/67 coletados (Pop range: 55-97)
+  - Step 4: Channel scraping — 67 canais, 33 com Spotify, 9 OAC detectados (286.3s)
+  - Step 5: Detecção Call2Go — 168 link_direto (10.2%), 1.473 nenhum (89.8%)
+    - 174 auto-gerados (10.6%), 144 OAC (8.8%)
+  - Step 6: DB build — call2go.db (3 tabelas)
+  - Step 7: EDA — link_direto média 8.6M views vs nenhum 14M
+  - Step 8: Mann-Whitney — U=129940, p=0.143 — **NÃO REJEITA H0**
+  - Step 9: Cross-platform — U=138828.5, p=0.986 — **NÃO REJEITA H0**
+  - Step 10: Amostra — 50 vídeos (seed=42)
+  - Step 11: Bidirecional — UNIDIRECIONAL Spotify→YouTube (ρ=0.508***, α=0.1)
+  - Step 12: Census Excel — 1.641 vídeos com dropdowns SIM/NÃO
+
+#### Outputs Gerados (18/04/2026)
+- `data/seed/artistas.csv` — 67 artistas com channel_id
+- `data/raw/youtube_videos_raw.jsonl` — 1.641 vídeos
+- `data/raw/spotify_metrics_2026-04-18.csv` — 67 artistas
+- `data/raw/channel_links_scraped.json` — 67 canais + 9 OAC
+- `data/processed/youtube_call2go_flagged.csv` — 1.641 vídeos flagados
+- `data/processed/call2go.db` — SQLite (3 tabelas)
+- `data/plots/boxplot_call2go_views.png` — Boxplot views por tipo
+- `data/plots/scatter_cross_platform.png` — Scatter cross-platform
+- `data/validation/blind_annotation_census.csv` — Census CSV (1.641 vídeos)
+- `data/validation/blind_annotation_census.xlsx` — Census Excel com dropdowns
+- `data/validation/detector_answers_census.csv` — Respostas do detector
+- `data/validation/direction_a_youtube_to_spotify.png` — Direção A
+- `data/validation/direction_b_spotify_to_youtube.png` — Direção B
+- `data/validation/bidirectional_correlation_matrix.png` — Heatmap
+
 ### 🟨 Pendente (Em Ordem de Prioridade)
-1. [P0] 🔴 **Alinhar com orientador** sobre resultados e próximos passos
-2. [P1] 🔴 **Anotar 920 vídeos** em `blind_annotation_census.xlsx` (SIM/NÃO) → salvar como `ground_truth.csv`
-3. [P2] Rodar `python -m src.validation.cross_validator` para validação censitária
-4. [P3] Escrever capítulo de Metodologia do TCC (validação circular → correção → AND)
+1. [P0] 🔴 **Anotar 1.641 vídeos** em `blind_annotation_census.xlsx` (SIM/NÃO) → ground truth
+2. [P1] Rodar `python -m src.validation.cross_validator` para validação censitária
+3. [P2] 🔴 **Alinhar com orientador** sobre resultados e próximos passos
+4. [P3] Escrever capítulo de Metodologia do TCC
 5. [P4] Escrever capítulo de Resultados com Kappa 3 níveis + IC 95%
 
 ### ✅ Concluído (Fase 9c — Limpeza e Consistência, 12/04/2026)

@@ -3,7 +3,7 @@ TCC Call2Go -- Pipeline Orquestrador
 
 Executa todo o pipeline de dados do início ao fim, na ordem correta:
 
-    1. Construção da base de artistas (Spotify Charts oficiais)
+    1. Construção da base de artistas (Charts Q1 2026 cross-platform)
     2. Coleta de vídeos do YouTube (por artista)
     3. Coleta de métricas do Spotify (por artista)
     4. Scraping de links estruturados dos canais (About page)
@@ -14,6 +14,7 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     9. Análise de Impacto Cross-Platform
    10. Geração de amostra para validação manual
    11. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
+   12. Censo Excel para validação manual humana
 
 Uso:
     python run_pipeline.py                  # pipeline completo
@@ -66,22 +67,24 @@ def run_step(step_func, step_name):
 
 
 def step_01_build_artist_base():
-    """Constrói base de artistas Top 50 BR (Spotify x YouTube)."""
-    from src.collectors.artist_source_builder import build_artist_base
+    """Constrói base de artistas via interseção cross-platform dos charts."""
+    from src.processors.chart_processor import run_chart_processing
+    from src.collectors.artist_source_builder import (
+        build_seed_from_chart_intersection)
 
-    playlists = [
-        {'id': '37i9dQZEVXbMXbN3EUUhlg', 'name': 'Top 50 Brasil'},
-        {'id': '37i9dQZEVXbKzoK95AbRy9', 'name': 'Viral 50 Brasil'},
-        {'id': '37i9dQZF1DX0FOF1IUWK1W', 'name': 'Top Hits Brasil'},
-    ]
+    # Fase A: Processa charts e gera CSV de interseção filtrado
+    run_chart_processing()
 
-    df = build_artist_base(playlists, max_artists=50, min_popularity=60)
+    # Fase B: Enriquece com Spotify/YouTube IDs e salva seed
+    build_seed_from_chart_intersection(
+        intersection_csv="data/processed/cross_platform_persistent_artists.csv",
+        output_file="data/seed/artistas.csv")
 
 
 def step_02_collect_youtube():
-    """Coleta os 20 vídeos mais visualizados por artista no YouTube."""
+    """Coleta os 30 vídeos mais visualizados por artista no YouTube."""
     from src.collectors.youtube_collector import collect_youtube_data
-    collect_youtube_data(max_videos_per_artist=20)
+    collect_youtube_data(max_videos_per_artist=30)
 
 
 def step_03_collect_spotify():
@@ -146,16 +149,33 @@ def step_11_cross_platform_validation():
     run_cross_platform_validation()
 
 
+def step_12_generate_census_excel():
+    """Gera censo completo + Excel formatado para validação manual humana."""
+    from src.validation.blind_annotator import (
+        generate_census_csv, generate_detector_answers)
+    from src.validation.excel_formatter import format_blind_annotation
+
+    # Gera CSVs do censo
+    generate_census_csv()
+    generate_detector_answers()
+
+    # Gera Excel com dropdowns para anotação manual
+    format_blind_annotation(
+        input_csv="data/validation/blind_annotation_census.csv",
+        output_xlsx="data/validation/blind_annotation_census.xlsx",
+        census_mode=True)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="TCC Call2Go -- Pipeline Orquestrador")
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-11)')
+                        help='Começa a partir de uma etapa específica (1-12)')
     args = parser.parse_args()
 
-    total_steps = 11
+    total_steps = 12
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -193,6 +213,8 @@ def main():
         (10, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_10_generate_sample, True),
         (11, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
          step_11_cross_platform_validation, True),
+        (12, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
+         step_12_generate_census_excel, True),
     ]
 
     results = {}
@@ -247,6 +269,9 @@ def main():
         "data/validation/direction_b_spotify_to_youtube.png",
         "data/validation/bidirectional_correlation_matrix.png",
         "data/validation/cross_platform_report.txt",
+        "data/validation/blind_annotation_census.csv",
+        "data/validation/blind_annotation_census.xlsx",
+        "data/validation/detector_answers_census.csv",
     ]
 
     for f in output_files:
