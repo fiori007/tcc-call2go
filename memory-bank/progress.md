@@ -1,9 +1,10 @@
 ﻿# Progress -- TCC Call2Go
 
 ## Estado Atual (18/04/2026)
-- Pipeline 12 etapas funcionando (67 artistas, 1.641 videos)
+- Pipeline 13 etapas funcionando (67 artistas, 1.641 videos)
+- Last.fm integrado: 67/67 artistas (100% cobertura), 659 tracks coletadas
+- DB SQLite com 4 tabelas: dim_artist, fact_yt_videos, fact_spotify, fact_lastfm
 - Codigo auditado, arquivos obsoletos removidos, caches limpos
-- Proximo passo: anotacao humana do censo (1.641 videos)
 
 ## Historico Resumido
 
@@ -42,8 +43,15 @@
 - Cross-platform: U=111388, p=0.999 -- NAO REJEITA H0
 - Bidirecional: UNIDIRECIONAL Spotify -> YouTube
 
+### Last.fm (18/04/2026)
+- lastfm_collector.py criado (pattern = spotify_collector)
+- 3 endpoints: getInfo (listeners, scrobbles, tags), getTopTracks, getTopAlbums
+- 67/67 artistas encontrados, 659 tracks, 0 erros
+- Integrado no pipeline (step 4) e DB (fact_lastfm_metrics)
+
 ## Pendente
-1. [P0] Anotar 1.641 videos (blind_annotation_census.xlsx)
-2. [P1] Cross-validation censitaria (cross_validator.py)
-3. [P2] Alinhar com orientador
-4. [P3] Capitulos Metodologia + Resultados do TCC
+1. [P0] Analise cross-platform 3 fontes (YouTube x Spotify x Last.fm)
+2. [P1] Anotar 1.641 videos (blind_annotation_census.xlsx)
+3. [P2] Cross-validation censitaria (cross_validator.py)
+4. [P3] Alinhar com orientador
+5. [P4] Capitulos Metodologia + Resultados do TCC

@@ -1,19 +1,20 @@
 ﻿# System Patterns -- TCC Call2Go
 
-## Pipeline (12 Etapas)
+## Pipeline (13 Etapas)
 `
 1. Seed building (chart_processor + artist_source_builder)
 2. YouTube collection (youtube_collector)
 3. Spotify collection (spotify_collector)
-4. Channel scraping (channel_link_scraper)
-5. Call2Go detection (call2go_detector) -- regex multi-layer
-6. DB build (db_builder) -- SQLite star schema
-7. EDA (eda_analysis) -- boxplots, stats descritivas
-8. Hypothesis testing (hypothesis_testing) -- Mann-Whitney U
-9. Cross-platform analysis (spotify_impact_analysis)
-10. Sample generation (sample_generator) -- 50 videos, seed=42
-11. Bidirectional validation (cross_platform_validator)
-12. Census Excel (blind_annotator + excel_formatter) -- dual output
+4. Last.fm collection (lastfm_collector) -- listeners, scrobbles, tags
+5. Channel scraping (channel_link_scraper)
+6. Call2Go detection (call2go_detector) -- regex multi-layer
+7. DB build (db_builder) -- SQLite star schema
+8. EDA (eda_analysis) -- boxplots, stats descritivas
+9. Hypothesis testing (hypothesis_testing) -- Mann-Whitney U
+10. Cross-platform analysis (spotify_impact_analysis)
+11. Sample generation (sample_generator) -- 50 videos, seed=42
+12. Bidirectional validation (cross_platform_validator)
+13. Census Excel (blind_annotator + excel_formatter) -- dual output
 `
 
 ## Deteccao Call2Go (3 niveis)
@@ -27,6 +28,7 @@
 dim_artist (artist_name PK, spotify_id, youtube_channel_id)
 fact_yt_videos (video_id, artist_name FK, view_count, call2go_type, ...)
 fact_spotify_metrics (date, spotify_id FK, followers, popularity)
+fact_lastfm_metrics (date, artist_name FK, listeners, playcount, tags, top tracks)
 `
 
 ## Convencoes

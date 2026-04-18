@@ -18,11 +18,14 @@
 - **YouTube:** API Key (YOUTUBE_API_KEY), quota 10k/dia
   - Otimizacao: playlistItems.list (1 unit) vs search.list (100 units)
   - Resume: le JSONL existente, pula artistas ja coletados
+- **Last.fm:** API Key (LASTFM_API_KEY), sem OAuth para leitura
+  - Endpoints: artist.getInfo, artist.getTopTracks, artist.getTopAlbums
+  - Rate limit: 0.25s entre requests, autocorrect=1 para nomes
 
 ## Estrutura de Arquivos
 `
 tcc_call2go/
-  run_pipeline.py            # Orquestrador 12 etapas
+  run_pipeline.py            # Orquestrador 13 etapas
   requirements.txt           # Dependencias pinadas
   src/
     collectors/              # Coleta de dados (APIs + scraping)

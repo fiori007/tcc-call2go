@@ -1,8 +1,9 @@
 ﻿# Active Context — TCC Call2Go
 
 ## Estado Atual (18/04/2026)
-Pipeline 12 etapas executado com sucesso. Base temporal Q1 2026 consolidada.
+Pipeline 13 etapas executado com sucesso. Base temporal Q1 2026 consolidada.
 **67 artistas x 30 videos = 1.641 videos analisados.**
+**Last.fm integrado: 67/67 artistas encontrados (100% cobertura).**
 
 ## Dados em Uso
 | Arquivo | Conteudo |
@@ -10,9 +11,11 @@ Pipeline 12 etapas executado com sucesso. Base temporal Q1 2026 consolidada.
 | `data/seed/artistas.csv` | 67 artistas com channel_id |
 | `data/raw/youtube_videos_raw.jsonl` | 1.641 videos brutos |
 | `data/raw/spotify_metrics_2026-04-18.csv` | 67 artistas (metricas atuais) |
+| `data/raw/lastfm_artists_2026-04-18.csv` | 67 artistas Last.fm (listeners, scrobbles, tags) |
+| `data/raw/lastfm_top_tracks_2026-04-18.csv` | 659 tracks (top 10 por artista) |
 | `data/raw/channel_links_scraped.json` | 75 canais (67 + 9 OAC oficiais) |
 | `data/processed/youtube_call2go_flagged.csv` | 1.641 videos com flags Call2Go |
-| `data/processed/call2go.db` | SQLite (dim_artist, fact_yt_videos, fact_spotify) |
+| `data/processed/call2go.db` | SQLite (dim_artist, fact_yt_videos, fact_spotify, fact_lastfm) |
 
 ## Distribuicao Detector
 | Nivel | SIM | NAO |
@@ -29,7 +32,8 @@ Pipeline 12 etapas executado com sucesso. Base temporal Q1 2026 consolidada.
   - Direcao B: Pop <-> Avg Views rho=0.508, p~0*** | Followers <-> Avg Views rho=0.676, p~0***
 
 ## Proximas Acoes
-1. [P0] **Anotar 1.641 videos** em `blind_annotation_census.xlsx` -> salvar como `ground_truth.csv`
-2. [P1] Rodar `python -m src.validation.cross_validator` (Kappa + Bootstrap CI 3 niveis)
-3. [P2] **Alinhar com orientador** sobre resultados
-4. [P3] Escrever capitulos Metodologia + Resultados do TCC
+1. [P0] Analise cross-platform 3 fontes (YouTube x Spotify x Last.fm)
+2. [P1] **Anotar 1.641 videos** em `blind_annotation_census.xlsx` -> salvar como `ground_truth.csv`
+3. [P2] Rodar `python -m src.validation.cross_validator` (Kappa + Bootstrap CI 3 niveis)
+4. [P3] **Alinhar com orientador** sobre resultados
+5. [P4] Escrever capitulos Metodologia + Resultados do TCC

@@ -60,12 +60,32 @@ def build_database():
     else:
         print("[ERRO] Nenhum arquivo de métricas do Spotify encontrado.")
 
+    # ---------------------------------------------------------
+    # 4. Carga dos Fatos do Last.fm
+    # ---------------------------------------------------------
+    print("Carregando tabela fact_lastfm_metrics...")
+    lastfm_files = glob.glob("data/raw/lastfm_artists_*.csv")
+
+    if lastfm_files:
+        df_lastfm_list = [pd.read_csv(f) for f in lastfm_files]
+        df_lastfm = pd.concat(df_lastfm_list, ignore_index=True)
+
+        # Remove duplicatas (mesmo artista no mesmo dia)
+        df_lastfm.drop_duplicates(
+            subset=['date', 'artist_name'], inplace=True)
+
+        df_lastfm.to_sql('fact_lastfm_metrics', conn,
+                          if_exists='replace', index=False)
+    else:
+        print("[AVISO] Nenhum arquivo de métricas do Last.fm encontrado.")
+
     # Fecha a conexão para salvar no disco
     conn.close()
 
     print(
         f"\n[OK] Banco de dados construído e populado com sucesso em: {db_path}")
-    print("[OK] Tabelas disponíveis: dim_artist, fact_yt_videos, fact_spotify_metrics")
+    print("[OK] Tabelas disponíveis: dim_artist, fact_yt_videos, "
+          "fact_spotify_metrics, fact_lastfm_metrics")
 
 
 if __name__ == "__main__":

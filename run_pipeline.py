@@ -6,20 +6,22 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     1. Construção da base de artistas (Charts Q1 2026 cross-platform)
     2. Coleta de vídeos do YouTube (por artista)
     3. Coleta de métricas do Spotify (por artista)
-    4. Scraping de links estruturados dos canais (About page)
-    5. Detecção de Call2Go (regex nas descrições)
-    6. Construção do Data Warehouse (SQLite)
-    7. Análise Exploratória (EDA)
-    8. Testes de Hipótese (Mann-Whitney U)
-    9. Análise de Impacto Cross-Platform
-   10. Geração de amostra para validação manual
-   11. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
-   12. Censo Excel para validação manual humana
+    4. Coleta de métricas do Last.fm (por artista)
+    5. Scraping de links estruturados dos canais (About page)
+    6. Detecção de Call2Go (regex nas descrições)
+    7. Construção do Data Warehouse (SQLite)
+    8. Análise Exploratória (EDA)
+    9. Testes de Hipótese (Mann-Whitney U)
+   10. Análise de Impacto Cross-Platform
+   11. Geração de amostra para validação manual
+   12. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
+   13. Censo Excel para validação manual humana
 
 Uso:
     python run_pipeline.py                  # pipeline completo
     python run_pipeline.py --skip-collect   # pula coleta (usa dados existentes)
     python run_pipeline.py --from-step 5    # começa a partir do passo 5
+    python run_pipeline.py --from-step 4    # re-executa a partir do Last.fm
 """
 
 import os
@@ -93,7 +95,13 @@ def step_03_collect_spotify():
     collect_spotify_data()
 
 
-def step_04_scrape_channel_links():
+def step_04_collect_lastfm():
+    """Coleta métricas do Last.fm para cada artista."""
+    from src.collectors.lastfm_collector import collect_lastfm_data
+    collect_lastfm_data()
+
+
+def step_05_scrape_channel_links():
     """Scraping de links estruturados da aba Sobre dos canais do YouTube."""
     import pandas as pd
     from src.collectors.channel_link_scraper import scrape_all_channels
@@ -107,49 +115,49 @@ def step_04_scrape_channel_links():
     scrape_all_channels(artists_channels, force=True)
 
 
-def step_05_detect_call2go():
+def step_06_detect_call2go():
     """Aplica detector regex nas descrições dos vídeos."""
     from src.processors.call2go_detector import process_videos
     process_videos()
 
 
-def step_06_build_database():
+def step_07_build_database():
     """Constrói o Data Warehouse SQLite."""
     from src.db.db_builder import build_database
     build_database()
 
 
-def step_07_eda_analysis():
+def step_08_eda_analysis():
     """Executa análise exploratória de dados."""
     from src.analytics.eda_analysis import run_analysis
     run_analysis()
 
 
-def step_08_hypothesis_testing():
+def step_09_hypothesis_testing():
     """Executa testes de hipótese estatísticos."""
     from src.analytics.hypothesis_testing import run_hypothesis_test
     run_hypothesis_test()
 
 
-def step_09_spotify_impact():
+def step_10_spotify_impact():
     """Executa análise de impacto cross-platform."""
     from src.analytics.spotify_impact_analysis import run_spotify_impact_test
     run_spotify_impact_test()
 
 
-def step_10_generate_sample():
+def step_11_generate_sample():
     """Gera amostra para validação manual."""
     from src.validation.sample_generator import generate_validation_sample
     generate_validation_sample()
 
 
-def step_11_cross_platform_validation():
+def step_12_cross_platform_validation():
     """Executa validação cross-platform bidirecional."""
     from src.validation.cross_platform_validator import run_cross_platform_validation
     run_cross_platform_validation()
 
 
-def step_12_generate_census_excel():
+def step_13_generate_census_excel():
     """Gera censo completo + Excel formatado para validação manual humana."""
     from src.validation.blind_annotator import (
         generate_census_csv, generate_detector_answers)
@@ -179,10 +187,10 @@ def main():
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-12)')
+                        help='Começa a partir de uma etapa específica (1-13)')
     args = parser.parse_args()
 
-    total_steps = 12
+    total_steps = 13
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -210,18 +218,19 @@ def main():
         (1, "CONSTRUÇÃO DA BASE DE ARTISTAS", step_01_build_artist_base, False),
         (2, "COLETA YOUTUBE", step_02_collect_youtube, False),
         (3, "COLETA SPOTIFY", step_03_collect_spotify, False),
-        (4, "SCRAPING LINKS CANAIS (ABOUT PAGE)",
-         step_04_scrape_channel_links, False),
-        (5, "DETECÇÃO CALL2GO (REGEX)", step_05_detect_call2go, True),
-        (6, "CONSTRUÇÃO DO DATA WAREHOUSE", step_06_build_database, True),
-        (7, "ANÁLISE EXPLORATÓRIA (EDA)", step_07_eda_analysis, True),
-        (8, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_08_hypothesis_testing, True),
-        (9, "ANÁLISE IMPACTO CROSS-PLATFORM", step_09_spotify_impact, True),
-        (10, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_10_generate_sample, True),
-        (11, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
-         step_11_cross_platform_validation, True),
-        (12, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
-         step_12_generate_census_excel, True),
+        (4, "COLETA LAST.FM", step_04_collect_lastfm, False),
+        (5, "SCRAPING LINKS CANAIS (ABOUT PAGE)",
+         step_05_scrape_channel_links, False),
+        (6, "DETECÇÃO CALL2GO (REGEX)", step_06_detect_call2go, True),
+        (7, "CONSTRUÇÃO DO DATA WAREHOUSE", step_07_build_database, True),
+        (8, "ANÁLISE EXPLORATÓRIA (EDA)", step_08_eda_analysis, True),
+        (9, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_09_hypothesis_testing, True),
+        (10, "ANÁLISE IMPACTO CROSS-PLATFORM", step_10_spotify_impact, True),
+        (11, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_11_generate_sample, True),
+        (12, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
+         step_12_cross_platform_validation, True),
+        (13, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
+         step_13_generate_census_excel, True),
     ]
 
     results = {}
@@ -241,7 +250,7 @@ def main():
         success = run_step(func, title)
         results[step_num] = "OK" if success else "FALHA"
 
-        if not success and step_num <= 3:
+        if not success and step_num <= 4:
             print(
                 f"\n  [AVISO] Etapa de coleta falhou. Tentando continuar com dados existentes...")
             continue
