@@ -1,9 +1,10 @@
 ﻿# Progress -- TCC Call2Go
 
-## Estado Atual (18/04/2026)
-- Pipeline 13 etapas funcionando (67 artistas, 1.641 videos)
-- Last.fm integrado: 67/67 artistas (100% cobertura), 659 tracks coletadas
-- DB SQLite com 4 tabelas: dim_artist, fact_yt_videos, fact_spotify, fact_lastfm
+## Estado Atual (19/04/2026)
+- Pipeline 14 etapas funcionando (67 artistas, 1.641 videos)
+- Last.fm integrado: 67/67 artistas (100%), 659 tracks, charts BR 200+200
+- Last.fm Bridge analysis: 8 analises cross-platform 3 fontes
+- DB SQLite com 6 tabelas: +fact_lastfm_chart_artists, +fact_lastfm_chart_tracks
 - Codigo auditado, arquivos obsoletos removidos, caches limpos
 
 ## Historico Resumido
@@ -49,9 +50,20 @@
 - 67/67 artistas encontrados, 659 tracks, 0 erros
 - Integrado no pipeline (step 4) e DB (fact_lastfm_metrics)
 
+### Last.fm Bridge Analysis (19/04/2026)
+- lastfm_chart_collector.py: geo.getTopArtists + geo.getTopTracks (200+200 BR)
+- lastfm_bridge_analysis.py: 8 analises cross-platform 3 fontes
+- 8/67 artistas no Top 200 BR (11.9%): Taylor Swift, Marina Sena, Pedro Sampaio...
+- Correlacoes fortes: Spotify Followers <-> Last.fm Scrobbles rho=0.845
+- Call2Go vs Hit status: NAO significativo (p=0.154)
+- Mann-Whitney Last.fm: NAO significativo (listeners p=0.573, scrobbles p=0.702)
+- Genero x Call2Go: NAO significativo (p=0.373)
+- Pipeline: step 4 coleta charts, step 11 roda bridge analysis
+- DB: +fact_lastfm_chart_artists, +fact_lastfm_chart_tracks (6 tabelas total)
+
 ## Pendente
-1. [P0] Analise cross-platform 3 fontes (YouTube x Spotify x Last.fm)
+1. ~~[P0] Analise cross-platform 3 fontes~~ DONE
 2. [P1] Anotar 1.641 videos (blind_annotation_census.xlsx)
 3. [P2] Cross-validation censitaria (cross_validator.py)
-4. [P3] Alinhar com orientador
+4. [P3] Alinhar com orientador sobre resultados bridge
 5. [P4] Capitulos Metodologia + Resultados do TCC

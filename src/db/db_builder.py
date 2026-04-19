@@ -61,7 +61,7 @@ def build_database():
         print("[ERRO] Nenhum arquivo de métricas do Spotify encontrado.")
 
     # ---------------------------------------------------------
-    # 4. Carga dos Fatos do Last.fm
+    # 4. Carga dos Fatos do Last.fm (metricas por artista)
     # ---------------------------------------------------------
     print("Carregando tabela fact_lastfm_metrics...")
     lastfm_files = glob.glob("data/raw/lastfm_artists_*.csv")
@@ -75,9 +75,37 @@ def build_database():
             subset=['date', 'artist_name'], inplace=True)
 
         df_lastfm.to_sql('fact_lastfm_metrics', conn,
-                          if_exists='replace', index=False)
+                         if_exists='replace', index=False)
     else:
         print("[AVISO] Nenhum arquivo de métricas do Last.fm encontrado.")
+
+    # ---------------------------------------------------------
+    # 5. Carga dos Charts Last.fm Brasil (artistas + tracks)
+    # ---------------------------------------------------------
+    print("Carregando tabela fact_lastfm_chart_artists...")
+    chart_artist_files = glob.glob(
+        "data/raw/lastfm_chart_artists_brazil_*.csv")
+    if chart_artist_files:
+        df_ca_list = [pd.read_csv(f) for f in chart_artist_files]
+        df_ca = pd.concat(df_ca_list, ignore_index=True)
+        df_ca.drop_duplicates(subset=['date', 'artist_name'], inplace=True)
+        df_ca.to_sql('fact_lastfm_chart_artists', conn,
+                     if_exists='replace', index=False)
+    else:
+        print("[AVISO] Nenhum arquivo de chart artistas Last.fm encontrado.")
+
+    print("Carregando tabela fact_lastfm_chart_tracks...")
+    chart_track_files = glob.glob(
+        "data/raw/lastfm_chart_tracks_brazil_*.csv")
+    if chart_track_files:
+        df_ct_list = [pd.read_csv(f) for f in chart_track_files]
+        df_ct = pd.concat(df_ct_list, ignore_index=True)
+        df_ct.drop_duplicates(
+            subset=['date', 'artist_name', 'track_name'], inplace=True)
+        df_ct.to_sql('fact_lastfm_chart_tracks', conn,
+                     if_exists='replace', index=False)
+    else:
+        print("[AVISO] Nenhum arquivo de chart tracks Last.fm encontrado.")
 
     # Fecha a conexão para salvar no disco
     conn.close()
@@ -85,7 +113,8 @@ def build_database():
     print(
         f"\n[OK] Banco de dados construído e populado com sucesso em: {db_path}")
     print("[OK] Tabelas disponíveis: dim_artist, fact_yt_videos, "
-          "fact_spotify_metrics, fact_lastfm_metrics")
+          "fact_spotify_metrics, fact_lastfm_metrics, "
+          "fact_lastfm_chart_artists, fact_lastfm_chart_tracks")
 
 
 if __name__ == "__main__":

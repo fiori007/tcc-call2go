@@ -6,16 +6,17 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     1. Construção da base de artistas (Charts Q1 2026 cross-platform)
     2. Coleta de vídeos do YouTube (por artista)
     3. Coleta de métricas do Spotify (por artista)
-    4. Coleta de métricas do Last.fm (por artista)
+    4. Coleta de métricas do Last.fm (artistas + charts BR)
     5. Scraping de links estruturados dos canais (About page)
     6. Detecção de Call2Go (regex nas descrições)
     7. Construção do Data Warehouse (SQLite)
     8. Análise Exploratória (EDA)
     9. Testes de Hipótese (Mann-Whitney U)
    10. Análise de Impacto Cross-Platform
-   11. Geração de amostra para validação manual
-   12. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
-   13. Censo Excel para validação manual humana
+   11. Last.fm Bridge — Análise 3 Fontes
+   12. Geração de amostra para validação manual
+   13. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
+   14. Censo Excel para validação manual humana
 
 Uso:
     python run_pipeline.py                  # pipeline completo
@@ -96,9 +97,11 @@ def step_03_collect_spotify():
 
 
 def step_04_collect_lastfm():
-    """Coleta métricas do Last.fm para cada artista."""
+    """Coleta métricas do Last.fm para cada artista + charts BR."""
     from src.collectors.lastfm_collector import collect_lastfm_data
+    from src.collectors.lastfm_chart_collector import collect_lastfm_charts
     collect_lastfm_data()
+    collect_lastfm_charts(country="Brazil", total=200)
 
 
 def step_05_scrape_channel_links():
@@ -145,19 +148,25 @@ def step_10_spotify_impact():
     run_spotify_impact_test()
 
 
-def step_11_generate_sample():
+def step_11_lastfm_bridge():
+    """Executa análise Last.fm Bridge — 3 fontes cross-platform."""
+    from src.analytics.lastfm_bridge_analysis import run_lastfm_bridge_analysis
+    run_lastfm_bridge_analysis()
+
+
+def step_12_generate_sample():
     """Gera amostra para validação manual."""
     from src.validation.sample_generator import generate_validation_sample
     generate_validation_sample()
 
 
-def step_12_cross_platform_validation():
+def step_13_cross_platform_validation():
     """Executa validação cross-platform bidirecional."""
     from src.validation.cross_platform_validator import run_cross_platform_validation
     run_cross_platform_validation()
 
 
-def step_13_generate_census_excel():
+def step_14_generate_census_excel():
     """Gera censo completo + Excel formatado para validação manual humana."""
     from src.validation.blind_annotator import (
         generate_census_csv, generate_detector_answers)
@@ -187,10 +196,10 @@ def main():
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-13)')
+                        help='Começa a partir de uma etapa específica (1-14)')
     args = parser.parse_args()
 
-    total_steps = 13
+    total_steps = 14
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -218,7 +227,7 @@ def main():
         (1, "CONSTRUÇÃO DA BASE DE ARTISTAS", step_01_build_artist_base, False),
         (2, "COLETA YOUTUBE", step_02_collect_youtube, False),
         (3, "COLETA SPOTIFY", step_03_collect_spotify, False),
-        (4, "COLETA LAST.FM", step_04_collect_lastfm, False),
+        (4, "COLETA LAST.FM (ARTISTAS + CHARTS BR)", step_04_collect_lastfm, False),
         (5, "SCRAPING LINKS CANAIS (ABOUT PAGE)",
          step_05_scrape_channel_links, False),
         (6, "DETECÇÃO CALL2GO (REGEX)", step_06_detect_call2go, True),
@@ -226,11 +235,12 @@ def main():
         (8, "ANÁLISE EXPLORATÓRIA (EDA)", step_08_eda_analysis, True),
         (9, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_09_hypothesis_testing, True),
         (10, "ANÁLISE IMPACTO CROSS-PLATFORM", step_10_spotify_impact, True),
-        (11, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_11_generate_sample, True),
-        (12, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
-         step_12_cross_platform_validation, True),
-        (13, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
-         step_13_generate_census_excel, True),
+        (11, "LAST.FM BRIDGE (3 FONTES)", step_11_lastfm_bridge, True),
+        (12, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_12_generate_sample, True),
+        (13, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
+         step_13_cross_platform_validation, True),
+        (14, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
+         step_14_generate_census_excel, True),
     ]
 
     results = {}

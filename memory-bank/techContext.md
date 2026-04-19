@@ -20,12 +20,13 @@
   - Resume: le JSONL existente, pula artistas ja coletados
 - **Last.fm:** API Key (LASTFM_API_KEY), sem OAuth para leitura
   - Endpoints: artist.getInfo, artist.getTopTracks, artist.getTopAlbums
+  - Charts BR: geo.getTopArtists, geo.getTopTracks (country="Brazil")
   - Rate limit: 0.25s entre requests, autocorrect=1 para nomes
 
 ## Estrutura de Arquivos
 `
 tcc_call2go/
-  run_pipeline.py            # Orquestrador 13 etapas
+  run_pipeline.py            # Orquestrador 14 etapas
   requirements.txt           # Dependencias pinadas
   src/
     collectors/              # Coleta de dados (APIs + scraping)
