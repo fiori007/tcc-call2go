@@ -25,6 +25,8 @@ Fluxo:
     ou via run_pipeline.py (etapa automatica)
 """
 
+import seaborn as sns
+import matplotlib.pyplot as plt
 import os
 import re
 import glob
@@ -34,8 +36,6 @@ import numpy as np
 from scipy import stats
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 # ============================================================
@@ -79,7 +79,8 @@ def _load_lastfm_artists(data_dir="data/raw"):
 
 def _load_lastfm_top_tracks(data_dir="data/raw"):
     """Carrega top tracks por artista do Last.fm."""
-    files = sorted(glob.glob(os.path.join(data_dir, "lastfm_top_tracks_*.csv")))
+    files = sorted(glob.glob(os.path.join(
+        data_dir, "lastfm_top_tracks_*.csv")))
     if not files:
         return None
     return pd.read_csv(files[-1])
@@ -192,7 +193,7 @@ def validate_three_way_intersection(df_seed, df_chart_artists, output_dir):
 # 2. RANKING COMPARATIVO 3 PLATAFORMAS
 # ============================================================
 
-def rank_comparison(df_seed, df_sp, df_lastfm, output_dir):
+def rank_comparison(df_seed, df_sp, df_lastfm, output_dir, df_yt=None):
     """
     Compara rankings de popularidade entre 3 plataformas via Spearman.
     Cada artista recebe um rank em cada plataforma, e as correlacoes
@@ -205,11 +206,19 @@ def rank_comparison(df_seed, df_sp, df_lastfm, output_dir):
     # Monta perfil com ranks
     df = df_seed[['artist_name']].copy()
 
-    # YouTube: rank por total_youtube_views (ja disponivel no seed)
+    # YouTube: rank por total_youtube_views. Se vier ausente/constante no seed,
+    # usa agregacao direta do dataset de videos para evitar rank degenerado.
     if 'total_youtube_views' in df_seed.columns:
-        df['youtube_views'] = df_seed['total_youtube_views'].values
+        df['youtube_views'] = pd.to_numeric(
+            df_seed['total_youtube_views'], errors='coerce').fillna(0)
     else:
         df['youtube_views'] = 0
+
+    if df['youtube_views'].nunique(dropna=True) <= 1 and df_yt is not None:
+        yt_agg = df_yt.groupby('artist_name', as_index=False)[
+            'view_count'].sum()
+        yt_map = dict(zip(yt_agg['artist_name'], yt_agg['view_count']))
+        df['youtube_views'] = df['artist_name'].map(yt_map).fillna(0)
 
     # Spotify: rank por popularity
     sp_map = dict(zip(df_sp['artist_name'], df_sp['popularity']))
@@ -227,10 +236,14 @@ def rank_comparison(df_seed, df_sp, df_lastfm, output_dir):
 
     # Gera ranks (1 = maior valor)
     df['rank_yt'] = df['youtube_views'].rank(ascending=False, method='min')
-    df['rank_sp_pop'] = df['spotify_popularity'].rank(ascending=False, method='min')
-    df['rank_sp_fol'] = df['spotify_followers'].rank(ascending=False, method='min')
-    df['rank_lfm_listeners'] = df['lastfm_listeners'].rank(ascending=False, method='min')
-    df['rank_lfm_playcount'] = df['lastfm_playcount'].rank(ascending=False, method='min')
+    df['rank_sp_pop'] = df['spotify_popularity'].rank(
+        ascending=False, method='min')
+    df['rank_sp_fol'] = df['spotify_followers'].rank(
+        ascending=False, method='min')
+    df['rank_lfm_listeners'] = df['lastfm_listeners'].rank(
+        ascending=False, method='min')
+    df['rank_lfm_playcount'] = df['lastfm_playcount'].rank(
+        ascending=False, method='min')
 
     # Correlacoes de Spearman entre ranks
     rank_cols = {
@@ -250,7 +263,13 @@ def rank_comparison(df_seed, df_sp, df_lastfm, output_dir):
         for j in range(i + 1, len(pairs)):
             label_a, col_a = pairs[i]
             label_b, col_b = pairs[j]
-            rho, p = stats.spearmanr(df[col_a], df[col_b])
+            a = df[col_a]
+            b = df[col_b]
+            if a.nunique(dropna=True) <= 1 or b.nunique(dropna=True) <= 1:
+                # Correlacao indefinida quando um dos vetores e constante.
+                rho, p = 0.0, 1.0
+            else:
+                rho, p = stats.spearmanr(a, b)
             sig = "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else "n.s."
             print(f"    {label_a} <-> {label_b}: rho={rho:.3f}, p={p:.4f} {sig}")
             results[f"{label_a}_vs_{label_b}"] = {'rho': rho, 'p': p}
@@ -311,10 +330,10 @@ def _clean_video_title(title):
         r'\bdvd\b',
         r'\|.*$',        # Remove tudo apos pipe
         r'\[.*?\]',      # Remove colchetes
-        r'feat\.?\s.*$', # Remove feat.
+        r'feat\.?\s.*$',  # Remove feat.
         r'ft\.?\s.*$',   # Remove ft.
-        r'part\.?\s.*$', # Remove part.
-        r'prod\.?\s.*$', # Remove prod.
+        r'part\.?\s.*$',  # Remove part.
+        r'prod\.?\s.*$',  # Remove prod.
     ]
     cleaned = title
     for pattern in noise:
@@ -353,7 +372,8 @@ def track_level_matching(df_yt, df_lastfm_tracks, df_chart_tracks, output_dir):
     chart_track_set = set()
     if df_chart_tracks is not None:
         for _, row in df_chart_tracks.iterrows():
-            key = (_normalize(row['artist_name']), _normalize(row['track_name']))
+            key = (_normalize(row['artist_name']),
+                   _normalize(row['track_name']))
             chart_track_set.add(key)
 
     # Matching
@@ -446,7 +466,8 @@ def callgo_vs_hits(df_yt, df_matches, output_dir):
     with_c2g = df[df['has_call2go'] == 1]
     without_c2g = df[df['has_call2go'] == 0]
     rate_with = with_c2g['lastfm_hit'].mean() * 100 if len(with_c2g) > 0 else 0
-    rate_without = without_c2g['lastfm_hit'].mean() * 100 if len(without_c2g) > 0 else 0
+    rate_without = without_c2g['lastfm_hit'].mean(
+    ) * 100 if len(without_c2g) > 0 else 0
 
     print(f"\n  Taxa de hits (Com Call2Go): {rate_with:.1f}%")
     print(f"  Taxa de hits (Sem Call2Go): {rate_without:.1f}%")
@@ -464,13 +485,15 @@ def callgo_vs_hits(df_yt, df_matches, output_dir):
             # Fisher exact para amostras com frequencias baixas
             odds_ratio, p = stats.fisher_exact(ct_values)
             chi2 = None
-            print(f"\n  Fisher Exact (freq. esperada < 5): OR={odds_ratio:.3f}, p={p:.4f}")
+            print(
+                f"\n  Fisher Exact (freq. esperada < 5): OR={odds_ratio:.3f}, p={p:.4f}")
 
         alpha = 0.05
         if p < alpha:
             print(f"  CONCLUSAO: Rejeita H0 — Call2Go e hit status NAO sao independentes")
         else:
-            print(f"  CONCLUSAO: Falha em rejeitar H0 — Call2Go e hit status sao independentes")
+            print(
+                f"  CONCLUSAO: Falha em rejeitar H0 — Call2Go e hit status sao independentes")
     else:
         p = None
         print(f"  [AVISO] Tabela de contingencia incompleta, teste nao aplicavel")
@@ -642,7 +665,8 @@ def mannwhitney_lastfm(df_profile, output_dir):
         axes[idx].set_ylabel(label, fontsize=10)
         axes[idx].set_title(f'{label}\npor Call2Go Status', fontsize=10,
                             fontweight='bold')
-        axes[idx].ticklabel_format(style='scientific', axis='y', scilimits=(0, 0))
+        axes[idx].ticklabel_format(
+            style='scientific', axis='y', scilimits=(0, 0))
 
         if col in results:
             p = results[col]['p']
@@ -846,7 +870,8 @@ def genre_analysis(df_profile, df_lastfm, output_dir):
               f"(N={row['n_artists']}, listeners={row['avg_lastfm_listeners']:,.0f})")
 
     # Teste chi-squared: Call2Go (binario por artista) vs genero
-    df_profile['has_any_call2go'] = (df_profile['call2go_rate'] > 0).astype(int)
+    df_profile['has_any_call2go'] = (
+        df_profile['call2go_rate'] > 0).astype(int)
 
     # Filtra generos com N >= 3 para validade estatistica
     valid_genres = genre_counts[genre_counts >= 3].index
@@ -856,7 +881,8 @@ def genre_analysis(df_profile, df_lastfm, output_dir):
         ct = pd.crosstab(df_filtered['genre'], df_filtered['has_any_call2go'])
         if ct.shape[1] == 2:
             chi2, p, dof, expected = stats.chi2_contingency(ct)
-            print(f"\n  Chi-squared (genero x Call2Go): X2={chi2:.3f}, p={p:.4f}, dof={dof}")
+            print(
+                f"\n  Chi-squared (genero x Call2Go): X2={chi2:.3f}, p={p:.4f}, dof={dof}")
 
             alpha = 0.05
             if p < alpha:
@@ -926,7 +952,8 @@ def generate_bridge_report(results, output_dir):
             in_chart = inter['in_lastfm_chart_br'].sum()
             f.write("1. INTERSECAO 3 FONTES\n")
             f.write(f"   Seed (Spotify+YouTube Q1 2026): {total} artistas\n")
-            f.write(f"   No Last.fm Top 200 BR: {in_chart} ({in_chart/total*100:.1f}%)\n")
+            f.write(
+                f"   No Last.fm Top 200 BR: {in_chart} ({in_chart/total*100:.1f}%)\n")
             f.write(f"   Last.fm per-artist coverage: 100% (todos encontrados)\n\n")
 
         # Rankings
@@ -950,8 +977,10 @@ def generate_bridge_report(results, output_dir):
         if 'callgo_hits' in results:
             ch = results['callgo_hits']
             f.write("4. CALL2GO vs HIT STATUS\n")
-            f.write(f"   Taxa hits (Com Call2Go): {ch['rate_with_c2g']:.1f}%\n")
-            f.write(f"   Taxa hits (Sem Call2Go): {ch['rate_without_c2g']:.1f}%\n")
+            f.write(
+                f"   Taxa hits (Com Call2Go): {ch['rate_with_c2g']:.1f}%\n")
+            f.write(
+                f"   Taxa hits (Sem Call2Go): {ch['rate_without_c2g']:.1f}%\n")
             if ch['p_value'] is not None:
                 f.write(f"   p-value: {ch['p_value']:.4f}\n")
             f.write("\n")
@@ -1005,13 +1034,15 @@ def build_three_source_profile(df_yt, df_sp, df_lastfm):
         avg_comments=('comment_count', 'mean'),
     ).reset_index()
 
-    yt_agg['call2go_rate'] = yt_agg['videos_com_call2go'] / yt_agg['total_videos']
+    yt_agg['call2go_rate'] = yt_agg['videos_com_call2go'] / \
+        yt_agg['total_videos']
 
     # Spotify
     sp_cols = df_sp[['artist_name', 'followers', 'popularity']].copy()
 
     # Last.fm
-    lfm_cols = df_lastfm[['artist_name', 'listeners', 'playcount', 'tags']].copy()
+    lfm_cols = df_lastfm[['artist_name',
+                          'listeners', 'playcount', 'tags']].copy()
     lfm_cols = lfm_cols.rename(columns={
         'listeners': 'lastfm_listeners',
         'playcount': 'lastfm_playcount',
@@ -1023,7 +1054,8 @@ def build_three_source_profile(df_yt, df_sp, df_lastfm):
     df_profile = df_profile.merge(lfm_cols, on='artist_name', how='inner')
 
     # Engagement
-    df_profile['avg_engagement'] = df_profile['avg_likes'] + df_profile['avg_comments']
+    df_profile['avg_engagement'] = df_profile['avg_likes'] + \
+        df_profile['avg_comments']
 
     return df_profile
 
@@ -1068,7 +1100,8 @@ def run_lastfm_bridge_analysis():
 
     # Perfil 3 fontes
     df_profile = build_three_source_profile(df_yt, df_sp, df_lastfm)
-    print(f"\n  Perfil 3 fontes: {len(df_profile)} artistas com dados nas 3 plataformas")
+    print(
+        f"\n  Perfil 3 fontes: {len(df_profile)} artistas com dados nas 3 plataformas")
 
     # Salva perfil
     profile_path = os.path.join(output_dir, "three_source_profile.csv")
@@ -1078,11 +1111,13 @@ def run_lastfm_bridge_analysis():
     all_results = {}
 
     # 1. Intersecao 3 fontes
-    df_inter = validate_three_way_intersection(df_seed, df_chart_artists, output_dir)
+    df_inter = validate_three_way_intersection(
+        df_seed, df_chart_artists, output_dir)
     all_results['intersection'] = df_inter
 
     # 2. Ranking comparativo
-    _, rank_results = rank_comparison(df_seed, df_sp, df_lastfm, plots_dir)
+    _, rank_results = rank_comparison(
+        df_seed, df_sp, df_lastfm, plots_dir, df_yt=df_yt)
     all_results['rank_results'] = rank_results
 
     # 3. Track-level matching

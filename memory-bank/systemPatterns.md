@@ -18,6 +18,17 @@
 14. Census Excel (blind_annotator + excel_formatter) -- dual output
 `
 
+## Determinismo / Cache
+- Etapa 5 (scraping de canais) opera em cache-first por padrao para estabilidade entre reruns.
+- Flag de override no pipeline: `--force-channel-scrape` (ignora cache e re-scrapa).
+- Objetivo: reduzir variacao estocastica de disponibilidade de pagina e garantir reprodutibilidade analitica.
+
+## Auditoria de Voltas (metodologica)
+- Script standalone: `src.validation.reverse_links_audit` (Playwright)
+- Escopo: Spotify->YouTube, Spotify->Last.fm, Last.fm->YouTube, Last.fm->Spotify
+- Cobertura validada: 67/67 em ambas plataformas
+- Resultado: 0 ocorrencias em todas as direcoes
+
 ## Deteccao Call2Go (3 niveis)
 1. **Video:** regex na descricao (open.spotify.com, spoti.fi, sptfy.com, bit.ly labeled, CTA text)
 2. **Canal (scraped):** links estruturados da aba Sobre (web scraping)

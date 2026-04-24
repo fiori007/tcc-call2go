@@ -1,0 +1,56 @@
+============================================================
+RELATORIO: LAST.FM BRIDGE — ANALISE CROSS-PLATFORM 3 FONTES
+Janela temporal: Q1 2026 (Janeiro-Marco)
+============================================================
+
+1. INTERSECAO 3 FONTES
+   Seed (Spotify+YouTube Q1 2026): 67 artistas
+   No Last.fm Top 200 BR: 9 (13.4%)
+   Last.fm per-artist coverage: 100% (todos encontrados)
+
+2. CONVERGENCIA DE RANKINGS
+   YouTube Views_vs_Spotify Pop: rho=0.498, p=0.0000 ***
+   YouTube Views_vs_Spotify Followers: rho=0.682, p=0.0000 ***
+   YouTube Views_vs_Last.fm Listeners: rho=0.514, p=0.0000 ***
+   YouTube Views_vs_Last.fm Scrobbles: rho=0.608, p=0.0000 ***
+   Spotify Pop_vs_Spotify Followers: rho=0.720, p=0.0000 ***
+   Spotify Pop_vs_Last.fm Listeners: rho=0.663, p=0.0000 ***
+   Spotify Pop_vs_Last.fm Scrobbles: rho=0.701, p=0.0000 ***
+   Spotify Followers_vs_Last.fm Listeners: rho=0.800, p=0.0000 ***
+   Spotify Followers_vs_Last.fm Scrobbles: rho=0.848, p=0.0000 ***
+   Last.fm Listeners_vs_Last.fm Scrobbles: rho=0.952, p=0.0000 ***
+
+3. TRACK-LEVEL MATCHING
+   Videos analisados: 1641
+   Hits Last.fm: 279 (17.0%)
+
+4. CALL2GO vs HIT STATUS
+   Taxa hits (Com Call2Go): 23.9%
+   Taxa hits (Sem Call2Go): 16.6%
+   p-value: 0.1062
+
+5. MANN-WHITNEY: CALL2GO vs LAST.FM
+   lastfm_listeners: U=201, p=0.86466 n.s.
+     Mediana COM: 85,831 | SEM: 134,481
+   lastfm_playcount: U=207, p=0.96003 n.s.
+     Mediana COM: 1,040,827 | SEM: 2,286,370
+
+6. ANALISE BIDIRECIONAL ESTENDIDA
+   YouTube Avg Views <-> Last.fm Listeners: rho=0.494, p=0.0000 ***
+   YouTube Avg Views <-> Last.fm Scrobbles: rho=0.590, p=0.0000 ***
+   YouTube Call2Go Rate <-> Last.fm Listeners: rho=-0.036, p=0.7731 n.s.
+   Spotify Popularity <-> Last.fm Listeners: rho=0.663, p=0.0000 ***
+   Spotify Followers <-> Last.fm Listeners: rho=0.800, p=0.0000 ***
+   Spotify Followers <-> Last.fm Scrobbles: rho=0.848, p=0.0000 ***
+
+7. CALL2GO POR GENERO
+   Gospel: avg_rate=40.0% (N=2)
+   Outros: avg_rate=4.9% (N=27)
+   Funk: avg_rate=4.4% (N=18)
+   Country/Internacional: avg_rate=0.0% (N=1)
+   Forro/Piseiro: avg_rate=0.0% (N=3)
+   Pagode/Samba: avg_rate=0.0% (N=2)
+   Pop: avg_rate=0.0% (N=2)
+   Rap/Hip-Hop: avg_rate=0.0% (N=5)
+   Rock: avg_rate=0.0% (N=2)
+   Sertanejo: avg_rate=0.0% (N=5)

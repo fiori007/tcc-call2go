@@ -1,0 +1,101 @@
+============================================================
+RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Q1 2026
+============================================================
+Gerado em: 2026-04-24 20:47:06
+
+Total de artistas nos charts: 316
+Artistas do dataset (seed): 67
+
+score_spotify: min=0.0050, max=3.0000, mediana=0.0221
+score_youtube: min=0.0100, max=3.0000, mediana=0.0274
+
+--- TOP 10 POR SCORE SPOTIFY ---
+   1. [*] DJ Japa NK: 3.0000
+   2. [*] PEDRO SAMPAIO: 1.7500
+   3. [*] Mc Jacaré: 1.3537
+   4.     dj gu: 1.1667
+   5. [*] Panda: 1.1667
+   6.     bts: 1.0000
+   7. [*] MC GP: 0.5611
+   8. [*] Grupo Menos É Mais: 0.5167
+   9. [*] DJ Oreia: 0.4345
+  10. [*] Vitinho Imperador: 0.4338
+
+--- TOP 10 POR SCORE YOUTUBE ---
+   1. [*] PEDRO SAMPAIO: 3.0000
+   2. [*] DJ Oreia: 1.8333
+   3. [*] DJ Japa NK: 1.5833
+   4. [*] Grupo Menos É Mais: 0.8667
+   5. [*] Mc Jacaré: 0.8619
+   6. [*] Mc Lele JP: 0.4778
+   7. [*] Vitinho Imperador: 0.4286
+   8.     mc vine7: 0.3750
+   9. [*] Oruam: 0.3274
+  10. [*] Léo Santana: 0.2520
+
+--- TOP 10 POR SCORE COMBINADO ---
+   1. [*] PEDRO SAMPAIO: 4.7500
+   2. [*] DJ Japa NK: 4.5833
+   3. [*] DJ Oreia: 2.2679
+   4. [*] Mc Jacaré: 2.2156
+   5. [*] Grupo Menos É Mais: 1.3833
+   6. [*] Panda: 1.3318
+   7.     bts: 1.1667
+   8.     dj gu: 1.1667
+   9. [*] Vitinho Imperador: 0.8623
+  10. [*] MC GP: 0.8047
+
+--- TENDENCIAS JAN->MAR (DATASET) ---
+  Spotify:
+    absent: 28
+    falling: 16
+    rising: 11
+    stable: 5
+    single: 3
+    new: 2
+    fading: 2
+  YouTube:
+    absent: 34
+    falling: 13
+    rising: 9
+    stable: 7
+    single: 2
+    new: 1
+    fading: 1
+
+--- COBERTURA DO SEED ---
+  Artistas seed na tabela: 67
+  Primarios (pelo menos 1 plataforma): 39
+  Featured-only Spotify: 28
+  Featured-only YouTube: 28
+
+--- COMPARACAO GRUPOS CALL2GO ---
+  score_spotify:
+    Call2Go=1: mediana=0.0500
+    Call2Go=0: mediana=0.0781
+    Mann-Whitney p=0.4123 [ns]
+  score_youtube:
+    Call2Go=1: mediana=0.0871
+    Call2Go=0: mediana=0.1007
+    Mann-Whitney p=0.5095 [ns]
+  presence_count_spotify:
+    Mann-Whitney p=1.0000 [ns]
+
+--- CORRELACOES LAST.FM ---
+  score_spotify x listeners (n=39):
+    Pearson  r=-0.034 [ns]
+    Spearman rho=0.188 [ns]
+  score_spotify x playcount (n=39):
+    Pearson  r=-0.068 [ns]
+    Spearman rho=0.061 [ns]
+  score_youtube x listeners (n=33):
+    Pearson  r=-0.049 [ns]
+    Spearman rho=-0.141 [ns]
+  score_youtube x playcount (n=33):
+    Pearson  r=-0.084 [ns]
+    Spearman rho=-0.325 [ns]
+  score_spotify x score_youtube (n=33):
+    Pearson  r=0.718 [***]
+    Spearman rho=0.626 [***]
+
+============================================================

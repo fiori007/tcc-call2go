@@ -12,6 +12,7 @@
 | SciPy | 1.17.1 | Testes estatisticos |
 | Matplotlib + Seaborn | 3.10.8 / 0.13.2 | Graficos |
 | pytest | 9.0.3 | Testes unitarios |
+| Playwright | 1.52.0 | Auditoria automatizada de links de perfil |
 
 ## APIs
 - **Spotify:** OAuth2 Client Credentials (SPOTIFY_CLIENT_ID + SECRET)
@@ -50,3 +51,4 @@ tcc_call2go/
 - Spotify Popularity Score: opaco, snapshot pontual
 - YouTube API nao expoe links da aba Sobre -> web scraping necessario
 - Spotify API nao expoe links externos do perfil
+- Scraping de perfis depende de disponibilidade de pagina (cache-first reduz variacao entre reruns)

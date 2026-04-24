@@ -37,6 +37,9 @@ os.chdir(PROJECT_ROOT)
 sys.path.insert(0, PROJECT_ROOT)
 
 
+FORCE_CHANNEL_SCRAPE = False
+
+
 def banner(step_num, total, title):
     """Imprime banner formatado para cada etapa."""
     width = 60
@@ -115,7 +118,7 @@ def step_05_scrape_channel_links():
         if pd.notna(row.get('youtube_channel_id')):
             artists_channels[row['artist_name']] = row['youtube_channel_id']
 
-    scrape_all_channels(artists_channels, force=True)
+    scrape_all_channels(artists_channels, force=FORCE_CHANNEL_SCRAPE)
 
 
 def step_06_detect_call2go():
@@ -190,16 +193,33 @@ def step_14_generate_census_excel():
         readonly_mode=True)
 
 
+def step_15_collect_spotify_track_dates():
+    """Coleta datas de lançamento das faixas dos charts Spotify Q1 2026."""
+    from src.collectors.spotify_track_dates_collector import collect_track_dates
+    collect_track_dates()
+
+
+def step_16_ranking_fusion_analysis():
+    """Executa análise de fusão de rankings cross-platform."""
+    from src.analytics.ranking_fusion import run_ranking_fusion_analysis
+    run_ranking_fusion_analysis()
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="TCC Call2Go -- Pipeline Orquestrador")
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-14)')
+                        help='Começa a partir de uma etapa específica (1-16)')
+    parser.add_argument('--force-channel-scrape', action='store_true',
+                        help='Força re-scraping dos canais (ignora cache da etapa 5)')
     args = parser.parse_args()
 
-    total_steps = 14
+    global FORCE_CHANNEL_SCRAPE
+    FORCE_CHANNEL_SCRAPE = args.force_channel_scrape
+
+    total_steps = 16
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -215,6 +235,8 @@ def main():
         print("  Modo: --skip-collect (pula coleta, usa dados existentes)")
     if args.from_step > 1:
         print(f"  Modo: --from-step {args.from_step}")
+    if args.force_channel_scrape:
+        print("  Modo: --force-channel-scrape (ignora cache da etapa 5)")
 
     # Verifica estado dos dados
     print("\n--- VERIFICAÇÃO DE DADOS ---")
@@ -241,6 +263,10 @@ def main():
          step_13_cross_platform_validation, True),
         (14, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
          step_14_generate_census_excel, True),
+        (15, "COLETA DATAS FAIXAS SPOTIFY",
+         step_15_collect_spotify_track_dates, False),
+        (16, "FUSÃO DE RANKINGS + ANÁLISE TEMPORAL",
+         step_16_ranking_fusion_analysis, True),
     ]
 
     results = {}
@@ -298,6 +324,16 @@ def main():
         "data/validation/blind_annotation_census.csv",
         "data/validation/blind_annotation_census.xlsx",
         "data/validation/detector_answers_census.csv",
+        "data/raw/spotify_track_dates_Q1_2026.csv",
+        "data/processed/ranking_fusion_scores.csv",
+        "data/plots/fusion_score_by_call2go.png",
+        "data/plots/fusion_lastfm_correlation.png",
+        "data/plots/temporal_lag_analysis.png",
+        "data/plots/rank_evolution_spotify.png",
+        "data/plots/presence_heatmap_spotify.png",
+        "data/plots/presence_heatmap_youtube.png",
+        "data/validation/ranking_fusion_report.txt",
+        "data/validation/seed_matching_diagnostic.csv",
     ]
 
     for f in output_files:

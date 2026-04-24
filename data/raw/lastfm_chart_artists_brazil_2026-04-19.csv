@@ -1,0 +1,201 @@
+rank,artist_name,listeners,mbid,url,date,country
+1,Sabrina Carpenter,122260,1882fe91-cdd9-49c9-9956-8e06a3810bd4,https://www.last.fm/music/Sabrina+Carpenter,2026-04-19,Brazil
+2,Lady Gaga,115811,650e7db6-b795-4eb5-a702-5ea2fc46c848,https://www.last.fm/music/Lady+Gaga,2026-04-19,Brazil
+3,Ariana Grande,102669,f4fdbb4c-e4b7-47a0-b83b-d91bbfcfa387,https://www.last.fm/music/Ariana+Grande,2026-04-19,Brazil
+4,Taylor Swift,102616,20244d07-534f-4eff-b4d4-930878889970,https://www.last.fm/music/Taylor+Swift,2026-04-19,Brazil
+5,Lana Del Rey,101913,b7539c32-53e7-4908-bda3-81449c367da6,https://www.last.fm/music/Lana+Del+Rey,2026-04-19,Brazil
+6,Justin Bieber,100697,e0140a67-e4d1-4f13-8a01-364355bee46e,https://www.last.fm/music/Justin+Bieber,2026-04-19,Brazil
+7,PinkPantheress,97240,7441014f-f8f5-494f-81db-ff166fbc078d,https://www.last.fm/music/PinkPantheress,2026-04-19,Brazil
+8,Anitta,96904,d606b860-cc03-4959-a3fd-3a24bccf2560,https://www.last.fm/music/Anitta,2026-04-19,Brazil
+9,Marina Sena,96364,2b1e7c27-2663-43df-9c23-8601e173e6ef,https://www.last.fm/music/Marina+Sena,2026-04-19,Brazil
+10,Tame Impala,92950,63aa26c3-d59b-4da4-84ac-716b54f1ef4d,https://www.last.fm/music/Tame+Impala,2026-04-19,Brazil
+11,Olivia Rodrigo,92747,6925db17-f35e-42f3-a4eb-84ee6bf5d4b0,https://www.last.fm/music/Olivia+Rodrigo,2026-04-19,Brazil
+12,Rihanna,87728,73e5e69d-3554-40d8-8516-00cb38737a1c,https://www.last.fm/music/Rihanna,2026-04-19,Brazil
+13,The Weeknd,86249,c8b03190-306c-4120-bb0b-6f2ebfc06ea9,https://www.last.fm/music/The+Weeknd,2026-04-19,Brazil
+14,Charli xcx,81231,260b6184-8828-48eb-945c-bc4cb6fc34ca,https://www.last.fm/music/Charli+xcx,2026-04-19,Brazil
+15,"Tyler, The Creator",78750,f6beac20-5dfe-4d1f-ae02-0b0a740aafd6,"https://www.last.fm/music/Tyler,+The+Creator",2026-04-19,Brazil
+16,Billie Eilish,75683,f4abc0b5-3f7a-4eff-8f78-ac078dbce533,https://www.last.fm/music/Billie+Eilish,2026-04-19,Brazil
+17,Chappell Roan,74674,56a55378-f155-48de-80a5-d80104221267,https://www.last.fm/music/Chappell+Roan,2026-04-19,Brazil
+18,Doja Cat,71893,5df62a88-cac9-490a-b62c-c7c88f4020f4,https://www.last.fm/music/Doja+Cat,2026-04-19,Brazil
+19,Paramore,71430,44cf61b8-5197-448a-b82b-cef6ee89fac5,https://www.last.fm/music/Paramore,2026-04-19,Brazil
+20,Arctic Monkeys,71301,ada7a83c-e3e1-40f1-93f9-3e73dbc9298a,https://www.last.fm/music/Arctic+Monkeys,2026-04-19,Brazil
+21,Beyoncé,71069,859d0860-d480-4efd-970c-c05d5f1776b8,https://www.last.fm/music/Beyonc%C3%A9,2026-04-19,Brazil
+22,Harry Styles,69776,7eb1ce54-a355-41f9-8d68-e018b096d427,https://www.last.fm/music/Harry+Styles,2026-04-19,Brazil
+23,KATSEYE,68130,abbf7d85-9a7f-4a6c-80bd-bf71f2c7d520,https://www.last.fm/music/KATSEYE,2026-04-19,Brazil
+24,Kanye West,67864,,https://www.last.fm/music/Kanye+West,2026-04-19,Brazil
+25,BTS,67851,0d79fe8e-ba27-4859-bb8c-2f255f346853,https://www.last.fm/music/BTS,2026-04-19,Brazil
+26,Radiohead,66002,a74b1b7f-71a5-4011-9441-d0b5e4122711,https://www.last.fm/music/Radiohead,2026-04-19,Brazil
+27,Linkin Park,65145,f59c5520-5f46-4d2c-b2c4-822eabf53419,https://www.last.fm/music/Linkin+Park,2026-04-19,Brazil
+28,NandaTsunami,64902,a79eaa67-a865-406c-b98d-f4512ad198f2,https://www.last.fm/music/NandaTsunami,2026-04-19,Brazil
+29,Kendrick Lamar,64445,381086ea-f511-4aba-bdf9-71c753dc5077,https://www.last.fm/music/Kendrick+Lamar,2026-04-19,Brazil
+30,The Neighbourhood,62747,53b06622-ec51-4924-a554-58b0affde6b5,https://www.last.fm/music/The+Neighbourhood,2026-04-19,Brazil
+31,Britney Spears,60772,45a663b5-b1cb-4a91-bff6-2bef7bbfdd76,https://www.last.fm/music/Britney+Spears,2026-04-19,Brazil
+32,Frank Ocean,57991,e520459c-dff4-491d-a6e4-c97be35e0044,https://www.last.fm/music/Frank+Ocean,2026-04-19,Brazil
+33,Djavan,57771,751e517d-9663-4692-8c20-942e16d484c5,https://www.last.fm/music/Djavan,2026-04-19,Brazil
+34,Katy Perry,57467,122d63fc-8671-43e4-9752-34e846d62a9c,https://www.last.fm/music/Katy+Perry,2026-04-19,Brazil
+35,Addison Rae,57451,610b71d9-fa78-47d6-9073-083922e73840,https://www.last.fm/music/Addison+Rae,2026-04-19,Brazil
+36,Lorde,57246,8e494408-8620-4c6a-82c2-c2ca4a1e4f12,https://www.last.fm/music/Lorde,2026-04-19,Brazil
+37,PEDRO SAMPAIO,57171,796bc8a9-efd1-43e8-bacf-5eba68835928,https://www.last.fm/music/PEDRO+SAMPAIO,2026-04-19,Brazil
+38,Michael Jackson,56766,f27ec8db-af05-4f36-916e-3d57f91ecf5e,https://www.last.fm/music/Michael+Jackson,2026-04-19,Brazil
+39,The Smiths,56160,40f5d9e4-2de7-4f2d-ad41-e31a9a9fea27,https://www.last.fm/music/The+Smiths,2026-04-19,Brazil
+40,Madonna,53918,79239441-bfd5-4981-a70c-55c3f15c1287,https://www.last.fm/music/Madonna,2026-04-19,Brazil
+41,Luísa Sonza,53167,ed667cac-2fdb-4401-973b-81c5b4a1717d,https://www.last.fm/music/Lu%C3%ADsa+Sonza,2026-04-19,Brazil
+42,Charlie Brown Jr.,53017,29b550f2-04a3-4733-b6f5-4e347fac7e11,https://www.last.fm/music/Charlie+Brown+Jr.,2026-04-19,Brazil
+43,Zara Larsson,52904,134e6410-6954-45d1-bd4a-0f2d2ad5471d,https://www.last.fm/music/Zara+Larsson,2026-04-19,Brazil
+44,Gorillaz,52775,e21857d5-3256-4547-afb3-4b6ded592596,https://www.last.fm/music/Gorillaz,2026-04-19,Brazil
+45,System of a Down,51571,cc0b7089-c08d-4c10-b6b0-873582c17fd6,https://www.last.fm/music/System+of+a+Down,2026-04-19,Brazil
+46,Bad Bunny,51288,89aa5ecb-59ad-46f5-b3eb-2d424e941f19,https://www.last.fm/music/Bad+Bunny,2026-04-19,Brazil
+47,Kali Uchis,50360,d0c7656d-8169-4f77-9dbe-b8f24e40105d,https://www.last.fm/music/Kali+Uchis,2026-04-19,Brazil
+48,SZA,50355,272989c8-5535-492d-a25c-9f58803e027f,https://www.last.fm/music/SZA,2026-04-19,Brazil
+49,Bruno Mars,50015,afb680f2-b6eb-4cd7-a70b-a63b25c763d5,https://www.last.fm/music/Bruno+Mars,2026-04-19,Brazil
+50,Deftones,49660,7527f6c2-d762-4b88-b5e2-9244f1e34c46,https://www.last.fm/music/Deftones,2026-04-19,Brazil
+51,Ebony,49550,36e0c533-ffe8-4a88-b846-4d81af8aaf0d,https://www.last.fm/music/Ebony,2026-04-19,Brazil
+52,BK,49520,28d7452b-c83b-4f43-98af-e233a146f59d,https://www.last.fm/music/BK,2026-04-19,Brazil
+53,Jorge Ben Jor,49456,19499124-36d4-4ccc-b28d-04dde3d2076f,https://www.last.fm/music/Jorge+Ben+Jor,2026-04-19,Brazil
+54,Drake,48490,9fff2f8a-21e6-47de-a2b8-7f449929d43f,https://www.last.fm/music/Drake,2026-04-19,Brazil
+55,Fleetwood Mac,47660,bd13909f-1c29-4c27-a874-d4aaf27c5b1a,https://www.last.fm/music/Fleetwood+Mac,2026-04-19,Brazil
+56,Miley Cyrus,46715,7e9bd05a-117f-4cce-87bc-e011527a8b18,https://www.last.fm/music/Miley+Cyrus,2026-04-19,Brazil
+57,RAYE,46412,8be564c3-dfba-440b-af8c-4ffbceeef45e,https://www.last.fm/music/RAYE,2026-04-19,Brazil
+58,Matuê,46068,be42aaaa-9703-41dc-b2eb-de03e30f83b9,https://www.last.fm/music/Matu%C3%AA,2026-04-19,Brazil
+59,Demi Lovato,46018,faf4cefb-036c-4c88-b93a-5b03dd0a0e6b,https://www.last.fm/music/Demi+Lovato,2026-04-19,Brazil
+60,Mitski,45811,fa58cf24-0e44-421d-8519-8bf461dcfaa5,https://www.last.fm/music/Mitski,2026-04-19,Brazil
+61,Anavitória,45230,,https://www.last.fm/music/Anavit%C3%B3ria,2026-04-19,Brazil
+62,Melanie Martinez,44035,0df563ec-1a79-486e-a46d-5b9862a40311,https://www.last.fm/music/Melanie+Martinez,2026-04-19,Brazil
+63,sombr,43544,502cf908-9921-48bc-bf0e-265c881c0156,https://www.last.fm/music/sombr,2026-04-19,Brazil
+64,ROSALÍA,43399,25f3abd9-63b5-471a-bd25-feb9672dfa11,https://www.last.fm/music/ROSAL%C3%8DA,2026-04-19,Brazil
+65,Red Hot Chili Peppers,43100,8bfac288-ccc5-448d-9573-c33ea2aa5c30,https://www.last.fm/music/Red+Hot+Chili+Peppers,2026-04-19,Brazil
+66,Rita Lee,42965,3f962bf0-42a0-45a0-830f-07b66301d35f,https://www.last.fm/music/Rita+Lee,2026-04-19,Brazil
+67,Gal Costa,42568,fc63a914-272d-4b95-9221-61adcce6f793,https://www.last.fm/music/Gal+Costa,2026-04-19,Brazil
+68,The Strokes,42260,f181961b-20f7-459e-89de-920ef03c7ed0,https://www.last.fm/music/The+Strokes,2026-04-19,Brazil
+69,Sade,42184,67930b3e-e00b-469f-8c74-fd69f20522ec,https://www.last.fm/music/Sade,2026-04-19,Brazil
+70,Slayyyter,42139,9058d01e-8afc-47a4-8664-621fb5f159c0,https://www.last.fm/music/Slayyyter,2026-04-19,Brazil
+71,Dominic Fike,41827,e337c918-098f-418e-97a2-81dc224b1bf9,https://www.last.fm/music/Dominic+Fike,2026-04-19,Brazil
+72,Marisa Monte,41684,f81f19b9-c76e-43ac-8656-bb56071785fb,https://www.last.fm/music/Marisa+Monte,2026-04-19,Brazil
+73,The Beatles,41664,b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d,https://www.last.fm/music/The+Beatles,2026-04-19,Brazil
+74,The Marías,41445,7a3970c9-ecd8-4eee-a267-4d8c77d97ff3,https://www.last.fm/music/The+Mar%C3%ADas,2026-04-19,Brazil
+75,Coldplay,41334,cc197bad-dc9c-440d-a5b5-d52ba2e14234,https://www.last.fm/music/Coldplay,2026-04-19,Brazil
+76,Nirvana,40892,5b11f4ce-a62d-471e-81fc-a69a8278c7da,https://www.last.fm/music/Nirvana,2026-04-19,Brazil
+77,TV Girl,40673,38f0c7ac-46eb-49ca-b3ab-c785ccd05a60,https://www.last.fm/music/TV+Girl,2026-04-19,Brazil
+78,Don Toliver,40095,a0723a3c-4135-438e-85c5-012712144ede,https://www.last.fm/music/Don+Toliver,2026-04-19,Brazil
+79,Tate McRae,40027,f9133869-f87c-459c-9aa7-2f176cda7e06,https://www.last.fm/music/Tate+McRae,2026-04-19,Brazil
+80,TWICE,40026,8da127cc-c432-418f-b356-ef36210d82ac,https://www.last.fm/music/TWICE,2026-04-19,Brazil
+81,Marina,39512,b37e091c-d2ee-4707-bfb1-402fc32f29bd,https://www.last.fm/music/Marina,2026-04-19,Brazil
+82,Tim Maia,39131,446ac261-09ae-43f4-a7e1-2c753c0813ce,https://www.last.fm/music/Tim+Maia,2026-04-19,Brazil
+83,Duquesa,39110,55904463-0325-4aea-88f4-925b0319aab8,https://www.last.fm/music/Duquesa,2026-04-19,Brazil
+84,Mac DeMarco,38990,f2492c31-54a8-4347-a1fc-f81f72873bbf,https://www.last.fm/music/Mac+DeMarco,2026-04-19,Brazil
+85,Twenty One Pilots,38936,a6c6897a-7415-4f8d-b5a5-3a5e05f3be67,https://www.last.fm/music/Twenty+One+Pilots,2026-04-19,Brazil
+86,Dua Lipa,38108,6f1a58bf-9b1b-49cf-a44a-6cefad7ae04f,https://www.last.fm/music/Dua+Lipa,2026-04-19,Brazil
+87,NewJeans,37881,49204a7a-ed85-407a-828f-6fd46f1d8126,https://www.last.fm/music/NewJeans,2026-04-19,Brazil
+88,Travis Scott,37836,e4a51f17-a57b-47b1-b37b-f552d0f8e9e6,https://www.last.fm/music/Travis+Scott,2026-04-19,Brazil
+89,Pink Floyd,37725,83d91898-7763-47d7-b03b-b92132375c47,https://www.last.fm/music/Pink+Floyd,2026-04-19,Brazil
+90,Joji,37479,74922d42-c3ec-4f7d-8a24-20da6eda6ba6,https://www.last.fm/music/Joji,2026-04-19,Brazil
+91,Liniker,36545,6c8806e3-9f74-4dd1-9fcb-63352d1ba2a0,https://www.last.fm/music/Liniker,2026-04-19,Brazil
+92,The Cure,36314,69ee3720-a7cb-4402-b48d-a02c366f2bcf,https://www.last.fm/music/The+Cure,2026-04-19,Brazil
+93,My Chemical Romance,36222,c07f0676-9143-4217-8a9f-4c26bd636f13,https://www.last.fm/music/My+Chemical+Romance,2026-04-19,Brazil
+94,Avril Lavigne,36127,0103c1cc-4a09-4a5d-a344-56ad99a77193,https://www.last.fm/music/Avril+Lavigne,2026-04-19,Brazil
+95,BLACKPINK,36119,48646387-1664-4c9a-9139-9bfd091b823c,https://www.last.fm/music/BLACKPINK,2026-04-19,Brazil
+96,Queen,36058,0383dadf-2a4e-4d10-a46a-e9e041da8eb3,https://www.last.fm/music/Queen,2026-04-19,Brazil
+97,Clairo,35314,d786f59b-1836-4ddb-8393-ab753edbe984,https://www.last.fm/music/Clairo,2026-04-19,Brazil
+98,Evanescence,35306,f4a31f0a-51dd-4fa7-986d-3095c40c5ed9,https://www.last.fm/music/Evanescence,2026-04-19,Brazil
+99,Slipknot,35299,a466c2a2-6517-42fb-a160-1087c3bafd9f,https://www.last.fm/music/Slipknot,2026-04-19,Brazil
+100,Jennie,35020,d32de3a1-01f0-430e-859a-72307724041c,https://www.last.fm/music/Jennie,2026-04-19,Brazil
+101,Laufey,34712,21a89505-10a9-4ac0-8388-833bc07b9f86,https://www.last.fm/music/Laufey,2026-04-19,Brazil
+102,Daniel Caesar,33900,b46e298d-d3a5-4695-a03e-63e8c523b23e,https://www.last.fm/music/Daniel+Caesar,2026-04-19,Brazil
+103,One Direction,33682,1a425bbd-cca4-4b2c-aeb7-71cb176c828a,https://www.last.fm/music/One+Direction,2026-04-19,Brazil
+104,Calvin Harris,33384,8dd98bdc-80ec-4e93-8509-2f46bafc09a7,https://www.last.fm/music/Calvin+Harris,2026-04-19,Brazil
+105,Black Eyed Peas,33351,d5be5333-4171-427e-8e12-732087c6b78e,https://www.last.fm/music/Black+Eyed+Peas,2026-04-19,Brazil
+106,Doechii,33322,9f75277c-b283-4846-ac8c-f932255cd0ac,https://www.last.fm/music/Doechii,2026-04-19,Brazil
+107,LE SSERAFIM,33298,1ee37742-1e3d-4e61-84d2-bc85f4c1459a,https://www.last.fm/music/LE+SSERAFIM,2026-04-19,Brazil
+108,DJ Japa NK,33161,,https://www.last.fm/music/DJ+Japa+NK,2026-04-19,Brazil
+109,Maroon 5,32966,0ab49580-c84f-44d4-875f-d83760ea2cfe,https://www.last.fm/music/Maroon+5,2026-04-19,Brazil
+110,Guns N' Roses,32661,,https://www.last.fm/music/Guns+N%27+Roses,2026-04-19,Brazil
+111,aespa,32630,b51c672b-85e0-48fe-8648-470a2422229f,https://www.last.fm/music/aespa,2026-04-19,Brazil
+112,beabadoobee,32563,88d17133-abbc-42db-9526-4e2c1db60336,https://www.last.fm/music/beabadoobee,2026-04-19,Brazil
+113,Shakira,32371,bf24ca37-25f4-4e34-9aec-460b94364cfc,https://www.last.fm/music/Shakira,2026-04-19,Brazil
+114,Skank,32366,25db5fde-2384-4baf-8e3d-d8299b4c99ef,https://www.last.fm/music/Skank,2026-04-19,Brazil
+115,Childish Gambino,32018,7fb57fba-a6ef-44c2-abab-2fa3bdee607e,https://www.last.fm/music/Childish+Gambino,2026-04-19,Brazil
+116,Baco Exu do Blues,31790,d316f174-4056-4d7c-b551-99da9925932f,https://www.last.fm/music/Baco+Exu+do+Blues,2026-04-19,Brazil
+117,Jeff Buckley,31614,e6e879c0-3d56-4f12-b3c5-3ce459661a8e,https://www.last.fm/music/Jeff+Buckley,2026-04-19,Brazil
+118,ZAYN,31515,,https://www.last.fm/music/ZAYN,2026-04-19,Brazil
+119,Justin Timberlake,31370,596ffa74-3d08-44ef-b113-765d43d12738,https://www.last.fm/music/Justin+Timberlake,2026-04-19,Brazil
+120,Selena Gomez,31243,e4bc69e2-a064-4f93-ada1-f7f209cc1cc3,https://www.last.fm/music/Selena+Gomez,2026-04-19,Brazil
+121,Tyla,31231,2bf761c6-4bcf-4cfc-a388-8fcb2eea8cc8,https://www.last.fm/music/Tyla,2026-04-19,Brazil
+122,Legião Urbana,30899,47685be0-926f-4be9-b1ae-e32da47a3b99,https://www.last.fm/music/Legi%C3%A3o+Urbana,2026-04-19,Brazil
+123,Sufjan Stevens,30629,01d3c51b-9b98-418a-8d8e-37f6fab59d8c,https://www.last.fm/music/Sufjan+Stevens,2026-04-19,Brazil
+124,A$AP Rocky,30588,25b7b584-d952-4662-a8b9-dd8cdfbfeb64,https://www.last.fm/music/A$AP+Rocky,2026-04-19,Brazil
+125,Olivia Dean,30495,15e0d608-0869-429b-898d-3d8db3ecedd5,https://www.last.fm/music/Olivia+Dean,2026-04-19,Brazil
+126,LUDMILLA,30428,cf71e106-1003-4390-8477-cf268229df66,https://www.last.fm/music/LUDMILLA,2026-04-19,Brazil
+127,Vanessa da Mata,30289,f3580347-b84a-47d8-b86e-cad642322a47,https://www.last.fm/music/Vanessa+da+Mata,2026-04-19,Brazil
+128,Troye Sivan,30124,e5712ceb-c37a-4c49-a11c-ccf4e21852d4,https://www.last.fm/music/Troye+Sivan,2026-04-19,Brazil
+129,Chase Atlantic,30110,ecab255c-3af3-4154-87ec-2685041ce297,https://www.last.fm/music/Chase+Atlantic,2026-04-19,Brazil
+130,David Guetta,29993,302bd7b9-d012-4360-897a-93b00c855680,https://www.last.fm/music/David+Guetta,2026-04-19,Brazil
+131,Cazuza,29822,e554daf4-4ad0-438f-a7f9-832519451fd2,https://www.last.fm/music/Cazuza,2026-04-19,Brazil
+132,Luan Santana,29802,70598780-d9bf-47f3-9c7e-292f8608c103,https://www.last.fm/music/Luan+Santana,2026-04-19,Brazil
+133,Red Velvet,29757,4f0cb3b7-6c06-4317-ae35-ddf3106a17ee,https://www.last.fm/music/Red+Velvet,2026-04-19,Brazil
+134,Limp Bizkit,29537,8f9d6bb2-dba4-4cca-9967-cc02b9f4820c,https://www.last.fm/music/Limp+Bizkit,2026-04-19,Brazil
+135,Chico Buarque,29528,3a5d1cc7-627e-48ea-aba3-fdd20d782c33,https://www.last.fm/music/Chico+Buarque,2026-04-19,Brazil
+136,Natiruts,29483,917e448b-fbed-4062-b563-67566a3b3bb1,https://www.last.fm/music/Natiruts,2026-04-19,Brazil
+137,Steve Lacy,29368,ca9766a0-1c30-43e6-a213-bac1334efc4a,https://www.last.fm/music/Steve+Lacy,2026-04-19,Brazil
+138,ABBA,29250,d87e52c5-bb8d-4da8-b941-9f4928627dc8,https://www.last.fm/music/ABBA,2026-04-19,Brazil
+139,Metallica,29183,65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab,https://www.last.fm/music/Metallica,2026-04-19,Brazil
+140,The Cranberries,28831,c98d40fd-f6cf-4b26-883e-eaa515ee2851,https://www.last.fm/music/The+Cranberries,2026-04-19,Brazil
+141,Jorge & Mateus,28806,311e7141-051a-40bc-bce5-7998b6c869ee,https://www.last.fm/music/Jorge+&+Mateus,2026-04-19,Brazil
+142,Pabllo Vittar,28396,d9550ac2-7bcf-4655-a3fe-24922e254a74,https://www.last.fm/music/Pabllo+Vittar,2026-04-19,Brazil
+143,Cigarettes After Sex,28219,34557d8f-ee4a-44ab-ae6e-49bb8ac604d0,https://www.last.fm/music/Cigarettes+After+Sex,2026-04-19,Brazil
+144,FKA twigs,28199,1e4e9db7-5068-4a9c-bdd0-5777e47172c8,https://www.last.fm/music/FKA+twigs,2026-04-19,Brazil
+145,Eminem,28155,b95ce3ff-3d05-4e87-9e01-c97b66af13d4,https://www.last.fm/music/Eminem,2026-04-19,Brazil
+146,Brandão85,27941,a74e0c38-87ca-4b14-bdaf-06e965b2c23b,https://www.last.fm/music/Brand%C3%A3o85,2026-04-19,Brazil
+147,Los Hermanos,27711,557ac15e-7800-44c3-bb62-d4ab34ac1e28,https://www.last.fm/music/Los+Hermanos,2026-04-19,Brazil
+148,Bring Me the Horizon,27693,074e3847-f67f-49f9-81f1-8c8cea147e8e,https://www.last.fm/music/Bring+Me+the+Horizon,2026-04-19,Brazil
+149,Veigh,27637,8b660aba-0b50-4925-a5e4-ad9dec7b5d54,https://www.last.fm/music/Veigh,2026-04-19,Brazil
+150,Mariah Carey,27470,494e8d09-f85b-4543-892f-a5096aed1cd4,https://www.last.fm/music/Mariah+Carey,2026-04-19,Brazil
+151,Marília Mendonça,27450,caeef712-a58f-469b-bfb6-edbd47612cdd,https://www.last.fm/music/Mar%C3%ADlia+Mendon%C3%A7a,2026-04-19,Brazil
+152,Oasis,27407,39ab1aed-75e0-4140-bd47-540276886b60,https://www.last.fm/music/Oasis,2026-04-19,Brazil
+153,Nelly Furtado,27323,13655113-cd16-4b43-9dca-cadbbf26ee05,https://www.last.fm/music/Nelly+Furtado,2026-04-19,Brazil
+154,Djonga,26783,7228b556-4896-4255-9323-a78bcb42f528,https://www.last.fm/music/Djonga,2026-04-19,Brazil
+155,João Gomes,26652,1edb1202-6a79-4fab-b12c-dc9ab853a168,https://www.last.fm/music/Jo%C3%A3o+Gomes,2026-04-19,Brazil
+156,Tribalistas,26582,a27207ee-a79e-4887-aa65-e644d2702f5e,https://www.last.fm/music/Tribalistas,2026-04-19,Brazil
+157,Jão,26546,27717b72-90bc-4f4f-9d0e-13a69bdfe00e,https://www.last.fm/music/J%C3%A3o,2026-04-19,Brazil
+158,Lil Peep,26501,92da4329-77a4-425c-8e92-4280110cace9,https://www.last.fm/music/Lil+Peep,2026-04-19,Brazil
+159,Caetano Veloso,26280,f07dbc2f-317b-470f-bad4-5f1b0eb6faf1,https://www.last.fm/music/Caetano+Veloso,2026-04-19,Brazil
+160,Jung Kook,26170,23c8056b-ee13-4cfc-a772-2f5292e35bb5,https://www.last.fm/music/Jung+Kook,2026-04-19,Brazil
+161,Muse,26122,9c9f1380-2516-4fc9-a3e6-f9f61941d090,https://www.last.fm/music/Muse,2026-04-19,Brazil
+162,Amy Winehouse,25968,dfe9a7c4-8cf2-47f4-9dcb-d233c2b86ec3,https://www.last.fm/music/Amy+Winehouse,2026-04-19,Brazil
+163,Djo,25925,83cedfd0-a118-48eb-ad71-72f4c2f95fd2,https://www.last.fm/music/Djo,2026-04-19,Brazil
+164,Green Day,25852,084308bd-1654-436f-ba03-df6697104e19,https://www.last.fm/music/Green+Day,2026-04-19,Brazil
+165,AJULLIACOSTA,25851,,https://www.last.fm/music/AJULLIACOSTA,2026-04-19,Brazil
+166,Henrique & Juliano,25655,99329c41-2069-4c12-8e8c-035fdf5127a5,https://www.last.fm/music/Henrique+&+Juliano,2026-04-19,Brazil
+167,Lisa,25522,70198b37-f6c7-4cc7-a728-4224e860a15f,https://www.last.fm/music/Lisa,2026-04-19,Brazil
+168,Preta Gil,25446,6348666a-b266-49d7-836c-b9d4741ba646,https://www.last.fm/music/Preta+Gil,2026-04-19,Brazil
+169,Racionais MC's,25425,,https://www.last.fm/music/Racionais+MC%27s,2026-04-19,Brazil
+170,Kate Bush,25416,4b585938-f271-45e2-b19a-91c634b5e396,https://www.last.fm/music/Kate+Bush,2026-04-19,Brazil
+171,Malcolm Todd,25415,6c2a79b8-2b5c-4c2d-b495-6a446811bf9d,https://www.last.fm/music/Malcolm+Todd,2026-04-19,Brazil
+172,Hozier,25409,b4691384-50c3-4afd-9988-51d3ec5db65d,https://www.last.fm/music/Hozier,2026-04-19,Brazil
+173,FBC,25395,1057a765-2447-4bd5-b977-d62b0505e03a,https://www.last.fm/music/FBC,2026-04-19,Brazil
+174,Post Malone,25192,b1e26560-60e5-4236-bbdb-9aa5a8d5ee19,https://www.last.fm/music/Post+Malone,2026-04-19,Brazil
+175,O Rappa,25175,00034ede-a1f1-4219-be39-02f36853373e,https://www.last.fm/music/O+Rappa,2026-04-19,Brazil
+176,Pierce the Veil,25083,8ed919fb-eaee-45a1-ba99-b3ede9ca5f1d,https://www.last.fm/music/Pierce+the+Veil,2026-04-19,Brazil
+177,Adele,25028,cc2c9c3c-b7bc-4b8b-84d8-4fbd8779e493,https://www.last.fm/music/Adele,2026-04-19,Brazil
+178,Mac Miller,25002,a0e8a1b1-5f8f-475a-a253-17415c17d0ff,https://www.last.fm/music/Mac+Miller,2026-04-19,Brazil
+179,Pearl Jam,24997,83b9cbe7-9857-49e2-ab8e-b57b01038103,https://www.last.fm/music/Pearl+Jam,2026-04-19,Brazil
+180,Kesha,24982,fab34286-b8e1-4879-bce3-194e1358fbd2,https://www.last.fm/music/Kesha,2026-04-19,Brazil
+181,Filipe Ret,24955,e0bce080-b2b8-4140-a0f2-ccc886ffad8c,https://www.last.fm/music/Filipe+Ret,2026-04-19,Brazil
+182,Ferrugem,24896,4677c3cf-cc38-4e88-9969-bd3d3bf9fda1,https://www.last.fm/music/Ferrugem,2026-04-19,Brazil
+183,Elis Regina,24890,e9e85a54-074c-4d29-a886-bcaaa9d44f9f,https://www.last.fm/music/Elis+Regina,2026-04-19,Brazil
+184,Pitty,24819,fecdd690-a3e6-4e30-a789-3bd0f71a69c9,https://www.last.fm/music/Pitty,2026-04-19,Brazil
+185,Maria Bethânia,24516,b3998c06-04e6-4b1d-bd2a-d5b83572ae7b,https://www.last.fm/music/Maria+Beth%C3%A2nia,2026-04-19,Brazil
+186,Hearts2Hearts,24349,066080a4-84c7-46c6-91d3-dc10d572749b,https://www.last.fm/music/Hearts2Hearts,2026-04-19,Brazil
+187,Black Sabbath,24209,5182c1d9-c7d2-4dad-afa0-ccfeada921a8,https://www.last.fm/music/Black+Sabbath,2026-04-19,Brazil
+188,XG,24104,8dfe067c-ae90-472e-80f2-fcee9be4e158,https://www.last.fm/music/XG,2026-04-19,Brazil
+189,Halsey,24009,3377f3bb-60fc-4403-aea9-7e800612e060,https://www.last.fm/music/Halsey,2026-04-19,Brazil
+190,David Bowie,24005,5441c29d-3602-4898-b1a1-b77fa23b8e50,https://www.last.fm/music/David+Bowie,2026-04-19,Brazil
+191,50 Cent,23780,8e68819d-71be-4e7d-b41d-f1df81b01d3f,https://www.last.fm/music/50+Cent,2026-04-19,Brazil
+192,Rubel,23758,c8e13148-c14a-4d07-95ef-f53d31e49e10,https://www.last.fm/music/Rubel,2026-04-19,Brazil
+193,Conan Gray,23638,850a8b03-98a7-4fd3-afbd-5e5520b4ef5f,https://www.last.fm/music/Conan+Gray,2026-04-19,Brazil
+194,bôa,23588,ca1dcba2-792c-4550-abf2-7b45396e81ca,https://www.last.fm/music/b%C3%B4a,2026-04-19,Brazil
+195,Major Lazer,23513,75be165a-ad83-4d12-bd28-f589a15c479f,https://www.last.fm/music/Major+Lazer,2026-04-19,Brazil
+196,Gracie Abrams,23474,f7441bc7-d7de-4813-a2fc-31a4033d396d,https://www.last.fm/music/Gracie+Abrams,2026-04-19,Brazil
+197,ILLIT,23344,6b128dd7-e998-4edb-a4f5-400fef190445,https://www.last.fm/music/ILLIT,2026-04-19,Brazil
+198,Alee,23253,5512f7aa-cf0e-4119-8784-04b02e3d01d1,https://www.last.fm/music/Alee,2026-04-19,Brazil
+199,Urias,23207,4e883e4e-03a6-4573-aa9e-b911a610a095,https://www.last.fm/music/Urias,2026-04-19,Brazil
+200,Secos & Molhados,23170,6840dcbe-3aca-4057-8d16-4799c3730e3a,https://www.last.fm/music/Secos+&+Molhados,2026-04-19,Brazil

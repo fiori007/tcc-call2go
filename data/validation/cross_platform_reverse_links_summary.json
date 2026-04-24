@@ -1,0 +1,35 @@
+{
+  "created_at_utc": "2026-04-22T03:12:47.557733+00:00",
+  "started_at_utc": "2026-04-22T03:08:59.447286+00:00",
+  "n_artists": 67,
+  "coverage": {
+    "spotify_checked_ok": 67,
+    "spotify_checked_total": 67,
+    "lastfm_checked_ok_or_selector_missing": 67,
+    "lastfm_checked_total": 67
+  },
+  "directions": {
+    "spotify_to_youtube": {
+      "count": 0,
+      "artists": []
+    },
+    "spotify_to_lastfm": {
+      "count": 0,
+      "artists": []
+    },
+    "lastfm_to_youtube": {
+      "count": 0,
+      "artists": []
+    },
+    "lastfm_to_spotify": {
+      "count": 0,
+      "artists": []
+    }
+  },
+  "errors": {
+    "spotify_errors": 0,
+    "lastfm_errors": 0,
+    "spotify_error_artists": [],
+    "lastfm_error_artists": []
+  }
+}

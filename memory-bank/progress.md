@@ -1,10 +1,12 @@
 ﻿# Progress -- TCC Call2Go
 
-## Estado Atual (19/04/2026)
+## Estado Atual (22/04/2026)
 - Pipeline 14 etapas funcionando (67 artistas, 1.641 videos)
 - Last.fm integrado: 67/67 artistas (100%), 659 tracks, charts BR 200+200
 - Last.fm Bridge analysis: 8 analises cross-platform 3 fontes
 - DB SQLite com 6 tabelas: +fact_lastfm_chart_artists, +fact_lastfm_chart_tracks
+- Auditoria automatizada de voltas: cobertura 67/67 em Spotify e Last.fm, 0 links reversos nas 4 direcoes
+- Reprodutibilidade validada: 2 reruns consecutivos (step 1-14) com resultados idênticos em modo cache-first
 - Codigo auditado, arquivos obsoletos removidos, caches limpos
 
 ## Historico Resumido
@@ -60,6 +62,26 @@
 - Genero x Call2Go: NAO significativo (p=0.373)
 - Pipeline: step 4 coleta charts, step 11 roda bridge analysis
 - DB: +fact_lastfm_chart_artists, +fact_lastfm_chart_tracks (6 tabelas total)
+
+### Auditoria de Voltas Automatizada (21/04/2026)
+- Script `src.validation.reverse_links_audit` implementado com Playwright
+- Saidas: `cross_platform_reverse_links_audit.csv` + `cross_platform_reverse_links_summary.json`
+- Cobertura: Spotify 67/67, Last.fm 67/67
+- Direcoes auditadas: Spotify->YouTube, Spotify->Last.fm, Last.fm->YouTube, Last.fm->Spotify
+- Resultado: todas as direcoes com contagem zero (0/67), sem erros de coleta
+- Decisao: manter eixo analitico principal em efetividade cross-platform por popularidade e Call2Go YouTube->Spotify
+
+### Fechamento End-to-End + Reprodutibilidade (22/04/2026)
+- Pipeline completo executado do zero (step 1-14): 14/14 OK
+- Ajuste de determinismo: `run_pipeline.py` recebeu flag `--force-channel-scrape`; padrao agora usa cache na etapa 5
+- Efeito: remove variacao inter-run do scraping de canais e estabiliza metricas derivadas
+- Last.fm bridge: removido warning de `ConstantInputWarning` no ranking comparativo
+- Metricas recentes (cache-first):
+	- Detector combinado: 88/1641 (5.4%)
+	- Mann-Whitney views: U=73010, p=0.13970 (n.s.)
+	- Bridge intersecao 3 fontes: 9/67 (13.4%)
+	- Chi2 Call2Go vs Hit: X2=2.610, p=0.1062 (n.s.)
+	- Genero x Call2Go: X2=2.293, p=0.6821 (n.s.)
 
 ## Pendente
 1. ~~[P0] Analise cross-platform 3 fontes~~ DONE
