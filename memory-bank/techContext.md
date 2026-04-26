@@ -25,26 +25,28 @@
   - Rate limit: 0.25s entre requests, autocorrect=1 para nomes
 
 ## Estrutura de Arquivos
-`
+```
 tcc_call2go/
-  run_pipeline.py            # Orquestrador 14 etapas
+  run_pipeline.py            # Orquestrador 17 etapas (step 12/14 deprecated)
   requirements.txt           # Dependencias pinadas
   src/
     collectors/              # Coleta de dados (APIs + scraping)
     processors/              # Deteccao Call2Go + processamento de charts
-    db/                      # Data Warehouse SQLite
-    analytics/               # EDA, hipoteses, cross-platform
-    validation/              # Anotacao, cross-validation, agreement
+    db/                      # Data Warehouse SQLite (batch/rebuild)
+    analytics/               # EDA, hipoteses, cross-platform, ranking_fusion,
+                             #   chart_temporal_analysis (PENDENTE)
+    validation/              # Cross-validation, agreement, regex_audit (PENDENTE)
   data/
     seed/                    # artistas.csv (67 artistas)
-    raw/                     # JSONL, CSVs brutos, scraped JSON
-    processed/               # Flagged CSV, SQLite DB
-    plots/                   # Graficos PNG (DPI 300)
-    validation/              # Census Excel, plots bidirecional
+    raw/                     # JSONL, CSVs brutos, scraped JSON,
+                             #   spotify_charts/ (13 CSVs), youtube_charts/ (13 CSVs)
+    processed/               # Flagged CSV, SQLite DB, ranking_fusion_scores.csv
+    plots/                   # Graficos PNG (DPI 300, max 1800px)
+    validation/              # Baseline Kappa, audit reports
   tests/                     # 77 testes adversariais
   artigo_latex/              # TCC em LaTeX (SBC format)
   memory-bank/               # Contexto persistente
-`
+```
 
 ## Limitacoes
 - YouTube API: 10k units/dia, reset meia-noite Pacific (04:00 BRT)

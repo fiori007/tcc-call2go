@@ -5,6 +5,17 @@ import os
 
 
 def build_database():
+    # ADR: Estratégia batch/rebuild (26/04/2026)
+    # Decisao: DROP + recreate completo a cada execucao (nao incremental).
+    # Justificativa:
+    #   - Reprodutibilidade analitica > eficiencia de escrita.
+    #   - SQLite e artefato de pesquisa (nao producao); rebuild < 1s.
+    #   - Sem concorrencia de escrita (pipeline sequencial, single-process).
+    #   - Incremental exige merge de schema e deteccao de conflitos sem ganho.
+    # Serie temporal (Spotify, Last.fm):
+    #   - Concatena todos os snapshots via glob("data/raw/*_metrics_*.csv").
+    #   - Dedup por (date, artist_id/artist_name) preserva evolucao de metricas
+    #     ao longo das coletas sem duplicar linhas do mesmo dia.
     print("Iniciando a construção do Banco de Dados Relacional (SQLite)...")
 
     # Define o caminho do banco de dados

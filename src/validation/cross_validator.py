@@ -94,6 +94,19 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
       2. Canal: humano vs. detector no perfil do canal (About page)
       3. Combinado: humano vs. detector (vídeo E canal -- lógica AND)
 
+    BASELINE DEFINITIVO -- Fase 8 (10/04/2026):
+      Amostra: 91 vídeos adversariais anotados em cego (sem viés de confirmacao).
+      Kappa video:    0.45 (moderado)    | IC 95% Bootstrap 2000 reamostras
+      Kappa canal:    0.80 (substancial) | IC 95% Bootstrap 2000 reamostras
+      Kappa combinado: 0.09 (fraco)      -- artefato da logica AND, nao falha do detector
+      Acuracia video: 82.4% | Acuracia canal: 90.1%
+      ground_truth.csv removido no cleanup de 18/04/2026 (estava associado a
+      validacao circular da Fase 3; o arquivo de 91 videos foi deliberadamente
+      descartado para nao ser reusado fora de contexto).
+      Census annotation (1641 videos) formalmente descontinuado em 26/04/2026.
+      Detector opera em modo confiado. Modulo mantido para eventual rerun
+      caso novos dados adversariais sejam coletados.
+
     Args:
         ground_truth_file: CSV com anotações manuais.
         raw_file: JSONL bruto para re-executar o detector.

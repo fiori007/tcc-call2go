@@ -11,8 +11,16 @@ Desenvolver e avaliar a confiabilidade de um sistema automatizado (baseado em re
 ## Hipóteses de Pesquisa
 - **H0 (Nula):** O detector automatizado (regex) não apresenta concordância significativa com a classificação humana.
 - **H1 (Alternativa):** O detector automatizado apresenta acurácia ≥ 85% em relação ao ground truth humano.
+  > **BASELINE DEFINITIVO — Fase 8 (10/04/2026):** 91 vídeos adversariais, anotação cega.
+  > Kappa vídeo: 0.45 (moderado) | Kappa canal: 0.80 (substancial)
+  > Acurácia vídeo: 82.4% (abaixo do limiar 85% declarado — diferença metodologicamente relevante para discussão)
+  > Acurácia canal: 90.1% (acima do limiar)
+  > ground_truth.csv removido 18/04/2026. Census annotation descontinuado 26/04/2026.
 - **H2 (Secundária — YouTube):** Vídeos com Call2Go geram maior volume de visualizações.
 - **H3 (Secundária — Cross-Platform):** O uso de Call2Go no YouTube impacta a popularidade no Spotify.
+- **H4 (Implícita — Temporal):** A atividade no YouTube antecede ou coincide temporalmente com a entrada no chart Spotify.
+  > Pergunta do orientador: analisar lag entre publicação de vídeos e entrada no chart.
+  > Módulo pendente: `src/analytics/chart_temporal_analysis.py`
 
 ## Escopo
 - **Amostra de artistas:** Interseção cross-platform persistente (Spotify Top 200 BR + YouTube Top 100 BR, Q1 2026) — fonte reprodutível

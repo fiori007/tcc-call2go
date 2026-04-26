@@ -14,9 +14,12 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     9. Testes de Hipótese (Mann-Whitney U)
    10. Análise de Impacto Cross-Platform
    11. Last.fm Bridge — Análise 3 Fontes
-   12. Geração de amostra para validação manual
+   12. [DEPRECATED 26/04/2026] Geração de amostra para validação manual
    13. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
-   14. Censo Excel para validação manual humana
+   14. [DEPRECATED 26/04/2026] Censo Excel para validação manual humana
+   15. Coleta de datas de lançamento das faixas Spotify Q1 2026
+   16. Fusão de rankings cross-platform (RRF normalizado, taxonomia estrutural)
+   17. Análise temporal charts (YouTube vs Spotify — defasagem de entrada no chart)
 
 Uso:
     python run_pipeline.py                  # pipeline completo
@@ -157,7 +160,7 @@ def step_11_lastfm_bridge():
     run_lastfm_bridge_analysis()
 
 
-def step_12_generate_sample():
+def step_12_generate_sample():  # [DEPRECATED - manual annotation discontinued 2026-04-26]
     """Gera amostra para validação manual."""
     from src.validation.sample_generator import generate_validation_sample
     generate_validation_sample()
@@ -169,7 +172,7 @@ def step_13_cross_platform_validation():
     run_cross_platform_validation()
 
 
-def step_14_generate_census_excel():
+def step_14_generate_census_excel():  # [DEPRECATED - manual annotation discontinued 2026-04-26]
     """Gera censo completo + Excel formatado para validação manual humana."""
     from src.validation.blind_annotator import (
         generate_census_csv, generate_detector_answers)
@@ -205,6 +208,12 @@ def step_16_ranking_fusion_analysis():
     run_ranking_fusion_analysis()
 
 
+def step_17_chart_temporal_analysis():
+    """Analisa defasagem temporal entre atividade YouTube e entrada no chart Spotify."""
+    from src.analytics.chart_temporal_analysis import run_chart_temporal_analysis
+    run_chart_temporal_analysis()
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="TCC Call2Go -- Pipeline Orquestrador")
@@ -219,7 +228,7 @@ def main():
     global FORCE_CHANNEL_SCRAPE
     FORCE_CHANNEL_SCRAPE = args.force_channel_scrape
 
-    total_steps = 16
+    total_steps = 17
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -258,15 +267,17 @@ def main():
         (9, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_09_hypothesis_testing, True),
         (10, "ANÁLISE IMPACTO CROSS-PLATFORM", step_10_spotify_impact, True),
         (11, "LAST.FM BRIDGE (3 FONTES)", step_11_lastfm_bridge, True),
-        (12, "GERAÇÃO DE AMOSTRA VALIDAÇÃO", step_12_generate_sample, True),
+        (12, "GERAÇÃO DE AMOSTRA VALIDAÇÃO [DEPRECATED]", step_12_generate_sample, True),
         (13, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
          step_13_cross_platform_validation, True),
-        (14, "CENSO EXCEL PARA VALIDAÇÃO MANUAL",
+        (14, "CENSO EXCEL PARA VALIDAÇÃO MANUAL [DEPRECATED]",
          step_14_generate_census_excel, True),
         (15, "COLETA DATAS FAIXAS SPOTIFY",
          step_15_collect_spotify_track_dates, False),
         (16, "FUSÃO DE RANKINGS + ANÁLISE TEMPORAL",
          step_16_ranking_fusion_analysis, True),
+        (17, "ANÁLISE TEMPORAL CHARTS (YouTube vs Spotify)",
+         step_17_chart_temporal_analysis, True),
     ]
 
     results = {}

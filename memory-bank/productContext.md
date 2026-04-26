@@ -19,6 +19,23 @@ A indústria musical brasileira depende cada vez mais de estratégias cross-plat
 - Profissionais de marketing musical
 - Pesquisadores em comunicação digital e comportamento do consumidor
 
+## Evolução da Validação (Cronologia)
+| Fase | Data | Ação | Resultado |
+|------|------|------|-----------|
+| 3 | Mar/2026 | Validação circular (ground_truth_helper) | DESCARTADA |
+| 5-6 | 31/03 | 6 fixes no detector (redirects, labeled, greedy) | Detector melhorado |
+| 8 | 10/04 | 91 vídeos adversariais, anotação cega | **BASELINE DEFINITIVO** |
+| Cleanup | 18/04 | Remocao ground_truth.csv (fase 3 circular) | Higiene metodológica |
+| 11 | 26/04 | Ranking Fusion v3.0, 288 artistas | Analise concluída |
+| 12 | 26/04 | Census annotation descontinuado | **Decisao definitiva** |
+
+## Decisão: Descontinuação da Anotação Censitária (26/04/2026)
+**Motivo:** Após 6 iteracoes de auditoria e fix, o detector alcançou Kappa=0.80 em canal
+(substancial) e 82.4% acurácia em vídeo. Anotar 1.641 vídeos adicionalmente
+não muda as conclusões e não é rastreavel (viesa confirmatório potencial).
+O TCC tem como foco a metodologia, não a escala da amostra. 91 vídeos adversariais
+representam um rigor analítico maior do que 1.641 vídeos com anotação não-cega.
+
 ## Definições-Chave
 - **Call2Go:** Qualquer elemento na descrição de um vídeo do YouTube que direcione o espectador para o Spotify (link direto ou texto implícito)
 - **Cross-Platform:** Transferência de engajamento/audiência entre YouTube e Spotify

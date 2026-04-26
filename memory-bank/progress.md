@@ -1,13 +1,13 @@
 ﻿# Progress -- TCC Call2Go
 
-## Estado Atual (22/04/2026)
-- Pipeline 14 etapas funcionando (67 artistas, 1.641 videos)
-- Last.fm integrado: 67/67 artistas (100%), 659 tracks, charts BR 200+200
-- Last.fm Bridge analysis: 8 analises cross-platform 3 fontes
-- DB SQLite com 6 tabelas: +fact_lastfm_chart_artists, +fact_lastfm_chart_tracks
-- Auditoria automatizada de voltas: cobertura 67/67 em Spotify e Last.fm, 0 links reversos nas 4 direcoes
-- Reprodutibilidade validada: 2 reruns consecutivos (step 1-14) com resultados idênticos em modo cache-first
-- Codigo auditado, arquivos obsoletos removidos, caches limpos
+## Estado Atual (26/04/2026)
+- Pipeline 16 etapas funcionando (67 artistas, 1.641 videos)
+- Ranking Fusion v3.0: 288 artistas primarios, RRF normalizado, taxonomia estrutural 6 categorias
+- 39/67 artistas seed encontrados como primarios nos charts Q1 2026
+- Validacao baseline definitiva: Kappa=0.45 video / 0.80 canal (Fase 8)
+- Census annotation formalmente descontinuado (26/04/2026)
+- Last.fm integrado: 67/67 artistas, bridge analysis, charts BR 200+200
+- Auditoria de voltas: 0 links reversos em todas as 4 direcoes
 
 ## Historico Resumido
 
@@ -83,9 +83,28 @@
 	- Chi2 Call2Go vs Hit: X2=2.610, p=0.1062 (n.s.)
 	- Genero x Call2Go: X2=2.293, p=0.6821 (n.s.)
 
+### Fase 11 -- Ranking Fusion v3.0 (26/04/2026)
+- Refatoracao completa de `src/analytics/ranking_fusion.py`
+- 7 fases de refatoracao: seed matching, seed-only scope, RRF normalizacao,
+  taxonomia estrutural 6 categorias, rank_delta variavel continua,
+  top 75 heatmap, relatorio de metodologia
+- **288 artistas primarios** (sem featured-only injetados; original 316 -> 288)
+- **39/67 artistas seed** encontrados como primarios nos charts
+- `score_X_normalized = score_X / n_semanas_plataforma` (antes de somar)
+- Taxonomia: absent|single|persistent|new|exit|intermittent
+- Top 1: PEDRO SAMPAIO score_combined=0.365385
+- Commit: `8b3112a` | pushed para master
+- Schema v3.0: 29 colunas em `data/processed/ranking_fusion_scores.csv`
+
+### Fase 12 -- Governanca v3.1 (26/04/2026) [EM ANDAMENTO]
+- [ ] Memory bank full restructure (todos os 6 arquivos)
+- [ ] Pipeline governance (docstring 17 etapas, steps deprecated, step_17)
+- [ ] Cross-validator formalization (docstring baseline definitivo)
+- [ ] `src/validation/regex_audit.py` (novo modulo)
+- [ ] `src/analytics/chart_temporal_analysis.py` (novo modulo, pergunta orientador)
+
 ## Pendente
-1. ~~[P0] Analise cross-platform 3 fontes~~ DONE
-2. [P1] Anotar 1.641 videos (blind_annotation_census.xlsx)
-3. [P2] Cross-validation censitaria (cross_validator.py)
-4. [P3] Alinhar com orientador sobre resultados bridge
-5. [P4] Capitulos Metodologia + Resultados do TCC
+1. [P0] **chart_temporal_analysis.py** -- pergunta orientador: YouTube precede Spotify charts?
+2. [P1] **regex_audit.py** -- auditoria automatizada do detector (breakdown por regra)
+3. [P2] **Alinhar com orientador** sobre resultados bridge + ranking fusion + temporal
+4. [P3] Capitulos Metodologia + Resultados do TCC (LaTeX)
