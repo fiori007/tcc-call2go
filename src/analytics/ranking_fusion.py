@@ -272,47 +272,46 @@ def compute_chart_entry_stats(weekly_charts: dict, platform: str) -> dict:
 
 
 # ============================================================
-# TENDENCIA TEMPORAL JAN -> MAR
+# PADRAO DE PRESENCA TEMPORAL JAN -> MAR
 # ============================================================
 
-def compute_trend(rank_jan, rank_feb, rank_mar) -> str:
+def classify_presence_pattern(rank_jan, rank_feb, rank_mar) -> str:
     """
-    Classifica a trajetoria de um artista nos charts Q1 (Jan -> Fev -> Mar).
+    Classifica o padrao de presenca de um artista nos charts Q1 (Jan -> Mar).
 
-    Categorias:
+    Taxonomia estrutural pura baseada unicamente na presenca/ausencia
+    em cada mes do trimestre. Nenhum threshold numerico e usado.
+    A magnitude da variacao de rank e representada em separado pela
+    variavel continua rank_delta (rank_jan - rank_mar).
+
+    Categorias (6):
         'absent':       nenhum mes presente
-        'single':       aparece em apenas 1 mes
-        'new':          ausente em Jan, presente em Mar (emergente)
-        'fading':       presente em Jan, ausente em Mar (em declinio)
-        'intermittent': presente em Jan e Mar, ausente em Fev
-        'rising':       rank melhora >= 15% de Jan para Mar (numero cai)
-        'falling':      rank piora  >= 15% de Jan para Mar (numero sobe)
-        'stable':       variacao < 15% entre Jan e Mar
+        'single':       exatamente 1 mes presente
+        'persistent':   presente nos 3 meses (Jan + Fev + Mar)
+        'new':          Jan=ausente E Mar=presente (emergiu no Q1)
+        'exit':         Jan=presente E Mar=ausente (saiu no Q1)
+        'intermittent': Jan=presente E Fev=ausente E Mar=presente
 
     Parametros:
         rank_jan, rank_feb, rank_mar: int ou None (None = ausente no mes)
     """
-    present = [r for r in [rank_jan, rank_feb, rank_mar] if r is not None]
-    if len(present) == 0:
+    present_count = sum(
+        1 for r in [rank_jan, rank_feb, rank_mar] if r is not None)
+
+    if present_count == 0:
         return 'absent'
-    if len(present) == 1:
+    if present_count == 1:
         return 'single'
-    # Categorias estruturais (quais meses estao presentes)
+    if present_count == 3:
+        return 'persistent'
+    # Exatamente 2 meses presentes: identificar padrao estrutural
     if rank_jan is None and rank_mar is not None:
         return 'new'
     if rank_jan is not None and rank_mar is None:
-        return 'fading'
+        return 'exit'
     if rank_jan is not None and rank_feb is None and rank_mar is not None:
         return 'intermittent'
-    # Jan e Mar ambos presentes: analisar direcao (rank menor = melhor)
-    if rank_jan is not None and rank_mar is not None:
-        improvement = rank_jan - rank_mar   # positivo = subiu no chart
-        pct = improvement / rank_jan if rank_jan > 0 else 0
-        if pct >= 0.15:
-            return 'rising'
-        if pct <= -0.15:
-            return 'falling'
-        return 'stable'
+    # Fallback (Jan + Fev, sem Mar -- coberto por present_count==2 acima)
     return 'single'
 
 
@@ -380,21 +379,37 @@ def compute_fusion_score(monthly_df: pd.DataFrame) -> pd.DataFrame:
 
 def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     """
-    Constroi tabela de fusao cross-platform para todos os artistas nos charts.
+    Constroi tabela de fusao cross-platform para todos os artistas primarios
+    nos charts Spotify Top 200 e YouTube Top 100 Brasil (Q1 2026).
 
-    Melhorias em relacao a versao anterior:
-    - Artistas do seed que aparecem apenas como featured (nao primarios)
-      sao adicionados com in_dataset=True e featured_only_spotify/youtube=True.
-    - score_combined = score_spotify.fillna(0) + score_youtube.fillna(0).
-    - trend_spotify e trend_youtube classificam a trajetoria Jan->Mar.
-    - first_chart_week_spotify/youtube e total_weeks_spotify/youtube.
-    - Diagnostico de matching: data/validation/seed_matching_diagnostic.csv.
+    Escopo: apenas artistas primarios (primeiro artista de cada faixa).
+    Featurings e colaboracoes secundarias sao excluidos da tabela.
+    Artistas-semente (64 do dataset) que aparecem apenas como featured
+    NAO sao injetados na tabela — apenas o diagnostico de cobertura e salvo.
+
+    Score combinado normalizado (RRF normalizado):
+        score_spotify_normalized = score_spotify / n_semanas_spotify
+        score_youtube_normalized = score_youtube / n_semanas_youtube
+        score_combined = score_sp_norm + score_yt_norm
+    Normalizacao garante comparabilidade entre plataformas independente
+    do numero de semanas coletadas. Referencia: Cormack et al., 2009 (SIGIR).
+
+    Padrao de presenca (taxonomia estrutural, 6 categorias, zero threshold):
+        absent / single / persistent / new / exit / intermittent
+    Variavel continua rank_delta_spotify/youtube = rank_Jan - rank_Mar
+    (positivo = melhorou; negativo = piorou; None se algum mes ausente).
 
     Salva em data/processed/ranking_fusion_scores.csv.
+    Diagnostico de seed: data/validation/seed_matching_diagnostic.csv.
     """
     print("\n--- CARGA DE CHARTS ---")
     sp_charts = load_weekly_charts("data/raw/spotify_charts", "spotify")
     yt_charts = load_weekly_charts("data/raw/youtube_charts", "youtube")
+
+    # Numero de semanas por plataforma (para normalizacao do score)
+    n_weeks_sp = len(sp_charts)
+    n_weeks_yt = len(yt_charts)
+    print(f"  Semanas carregadas: Spotify={n_weeks_sp}, YouTube={n_weeks_yt}")
 
     print("\n--- MAPA DE ARTISTAS FEATURED ---")
     featured_map = _build_featured_map(sp_charts, yt_charts)
@@ -438,11 +453,11 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
             yt_rename[col] = col + '_yt'
     df_yt = df_yt.rename(columns=yt_rename)
 
-    # Merge outer: todos os artistas de ambas plataformas
+    # Merge outer: todos os artistas primarios de ambas plataformas
     df_merged = pd.merge(df_sp, df_yt, on='artist_normalized', how='outer')
     df_merged = df_merged.reset_index(drop=True)
 
-    # ---- Seed matching: artistas primarios ----
+    # ---- Seed matching: apenas artistas primarios ----
     df_seed = pd.read_csv(artists_csv)
     seed_norm_map = {_normalize_name(n): n for n in df_seed['artist_name']}
 
@@ -450,46 +465,26 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
         lambda x: x in seed_norm_map)
     df_merged['artist_name_seed'] = df_merged['artist_normalized'].map(
         seed_norm_map)
-    df_merged['featured_only_spotify'] = False
-    df_merged['featured_only_youtube'] = False
 
-    # Artistas seed ja reconhecidos como primarios
-    primary_seed_found = set(
-        df_merged.loc[df_merged['in_dataset'], 'artist_normalized'])
+    # ---- Score normalizado por numero de semanas (Fase 2) ----
+    # Normalizacao garante comparabilidade entre plataformas.
+    # score_raw / n_semanas = score medio semanal (invariante ao periodo coletado).
+    if n_weeks_sp > 0:
+        df_merged['score_spotify_normalized'] = df_merged['score_spotify'] / n_weeks_sp
+    else:
+        df_merged['score_spotify_normalized'] = df_merged['score_spotify']
 
-    # Artistas seed que nao sao primarios: verificar se aparecem como featured
-    missing_primary = {
-        norm: original
-        for norm, original in seed_norm_map.items()
-        if norm not in primary_seed_found
-    }
+    if n_weeks_yt > 0:
+        df_merged['score_youtube_normalized'] = df_merged['score_youtube'] / n_weeks_yt
+    else:
+        df_merged['score_youtube_normalized'] = df_merged['score_youtube']
 
-    # Adiciona featured-only como linhas extras (score=NaN, in_dataset=True)
-    featured_rows = []
-    for norm, original in missing_primary.items():
-        in_feat_sp = norm in featured_map['all_sp']
-        in_feat_yt = norm in featured_map['all_yt']
-        if in_feat_sp or in_feat_yt:
-            featured_rows.append({
-                'artist_normalized': norm,
-                'artist_name_seed': original,
-                'in_dataset': True,
-                'featured_only_spotify': in_feat_sp,
-                'featured_only_youtube': in_feat_yt,
-            })
-
-    if featured_rows:
-        df_feat = pd.DataFrame(featured_rows)
-        df_merged = pd.concat(
-            [df_merged, df_feat], ignore_index=True, sort=False)
-        print(f"  Artistas featured-only adicionados: {len(featured_rows)}")
-
-    # ---- Score combinado ----
+    # score_combined = soma dos scores normalizados (plataformas em mesma escala)
     df_merged['score_combined'] = (
-        df_merged['score_spotify'].fillna(0)
-        + df_merged['score_youtube'].fillna(0)
+        df_merged['score_spotify_normalized'].fillna(0)
+        + df_merged['score_youtube_normalized'].fillna(0)
     )
-    # Artistas sem nenhum score real (featured-only puro) ficam com NaN
+    # Artistas sem nenhum score real ficam com NaN
     has_real_score = (
         df_merged['score_spotify'].notna()
         | df_merged['score_youtube'].notna()
@@ -506,7 +501,7 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     for pos, idx in enumerate(ranked_idx, start=1):
         df_merged.at[idx, 'global_rank_combined'] = pos
 
-    # ---- Tendencia temporal ----
+    # ---- Padrao de presenca temporal (taxonomia estrutural) ----
     def _safe_rank(v):
         """Converte valor de rank para int ou None (NaN -> None)."""
         try:
@@ -517,20 +512,43 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
         return None if v is None else int(v)
 
     if 'rank_Jan_sp' in df_merged.columns:
-        df_merged['trend_spotify'] = df_merged.apply(
-            lambda r: compute_trend(
+        df_merged['pattern_spotify'] = df_merged.apply(
+            lambda r: classify_presence_pattern(
                 _safe_rank(r.get('rank_Jan_sp')),
                 _safe_rank(r.get('rank_Feb_sp')),
                 _safe_rank(r.get('rank_Mar_sp')),
             ), axis=1)
 
     if 'rank_Jan_yt' in df_merged.columns:
-        df_merged['trend_youtube'] = df_merged.apply(
-            lambda r: compute_trend(
+        df_merged['pattern_youtube'] = df_merged.apply(
+            lambda r: classify_presence_pattern(
                 _safe_rank(r.get('rank_Jan_yt')),
                 _safe_rank(r.get('rank_Feb_yt')),
                 _safe_rank(r.get('rank_Mar_yt')),
             ), axis=1)
+
+    # ---- rank_delta: variavel continua de variacao Jan->Mar (Fase 4) ----
+    # rank_delta positivo = melhorou (numero menor); negativo = piorou.
+    # None quando Jan ou Mar ausentes (sem magnitude calculavel).
+    def _rank_delta(jan_val, mar_val):
+        """Retorna rank_jan - rank_mar (int) ou None se algum estiver ausente."""
+        rj = _safe_rank(jan_val)
+        rm = _safe_rank(mar_val)
+        if rj is None or rm is None:
+            return None
+        return rj - rm
+
+    if 'rank_Jan_sp' in df_merged.columns and 'rank_Mar_sp' in df_merged.columns:
+        df_merged['rank_delta_spotify'] = df_merged.apply(
+            lambda r: _rank_delta(r.get('rank_Jan_sp'), r.get('rank_Mar_sp')),
+            axis=1,
+        )
+
+    if 'rank_Jan_yt' in df_merged.columns and 'rank_Mar_yt' in df_merged.columns:
+        df_merged['rank_delta_youtube'] = df_merged.apply(
+            lambda r: _rank_delta(r.get('rank_Jan_yt'), r.get('rank_Mar_yt')),
+            axis=1,
+        )
 
     # ---- Datas de entrada nos charts ----
     df_merged['first_chart_week_spotify'] = df_merged['artist_normalized'].map(
@@ -571,8 +589,9 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     n_not_found = int(
         (~df_diag['found_as_primary_sp'] & ~df_diag['found_as_primary_yt']
          & ~df_diag['found_as_featured_sp'] & ~df_diag['found_as_featured_yt']).sum())
-    print(f"  Cobertura seed: {n_any_primary} primarios, "
-          f"{n_feat_only} featured-only, {n_not_found} nao encontrados")
+    print(f"  Cobertura seed: {n_any_primary} primarios (in_dataset=True), "
+          f"{n_feat_only} featured-only (excluidos da tabela), "
+          f"{n_not_found} nao encontrados")
     print(f"  Diagnostico: data/validation/seed_matching_diagnostic.csv")
 
     # ---- Salva resultado ----
@@ -586,13 +605,14 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     yt_scores = df_merged['score_youtube'].dropna()
     comb_scores = df_merged['score_combined'].dropna()
 
-    print(f"\n  Total artistas: {total} | In dataset: {in_ds}")
+    print(f"\n  Total artistas primarios: {total} | In dataset (seed primario): {in_ds}")
+    print(f"  Normalizacao: n_semanas_sp={n_weeks_sp}, n_semanas_yt={n_weeks_yt}")
     if not sp_scores.empty:
-        print(f"  Score Spotify: min={sp_scores.min():.4f}, max={sp_scores.max():.4f}")
+        print(f"  Score Spotify (raw): min={sp_scores.min():.4f}, max={sp_scores.max():.4f}")
     if not yt_scores.empty:
-        print(f"  Score YouTube: min={yt_scores.min():.4f}, max={yt_scores.max():.4f}")
+        print(f"  Score YouTube (raw): min={yt_scores.min():.4f}, max={yt_scores.max():.4f}")
     if not comb_scores.empty:
-        print(f"  Score Combinado: min={comb_scores.min():.4f}, max={comb_scores.max():.4f}")
+        print(f"  Score Combinado (norm): min={comb_scores.min():.6f}, max={comb_scores.max():.6f}")
     print(f"  Salvo em: {output_path}")
 
     return df_merged
@@ -604,15 +624,24 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
 
 def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
     """
-    Gera heatmaps de presenca mensal para os 67 artistas do dataset.
+    Gera heatmaps de presenca mensal para os Top 75 artistas por score_combined.
 
-    Linhas: artistas ordenados por score desc. Colunas: meses.
+    Escopo: todos os artistas primarios dos charts (nao restrito ao seed).
+    Selecionados os 75 com maior score_combined para legibilidade.
+    Linhas: artistas ordenados por score_combined desc. Colunas: meses.
     Cor: 1=presente, 0=ausente.
     Salva presence_heatmap_spotify.png e presence_heatmap_youtube.png.
     figsize=(6,9) dpi=200 -> 1200x1800px (dentro do limite de 1800px).
     """
     os.makedirs(output_dir, exist_ok=True)
-    df_ds = df_fusion[df_fusion['in_dataset'] == True].copy()
+    # Top 75 artistas primarios por score_combined (universo completo)
+    df_ds = (
+        df_fusion
+        .dropna(subset=['score_combined'])
+        .nlargest(75, 'score_combined')
+        .copy()
+    )
+    print(f"  Heatmap: {len(df_ds)} artistas selecionados (top 75 score_combined)")
 
     month_order = {abbr: i for i, abbr in enumerate(calendar.month_abbr) if abbr}
 
@@ -622,15 +651,13 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
     ]:
         rank_cols = [c for c in df_fusion.columns
                      if c.startswith('rank_') and c.endswith(suffix)]
-        if not rank_cols or score_col not in df_ds.columns:
+        if not rank_cols or 'score_combined' not in df_ds.columns:
             print(f"[AVISO] Colunas de rank nao encontradas para {platform}, "
                   "pulando heatmap")
             continue
 
-        # Ordena artistas por score decrescente
-        df_plot = df_ds.copy()
-        df_plot[score_col] = df_plot[score_col].fillna(0)
-        df_plot = df_plot.sort_values(score_col, ascending=False)
+        # Ordena artistas por score_combined decrescente
+        df_plot = df_ds.sort_values('score_combined', ascending=False)
 
         # Ordena colunas de rank em ordem calendaria
         rank_cols_sorted = sorted(
@@ -647,7 +674,7 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
         presence_matrix.index = artist_labels
         presence_matrix.columns = month_labels
 
-        # figsize=(6,9) dpi=200 -> 1200x1800px -- dentro do limite
+        # figsize=(6,9) dpi=200 -> 1200x1800px -- dentro do limite com 75 artistas
         fig, ax = plt.subplots(figsize=(6, 9))
         sns.heatmap(
             presence_matrix,
@@ -658,7 +685,8 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
             vmin=0,
             vmax=1,
         )
-        ax.set_title(f'Presenca Mensal nos Charts -- {platform} Q1 2026')
+        ax.set_title(
+            f'Presenca Mensal -- Top 75 por Score Combinado ({platform} Q1 2026)')
         ax.set_xlabel('Mes')
         ax.set_ylabel('Artista')
         plt.tight_layout()
@@ -676,46 +704,45 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
 def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
     """
     Gera line chart mostrando evolucao de rank no Spotify Q1 2026
-    para artistas do dataset com presenca >= 2 meses.
+    para os top 25 artistas por score_combined com presenca >= 2 meses.
 
-    Eixo Y invertido (posicao 1 no topo). Linhas coloridas por tendencia.
+    Eixo Y invertido (posicao 1 no topo). Linhas coloridas por padrao
+    de presenca (taxonomia estrutural: 6 categorias, zero threshold).
     Nomes anotados ao final de cada linha.
     figsize=(6,8) dpi=200 -> 1200x1600px -- dentro do limite de 1800px.
     """
     from matplotlib.lines import Line2D
 
     os.makedirs(output_dir, exist_ok=True)
-    df_ds = df_fusion[df_fusion['in_dataset'] == True].copy()
+    # Universo completo (nao restrito ao seed)
+    df_all = df_fusion.dropna(subset=['score_combined']).copy()
 
     sp_rank_cols = [c for c in ['rank_Jan_sp', 'rank_Feb_sp', 'rank_Mar_sp']
-                    if c in df_ds.columns]
+                    if c in df_all.columns]
     if len(sp_rank_cols) < 2:
         print("[AVISO] Colunas de rank insuficientes para plot de evolucao")
         return
 
-    # Artistas com presenca >= 2 meses e pelo menos 1 score real
-    df_plot = df_ds[
-        df_ds[sp_rank_cols].notna().sum(axis=1) >= 2
+    # Artistas com presenca >= 2 meses
+    df_plot = df_all[
+        df_all[sp_rank_cols].notna().sum(axis=1) >= 2
     ].copy()
     if df_plot.empty:
         print("[AVISO] Nenhum artista com >= 2 meses para plot de evolucao")
         return
 
-    # Ordena por score_combined ou score_spotify desc
-    sort_col = ('score_combined' if 'score_combined' in df_plot.columns
-                else 'score_spotify')
-    df_plot = df_plot.sort_values(sort_col, ascending=False, na_position='last')
-    df_plot = df_plot.head(25)  # Maximo 25 para legibilidade
+    # Top 25 por score_combined para legibilidade
+    df_plot = df_plot.sort_values('score_combined', ascending=False, na_position='last')
+    df_plot = df_plot.head(25)
 
-    # Cores por tendencia
-    trend_colors = {
-        'rising':       '#2ca02c',
-        'falling':      '#d62728',
-        'stable':       '#1f77b4',
-        'new':          '#9467bd',
-        'fading':       '#ff7f0e',
-        'intermittent': '#8c564b',
-        'single':       '#7f7f7f',
+    # Cores por padrao de presenca (taxonomia estrutural, 6 categorias)
+    pattern_colors = {
+        'persistent':   '#2ca02c',   # verde -- presente nos 3 meses
+        'new':          '#9467bd',   # roxo  -- emergiu no Q1
+        'exit':         '#d62728',   # vermelho -- saiu no Q1
+        'intermittent': '#ff7f0e',   # laranja -- alternado
+        'single':       '#7f7f7f',   # cinza  -- apenas 1 mes
+        'absent':       '#c7c7c7',   # cinza claro -- ausente
     }
 
     month_cols = ['rank_Jan_sp', 'rank_Feb_sp', 'rank_Mar_sp']
@@ -732,8 +759,8 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
         if len(name) > 20:
             name = name[:18] + '..'
 
-        trend = row.get('trend_spotify', 'stable')
-        color = trend_colors.get(str(trend), '#1f77b4')
+        pattern = row.get('pattern_spotify', 'single')
+        color = pattern_colors.get(str(pattern), '#1f77b4')
 
         # Pares (x, rank) apenas para meses presentes
         pts = [
@@ -763,15 +790,16 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
     ax.invert_yaxis()
     ax.set_xlabel('Mes')
     ax.set_ylabel('Posicao no Chart (1 = melhor)')
-    ax.set_title('Evolucao de Rank Spotify Q1 2026 -- Artistas do Dataset')
+    ax.set_title('Evolucao de Rank Spotify Q1 2026 -- Top 25 por Score Combinado')
 
-    # Legenda manual de tendencias
+    # Legenda manual de padroes de presenca
     legend_elements = [
         Line2D([0], [0], color=c, linewidth=1.5, label=t)
-        for t, c in trend_colors.items()
+        for t, c in pattern_colors.items()
+        if t != 'absent'
     ]
     ax.legend(handles=legend_elements, loc='lower left', fontsize=5.5,
-              title='Tendencia', title_fontsize=6)
+              title='Padrao', title_fontsize=6)
 
     plt.tight_layout()
     out_path = os.path.join(output_dir, 'rank_evolution_spotify.png')
@@ -1146,8 +1174,17 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
     """
     Gera relatorio textual consolidado da analise de fusao de rankings.
 
-    Inclui: total artistas, ranges de score, top 10 por plataforma,
+    Inclui: total artistas, cobertura seed, normalizacao de score,
+    top 10 por score_combined, distribuicao de padroes de presenca,
     estatisticas por grupo Call2Go, resumo de correlacoes Last.fm.
+
+    Metodologia:
+    - Score de fusao: Reciprocal Rank Fusion (RRF), normalizado pelo
+      numero de semanas por plataforma. Ref: Cormack et al., 2009 (SIGIR).
+    - Padrao de presenca: taxonomia estrutural de 6 categorias baseada
+      unicamente em presenca/ausencia binaria por mes (zero threshold).
+    - rank_delta: variavel continua (rank_jan - rank_mar) para analises
+      de magnitude sem threshold arbitrario.
     """
     os.makedirs(output_dir, exist_ok=True)
     report_path = os.path.join(output_dir, "ranking_fusion_report.txt")
@@ -1159,21 +1196,52 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
     lines.append(f"Gerado em: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     lines.append("")
 
-    # Totais
+    # Totais e cobertura
     total = len(df_fusion)
     in_ds = int(df_fusion['in_dataset'].sum())
-    lines.append(f"Total de artistas nos charts: {total}")
-    lines.append(f"Artistas do dataset (seed): {in_ds}")
+    lines.append(f"Total de artistas primarios nos charts: {total}")
+    lines.append(f"Artistas do dataset (seed, encontrados como primarios): {in_ds}")
     lines.append("")
 
-    # Ranges de score
-    for col in ['score_spotify', 'score_youtube']:
+    # Nota metodologica de normalizacao
+    lines.append("--- METODOLOGIA DE SCORE ---")
+    lines.append("  score = Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)")
+    lines.append("  score_Xplatform = sum(1/best_rank_mes) para cada mes presente")
+    lines.append("  score_X_normalized = score_X / n_semanas_plataforma")
+    lines.append("  score_combined = score_sp_normalized + score_yt_normalized")
+    sp_norm_scores = df_fusion['score_spotify_normalized'].dropna() if 'score_spotify_normalized' in df_fusion.columns else pd.Series(dtype=float)
+    yt_norm_scores = df_fusion['score_youtube_normalized'].dropna() if 'score_youtube_normalized' in df_fusion.columns else pd.Series(dtype=float)
+    if not sp_norm_scores.empty:
+        lines.append(f"  n_semanas_spotify: implicito em score_spotify_normalized")
+    if not yt_norm_scores.empty:
+        lines.append(f"  n_semanas_youtube: implicito em score_youtube_normalized")
+    lines.append("")
+
+    # Ranges de score (raw e normalizado)
+    lines.append("--- RANGES DE SCORE ---")
+    for col in ['score_spotify', 'score_youtube', 'score_combined']:
         if col in df_fusion.columns:
             s = df_fusion[col].dropna()
             if not s.empty:
                 lines.append(
-                    f"{col}: min={s.min():.4f}, max={s.max():.4f}, "
-                    f"mediana={s.median():.4f}")
+                    f"  {col}: min={s.min():.6f}, max={s.max():.6f}, "
+                    f"mediana={s.median():.6f}")
+    lines.append("")
+
+    # Top 10 por Score Combinado (normalizado)
+    lines.append("--- TOP 10 POR SCORE COMBINADO (normalizado) ---")
+    if 'score_combined' in df_fusion.columns:
+        top10_c = (df_fusion[
+            ['artist_normalized', 'artist_name_seed', 'score_combined', 'in_dataset']
+        ]
+            .dropna(subset=['score_combined'])
+            .sort_values('score_combined', ascending=False)
+            .head(10))
+        for i, (_, row) in enumerate(top10_c.iterrows(), start=1):
+            name = (row['artist_name_seed'] if pd.notna(row['artist_name_seed'])
+                    else row['artist_normalized'])
+            mark = '[*]' if row['in_dataset'] else '   '
+            lines.append(f"  {i:2d}. {mark} {name}: {row['score_combined']:.6f}")
     lines.append("")
 
     # Top 10 por Spotify
@@ -1206,48 +1274,30 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
             lines.append(f"  {i:2d}. {mark} {name}: {row['score_youtube']:.4f}")
     lines.append("")
 
-    # Top 10 Score Combinado
-    lines.append("--- TOP 10 POR SCORE COMBINADO ---")
-    if 'score_combined' in df_fusion.columns:
-        top10_c = (df_fusion[
-            ['artist_normalized', 'artist_name_seed', 'score_combined', 'in_dataset']
-        ]
-            .dropna(subset=['score_combined'])
-            .sort_values('score_combined', ascending=False)
-            .head(10))
-        for i, (_, row) in enumerate(top10_c.iterrows(), start=1):
-            name = (row['artist_name_seed'] if pd.notna(row['artist_name_seed'])
-                    else row['artist_normalized'])
-            mark = '[*]' if row['in_dataset'] else '   '
-            lines.append(f"  {i:2d}. {mark} {name}: {row['score_combined']:.4f}")
-    lines.append("")
-
-    # Distribuicao de tendencias (dataset only)
-    lines.append("--- TENDENCIAS JAN->MAR (DATASET) ---")
-    for trend_col, platform in [('trend_spotify', 'Spotify'),
-                                 ('trend_youtube', 'YouTube')]:
-        if trend_col in df_fusion.columns:
+    # Distribuicao de padroes de presenca (todos os artistas primarios)
+    lines.append("--- PADROES DE PRESENCA JAN->MAR (TODOS OS ARTISTAS) ---")
+    lines.append("  Taxonomia estrutural: absent/single/persistent/new/exit/intermittent")
+    for pattern_col, platform in [('pattern_spotify', 'Spotify'),
+                                   ('pattern_youtube', 'YouTube')]:
+        if pattern_col in df_fusion.columns:
             lines.append(f"  {platform}:")
-            ds_trends = df_fusion[
-                df_fusion['in_dataset'] == True][trend_col].value_counts()
-            for t, c in ds_trends.items():
-                lines.append(f"    {t}: {c}")
+            counts = df_fusion[pattern_col].value_counts()
+            total_patt = counts.sum()
+            for t, c in counts.items():
+                pct = 100.0 * c / total_patt if total_patt > 0 else 0
+                lines.append(f"    {t}: {c} ({pct:.1f}%)")
     lines.append("")
 
-    # Cobertura do seed
-    lines.append("--- COBERTURA DO SEED ---")
-    in_ds_count = int(df_fusion['in_dataset'].sum())
-    lines.append(f"  Artistas seed na tabela: {in_ds_count}")
-    if 'featured_only_spotify' in df_fusion.columns:
-        df_ds_only = df_fusion[df_fusion['in_dataset'] == True]
-        feat_sp = int(df_ds_only['featured_only_spotify'].sum())
-        feat_yt = int(
-            df_ds_only['featured_only_youtube'].sum()
-            if 'featured_only_youtube' in df_ds_only.columns else 0)
-        n_prim = in_ds_count - max(feat_sp, feat_yt)
-        lines.append(f"  Primarios (pelo menos 1 plataforma): {in_ds_count - feat_sp}")
-        lines.append(f"  Featured-only Spotify: {feat_sp}")
-        lines.append(f"  Featured-only YouTube: {feat_yt}")
+    # Distribuicao de padroes de presenca (dataset seed only)
+    lines.append("--- PADROES DE PRESENCA JAN->MAR (DATASET SEED) ---")
+    df_ds_only = df_fusion[df_fusion['in_dataset'] == True]
+    for pattern_col, platform in [('pattern_spotify', 'Spotify'),
+                                   ('pattern_youtube', 'YouTube')]:
+        if pattern_col in df_fusion.columns:
+            lines.append(f"  {platform}:")
+            counts = df_ds_only[pattern_col].value_counts()
+            for t, c in counts.items():
+                lines.append(f"    {t}: {c}")
     lines.append("")
 
     # Estatisticas Call2Go
