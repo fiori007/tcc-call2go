@@ -27,7 +27,7 @@
 ## Estrutura de Arquivos
 ```
 tcc_call2go/
-  run_pipeline.py            # Orquestrador 17 etapas (step 12/14 deprecated)
+  run_pipeline.py            # Orquestrador 15 etapas (steps 1-15, sem deprecated)
   requirements.txt           # Dependencias pinadas
   src/
     collectors/              # Coleta de dados (APIs + scraping)

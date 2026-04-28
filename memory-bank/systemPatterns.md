@@ -1,25 +1,24 @@
 ﻿# System Patterns — TCC Call2Go
 
-## Pipeline (16 Etapas + 1 Pendente)
+## Pipeline v4.0 (15 Etapas ativas)
 ```
  1. Seed building (chart_processor + artist_source_builder)
  2. YouTube collection (youtube_collector)
  3. Spotify collection (spotify_collector)
  4. Last.fm collection (lastfm_collector + lastfm_chart_collector) -- artistas + charts BR
  5. Channel scraping (channel_link_scraper) -- cache-first por padrao
- 6. Call2Go detection (call2go_detector) -- regex multi-layer 3 niveis
+ 6. Call2Go detection (call2go_detector) -- regex multi-layer, colunas AND + OR
  7. DB build (db_builder) -- SQLite star schema (6 tabelas), batch/rebuild
  8. EDA (eda_analysis) -- boxplots, stats descritivas
- 9. Hypothesis testing (hypothesis_testing) -- Mann-Whitney U
-10. Cross-platform analysis (spotify_impact_analysis) -- bidirecional
+ 9. Hypothesis testing (hypothesis_testing) -- Mann-Whitney U (OR primario + AND sub-analise)
+10. Cross-platform analysis (spotify_impact_analysis) -- OR primario + AND sub-analise
 11. Last.fm Bridge (lastfm_bridge_analysis) -- 8 analises 3 fontes
-12. [DEPRECATED 26/04/2026] Sample generation (sample_generator) -- validacao manual descontinuada
-13. Bidirectional validation (cross_platform_validator) -- YouTube <-> Spotify
-14. [DEPRECATED 26/04/2026] Census Excel (blind_annotator + excel_formatter) -- anotacao manual descontinuada
-15. Spotify track dates collection (spotify_track_dates_collector)
-16. Ranking Fusion v3.0 (ranking_fusion) -- RRF normalizado, 288 artistas, taxonomia estrutural
-17. [PENDING] Chart Temporal Analysis (chart_temporal_analysis) -- pergunta do orientador
+12. Bidirectional validation (cross_platform_validator) -- YouTube <-> Spotify
+13. Spotify track dates collection (spotify_track_dates_collector)
+14. Ranking Fusion v3.0 (ranking_fusion) -- RRF normalizado, 288 artistas, taxonomia estrutural
+15. Chart Temporal Analysis (chart_temporal_analysis) -- defasagem YouTube vs Spotify chart entry
 ```
+Etapas deprecated removidas: step 12 (sample_generator) e 14 (blind_annotator/excel_formatter).
 
 ## Decisao Arquitetural: DB Builder (batch/rebuild)
 - **Decisao:** DROP + recreate completo a cada execucao (nao incremental)
@@ -56,9 +55,11 @@
 - Fallback: regex na bio do canal captura `"Spotify - bit.ly/..."` que o scraper nao ve
 - OAC (auto-generated): verifica canal oficial linkado pelo scraper
 
-### Nivel 3 -- Combinado (AND)
-- `has_call2go = video_has AND canal_has`
-- Semantica: artista promove ativa e estruturalmente o Spotify (descricao + perfil)
+### Nivel 3 -- Combinado
+- **AND** `has_call2go = video_has AND canal_has` (88/1641, 5.4%) -- sub-analise
+  Semantica: artista promove de forma simultanea nas duas camadas
+- **OR** `has_call2go_or = video_has OR canal_has` (518/1641, 31.6%) -- metrica primaria
+  Semantica: artista usa Call2Go em qualquer fonte; definicao operacional central do TCC
 
 ## Schema ranking_fusion_scores.csv (v3.0, 26/04/2026)
 ```

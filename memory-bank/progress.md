@@ -1,13 +1,12 @@
 ﻿# Progress -- TCC Call2Go
 
-## Estado Atual (26/04/2026)
-- Pipeline 16 etapas funcionando (67 artistas, 1.641 videos)
-- Ranking Fusion v3.0: 288 artistas primarios, RRF normalizado, taxonomia estrutural 6 categorias
-- 39/67 artistas seed encontrados como primarios nos charts Q1 2026
-- Validacao baseline definitiva: Kappa=0.45 video / 0.80 canal (Fase 8)
-- Census annotation formalmente descontinuado (26/04/2026)
-- Last.fm integrado: 67/67 artistas, bridge analysis, charts BR 200+200
-- Auditoria de voltas: 0 links reversos em todas as 4 direcoes
+## Estado Atual (28/04/2026)
+- **Pipeline v4.0**: 15 etapas ativas, deprecated steps 12/14 removidos
+- **Coluna `has_call2go_or`** adicionada: OR logic como métrica primária (518/1641 = 31.6%)
+- **H2/H3/H4**: análises duais (OR primário + AND sub-análise) em todos os módulos
+- **Clean-state run**: `--skip-collect` OK, 30/30 outputs verificados, determinístico
+- **Commits**: `059065e` (governance v3.1) → `f391d50` (OR logic) → `34fe9ff` (pipeline v4.0 + cleanup)
+- **Workspace limpo**: removidos 5 snapshots antigos de raw/, 3 CSVs intermediários, 5 arquivos deprecated de validação
 
 ## Historico Resumido
 
@@ -71,13 +70,14 @@
 - Resultado: todas as direcoes com contagem zero (0/67), sem erros de coleta
 - Decisao: manter eixo analitico principal em efetividade cross-platform por popularidade e Call2Go YouTube->Spotify
 
-### Fechamento End-to-End + Reprodutibilidade (22/04/2026)
-- Pipeline completo executado do zero (step 1-14): 14/14 OK
-- Ajuste de determinismo: `run_pipeline.py` recebeu flag `--force-channel-scrape`; padrao agora usa cache na etapa 5
-- Efeito: remove variacao inter-run do scraping de canais e estabiliza metricas derivadas
-- Last.fm bridge: removido warning de `ConstantInputWarning` no ranking comparativo
-- Metricas recentes (cache-first):
-	- Detector combinado: 88/1641 (5.4%)
+### Pipeline v4.0 + Cleanup (28/04/2026)
+- Removidos steps deprecated 12 (sample_generator) e 14 (census/excel) do pipeline
+- Steps renumerados: 17→15 total
+- Limpeza: 5 snapshots antigos raw/ (04-18, 04-19), 3 CSVs intermediários processed/, 5 arquivos validation/ deprecated
+- `has_call2go_or` adicionada ao detector (OR = 518/1641)
+- hypothesis_testing.py, spotify_impact_analysis.py, chart_temporal_analysis.py: dual reporting OR+AND
+- Clean-state run com `--skip-collect`: 10/10 steps analíticos OK, 30/30 outputs gerados
+- Commits: f391d50 (OR logic) + 34fe9ff (pipeline v4.0 + cleanup)
 	- Mann-Whitney views: U=73010, p=0.13970 (n.s.)
 	- Bridge intersecao 3 fontes: 9/67 (13.4%)
 	- Chi2 Call2Go vs Hit: X2=2.610, p=0.1062 (n.s.)
