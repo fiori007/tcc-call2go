@@ -35,6 +35,11 @@ Outputs:
   data/plots/chart_temporal_correlation.png
 """
 
+from datetime import datetime
+from scipy import stats
+import seaborn as sns
+import matplotlib.ticker as ticker
+import matplotlib.pyplot as plt
 import os
 import json
 import warnings
@@ -42,11 +47,6 @@ import pandas as pd
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import seaborn as sns
-from scipy import stats
-from datetime import datetime
 
 warnings.filterwarnings('ignore', category=FutureWarning)
 
@@ -117,21 +117,31 @@ def run_chart_temporal_analysis():
 
     seed_artists['first_chart_week_spotify'] = pd.to_datetime(
         seed_artists['first_chart_week_spotify'], errors='coerce')
-    seed_artists = seed_artists[seed_artists['first_chart_week_spotify'].notna()]
+    seed_artists = seed_artists[seed_artists['first_chart_week_spotify'].notna(
+    )]
 
     # Normaliza nome para matching
-    seed_artists['name_norm'] = seed_artists['artist_name_seed'].apply(_normalize)
+    seed_artists['name_norm'] = seed_artists['artist_name_seed'].apply(
+        _normalize)
 
-    df_yt['published_at'] = pd.to_datetime(df_yt['published_at'], utc=True, errors='coerce')
+    df_yt['published_at'] = pd.to_datetime(
+        df_yt['published_at'], utc=True, errors='coerce')
     df_yt['published_at'] = df_yt['published_at'].dt.tz_localize(None)
     df_yt['name_norm'] = df_yt['artist_name'].apply(_normalize)
 
-    print(f"\n  Artistas seed com first_chart_week_spotify: {len(seed_artists)}")
-    print(f"  Videos com published_at valido: {df_yt['published_at'].notna().sum()}/{len(df_yt)}")
+    print(
+        f"\n  Artistas seed com first_chart_week_spotify: {len(seed_artists)}")
+    print(
+        f"  Videos com published_at valido: {df_yt['published_at'].notna().sum()}/{len(df_yt)}")
 
-    # Diagnostico: quantos videos Call2Go (nivel video) existem no corpus
-    n_video_c2g = (df_yt['video_call2go'] != 'nenhum').sum() if 'video_call2go' in df_yt.columns else 0
-    print(f"  Videos com video_call2go != 'nenhum' no corpus: {n_video_c2g}")
+    # Diagnostico: quantos videos Call2Go (OR: video OU canal) existem no corpus
+    if 'video_call2go' in df_yt.columns and 'channel_call2go' in df_yt.columns:
+        n_or_c2g = (
+            (df_yt['video_call2go'] != 'nenhum') | (df_yt['channel_call2go'] != 'nenhum')
+        ).sum()
+    else:
+        n_or_c2g = 0
+    print(f"  Videos com Call2Go OR (video ou canal) no corpus: {n_or_c2g}")
 
     # -------------------------------------------------------------- #
     # 2. Computa lag e janelas por artista                            #
@@ -144,16 +154,19 @@ def run_chart_temporal_analysis():
         chart_entry = artist_row['first_chart_week_spotify']  # Timestamp
 
         # Videos do artista
-        yt_artist = df_yt[df_yt['name_norm'] == name_n].dropna(subset=['published_at'])
+        yt_artist = df_yt[df_yt['name_norm'] ==
+                          name_n].dropna(subset=['published_at'])
 
         if yt_artist.empty:
             continue
 
         dates = yt_artist['published_at']
-        # video_call2go e uma coluna string: 'link_direto'|'texto_implicito'|'nenhum'
-        call2go_dates = yt_artist.loc[
-            yt_artist['video_call2go'] != 'nenhum', 'published_at'
-        ]
+        # Lógica OR: Call2Go se video_call2go != 'nenhum' OU channel_call2go != 'nenhum'
+        mask_or = (
+            (yt_artist['video_call2go'] != 'nenhum') |
+            (yt_artist['channel_call2go'] != 'nenhum')
+        )
+        call2go_dates = yt_artist.loc[mask_or, 'published_at']
 
         # Lag em dias (negativo = YouTube ativo ANTES do chart entry)
         first_video_date = dates.min()
@@ -175,14 +188,13 @@ def run_chart_temporal_analysis():
             window_counts[f'videos_window_{label}'] = mask_window.sum()
 
             if not call2go_dates.empty:
-                c2g_dates_series = yt_artist.loc[
-                    yt_artist['video_call2go'] != 'nenhum', 'published_at'
-                ]
+                c2g_dates_series = yt_artist.loc[mask_or, 'published_at']
                 mask_c2g = (
                     (c2g_dates_series >= chart_entry + pd.Timedelta(days=w_start)) &
                     (c2g_dates_series < chart_entry + pd.Timedelta(days=w_end))
                 )
-                window_call2go_counts[f'call2go_window_{label}'] = mask_c2g.sum()
+                window_call2go_counts[f'call2go_window_{label}'] = mask_c2g.sum(
+                )
             else:
                 window_call2go_counts[f'call2go_window_{label}'] = 0
 
@@ -265,7 +277,8 @@ def run_chart_temporal_analysis():
             return None, None, n
         # Array constante = correlacao nao definida
         if paired['a'].nunique() <= 1 or paired['b'].nunique() <= 1:
-            print(f"  [{label}] array constante -- correlacao nao calculavel (n={n})")
+            print(
+                f"  [{label}] array constante -- correlacao nao calculavel (n={n})")
             return None, None, n
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
@@ -306,17 +319,21 @@ def run_chart_temporal_analysis():
     data_hist = df_results['lag_any_days'].dropna()
     if not data_hist.empty:
         bins = min(20, len(data_hist))
-        ax.hist(data_hist, bins=bins, color='steelblue', edgecolor='white', linewidth=0.5)
-        ax.axvline(0, color='red', linestyle='--', linewidth=1.2, label='Chart entry')
+        ax.hist(data_hist, bins=bins, color='steelblue',
+                edgecolor='white', linewidth=0.5)
+        ax.axvline(0, color='red', linestyle='--',
+                   linewidth=1.2, label='Chart entry')
         ax.axvline(data_hist.median(), color='orange', linestyle='--',
                    linewidth=1.2, label=f'Mediana={data_hist.median():.0f}d')
         if not df_c2g.empty and df_c2g['lag_call2go_days'].notna().any():
             ax.axvline(df_c2g['lag_call2go_days'].median(),
                        color='green', linestyle=':', linewidth=1.2,
                        label=f'Mediana Call2Go={df_c2g["lag_call2go_days"].median():.0f}d')
-    ax.set_xlabel("Defasagem (dias) -- negativo = YouTube antes do chart", fontsize=9)
+    ax.set_xlabel(
+        "Defasagem (dias) -- negativo = YouTube antes do chart", fontsize=9)
     ax.set_ylabel("Artistas", fontsize=9)
-    ax.set_title("Lag YouTube vs Entrada no Chart Spotify (Q1 2026)", fontsize=10)
+    ax.set_title(
+        "Lag YouTube vs Entrada no Chart Spotify (Q1 2026)", fontsize=10)
     ax.legend(fontsize=8)
     plt.tight_layout()
     plt.savefig(HIST_PNG, dpi=300)
@@ -339,9 +356,11 @@ def run_chart_temporal_analysis():
                        label='Videos Call2Go', color='darkorange', alpha=0.85)
         ax.set_xticks(x)
         ax.set_xticklabels(WINDOW_LABELS, fontsize=8)
-        ax.set_xlabel("Janela de tempo relativa ao chart entry (dias)", fontsize=9)
+        ax.set_xlabel(
+            "Janela de tempo relativa ao chart entry (dias)", fontsize=9)
         ax.set_ylabel("Total de videos (todos artistas)", fontsize=9)
-        ax.set_title("Videos por Janela Temporal (Q1 2026 -- 39 artistas seed)", fontsize=10)
+        ax.set_title(
+            "Videos por Janela Temporal (Q1 2026 -- 39 artistas seed)", fontsize=10)
         ax.legend(fontsize=8)
     plt.tight_layout()
     plt.savefig(WINDOWS_PNG, dpi=300)
@@ -353,20 +372,24 @@ def run_chart_temporal_analysis():
     if not df_c2g.empty and df_c2g['lag_call2go_days'].notna().any():
         x_corr = df_c2g['lag_call2go_days']
         y_corr = df_c2g['score_spotify_normalized']
-        ax.scatter(x_corr, y_corr, color='steelblue', alpha=0.7, s=40, edgecolors='white', linewidths=0.3)
+        ax.scatter(x_corr, y_corr, color='steelblue', alpha=0.7,
+                   s=40, edgecolors='white', linewidths=0.3)
 
         # Linha de tendencia (regressao linear simples para visualizacao)
         paired_c = pd.DataFrame({'x': x_corr, 'y': y_corr}).dropna()
         if len(paired_c) >= 3:
             m, b = np.polyfit(paired_c['x'], paired_c['y'], 1)
             x_line = np.linspace(paired_c['x'].min(), paired_c['x'].max(), 100)
-            ax.plot(x_line, m * x_line + b, color='red', linewidth=1.2, linestyle='--', alpha=0.8)
+            ax.plot(x_line, m * x_line + b, color='red',
+                    linewidth=1.2, linestyle='--', alpha=0.8)
 
         ax.axvline(0, color='gray', linestyle=':', linewidth=0.8)
         label_rho = f"rho={rho1:.3f}, p={p1:.3f}" if rho1 is not None else "n < 5"
-        ax.set_xlabel("lag_call2go_days (negativo = CTA antes do chart)", fontsize=9)
+        ax.set_xlabel(
+            "lag_call2go_days (negativo = CTA antes do chart)", fontsize=9)
         ax.set_ylabel("score_spotify_normalized", fontsize=9)
-        ax.set_title(f"Lag Call2Go vs Score Spotify Normalizado\n({label_rho}, n={n1})", fontsize=9)
+        ax.set_title(
+            f"Lag Call2Go vs Score Spotify Normalizado\n({label_rho}, n={n1})", fontsize=9)
     else:
         ax.text(0.5, 0.5, "Dados insuficientes\n(sem artistas com Call2Go e chart entry)",
                 ha='center', va='center', transform=ax.transAxes, fontsize=10)
@@ -381,11 +404,14 @@ def run_chart_temporal_analysis():
     print("\n" + "=" * 60)
     print("SUMARIO DA ANALISE TEMPORAL")
     print("=" * 60)
-    print(f"Artistas analisados: {len(df_results)} (seed primarios com first_chart_week_spotify)")
+    print(
+        f"Artistas analisados: {len(df_results)} (seed primarios com first_chart_week_spotify)")
     print(f"  com dados Call2Go: {len(df_c2g)}")
-    print(f"\nLag (any video): mediana={df_results['lag_any_days'].median():.0f} dias")
+    print(
+        f"\nLag (any video): mediana={df_results['lag_any_days'].median():.0f} dias")
     if not df_c2g.empty:
-        print(f"Lag (Call2Go):    mediana={df_c2g['lag_call2go_days'].median():.0f} dias")
+        print(
+            f"Lag (Call2Go):    mediana={df_c2g['lag_call2go_days'].median():.0f} dias")
     print(f"\nArquivos gerados:")
     for path in [RESULTS_CSV, HIST_PNG, WINDOWS_PNG, CORR_PNG]:
         status = "[OK]" if os.path.exists(path) else "[AUSENTE]"

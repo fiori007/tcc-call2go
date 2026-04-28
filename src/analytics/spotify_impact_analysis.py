@@ -17,7 +17,8 @@ def run_spotify_impact_test():
     # Trazemos a métrica máxima de popularidade do Spotify atrelada ao artista e os tipos de vídeo dele
     query = """
     SELECT 
-        y.call2go_type,
+        y.has_call2go_or,
+        y.has_call2go,
         y.view_count,
         s.popularity
     FROM fact_yt_videos y
@@ -40,7 +41,7 @@ def run_spotify_impact_test():
         data=df,
         x='view_count',
         y='popularity',
-        hue='call2go_type',
+        hue='has_call2go_or',
         palette='Set1',
         s=100,  # tamanho dos pontos
         alpha=0.7
@@ -56,30 +57,65 @@ def run_spotify_impact_test():
     print(f"[OK] Gráfico de dispersão salvo para o TCC em: {plot_path}\n")
 
     # ---------------------------------------------------------
-    # 2. Teste Estatístico (Popularidade no Spotify)
+    # 2. Testes Estatísticos (Popularidade no Spotify)
     # ---------------------------------------------------------
-    group_none = df[df['call2go_type'] == 'nenhum']['popularity']
-    group_call2go = df[df['call2go_type'] != 'nenhum']['popularity']
-
-    print("--- ESTATÍSTICA DESCRITIVA: POPULARIDADE NO SPOTIFY ---")
-    print(f"Média Pop (Sem Call2Go): {group_none.mean():.2f}")
-    print(f"Média Pop (Com Call2Go): {group_call2go.mean():.2f}\n")
-
-    print("--- RESULTADO DO TESTE DE HIPÓTESE (SPOTIFY) ---")
-    # Testa se a popularidade é maior nos casos em que houve Call2Go
-    stat, p_value = stats.mannwhitneyu(
-        group_call2go, group_none, alternative='greater')
-
-    print(f"Estatística U: {stat}")
-    print(f"P-valor: {p_value:.5f}")
-
     alpha = 0.05
-    if p_value < alpha:
-        print("CONCLUSÃO CROSS-PLATFORM: Rejeitamos a Hipótese Nula (H0).")
-        print(">> O uso de Call2Go no YouTube gera um impacto estatisticamente significativo NA POPULARIDADE DO SPOTIFY.")
+
+    # -------------------------------------------------------------- #
+    # ANÁLISE PRIMÁRIA: Lógica OR (H3)                               #
+    # -------------------------------------------------------------- #
+    print("=" * 60)
+    print("ANÁLISE PRIMÁRIA — Lógica OR (H3)")
+    print("=" * 60)
+
+    group_or_no  = df[df['has_call2go_or'] == 0]['popularity']
+    group_or_yes = df[df['has_call2go_or'] == 1]['popularity']
+
+    print("--- ESTATÍSTICA DESCRITIVA: POPULARIDADE NO SPOTIFY (OR) ---")
+    print(f"Média Pop (OR=0, Sem Call2Go): {group_or_no.mean():.2f}")
+    print(f"Média Pop (OR=1, Com Call2Go): {group_or_yes.mean():.2f}\n")
+
+    print("--- RESULTADO DO TESTE DE HIPÓTESE (SPOTIFY - OR) ---")
+    stat_or, p_or = stats.mannwhitneyu(
+        group_or_yes, group_or_no, alternative='greater')
+
+    print(f"Estatística U: {stat_or}")
+    print(f"P-valor:        {p_or:.5f}")
+
+    if p_or < alpha:
+        print("CONCLUSÃO (OR): Rejeitamos H0.")
+        print(">> Uso de Call2Go (OR) impacta significativamente a popularidade no Spotify.")
     else:
-        print("CONCLUSÃO CROSS-PLATFORM: Falhamos em rejeitar a Hipótese Nula (H0).")
-        print(">> Embora o Call2Go gere mais views no YouTube, não há evidências de que essa conversão se reflita em uma pontuação de popularidade maior no Spotify de forma imediata. (Isso é excelente para discussão no TCC).")
+        print("CONCLUSÃO (OR): Não rejeitamos H0.")
+        print(">> Sem evidência de diferença significativa com lógica OR. (Excelente para discussão no TCC).")
+
+    # -------------------------------------------------------------- #
+    # SUB-ANÁLISE: Lógica AND                                         #
+    # -------------------------------------------------------------- #
+    print("\n" + "=" * 60)
+    print("SUB-ANÁLISE — Lógica AND (vídeo E canal)")
+    print("=" * 60)
+
+    group_and_no  = df[df['has_call2go'] == 0]['popularity']
+    group_and_yes = df[df['has_call2go'] == 1]['popularity']
+
+    print("--- ESTATÍSTICA DESCRITIVA: POPULARIDADE NO SPOTIFY (AND) ---")
+    print(f"Média Pop (AND=0, Sem Call2Go): {group_and_no.mean():.2f}")
+    print(f"Média Pop (AND=1, Com Call2Go): {group_and_yes.mean():.2f}\n")
+
+    print("--- RESULTADO DO TESTE DE HIPÓTESE (SPOTIFY - AND) ---")
+    stat_and, p_and = stats.mannwhitneyu(
+        group_and_yes, group_and_no, alternative='greater')
+
+    print(f"Estatística U: {stat_and}")
+    print(f"P-valor:        {p_and:.5f}")
+
+    if p_and < alpha:
+        print("CONCLUSÃO (AND): Rejeitamos H0.")
+        print(">> Uso simultâneo (vídeo+canal) impacta significativamente a popularidade no Spotify.")
+    else:
+        print("CONCLUSÃO (AND): Não rejeitamos H0.")
+        print(">> Sem evidência de diferença significativa com lógica AND.")
 
 
 if __name__ == "__main__":

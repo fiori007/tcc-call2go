@@ -244,6 +244,9 @@ def process_videos():
                     final_channel_has = bio_has
                     final_channel_type = bio_type
 
+            # Lógica OR: basta uma das fontes ter Call2Go (métrica primária)
+            or_has = has_call2go or final_channel_has
+
             # Classificação combinada: AND -- ambas as fontes devem ter Call2Go
             combined_has = has_call2go and final_channel_has
             if combined_has:
@@ -273,6 +276,7 @@ def process_videos():
                 'like_count': video.get('like_count'),
                 'comment_count': video.get('comment_count'),
                 'has_call2go': int(combined_has),
+                'has_call2go_or': int(or_has),
                 'call2go_type': combined_type,
                 'call2go_source': combined_source,
                 'video_call2go': call_type,
@@ -292,10 +296,16 @@ def process_videos():
     print(f"[OK] Processamento concluído. {len(df)} vídeos analisados.")
 
     # Resumo por tipo combinado
-    print(f"\n--- DISTRIBUIÇÃO COMBINADA (Vídeo + Canal) ---")
+    print(f"\n--- DISTRIBUIÇÃO COMBINADA/AND (Vídeo E Canal) ---")
     for ctype, count in df['call2go_type'].value_counts().items():
         pct = count / len(df) * 100
         print(f"  {ctype}: {count} ({pct:.1f}%)")
+
+    # Resumo OR (métrica primária)
+    or_count = df['has_call2go_or'].sum()
+    print(f"\n--- LÓGICA OR (Vídeo OU Canal) ---")
+    print(f"  has_call2go_or = 1: {or_count} ({or_count/len(df)*100:.1f}%)")
+    print(f"  has_call2go_or = 0: {len(df) - or_count} ({(len(df)-or_count)/len(df)*100:.1f}%)")
 
     # Resumo por fonte
     print(f"\n--- FONTE DA DETECÇÃO ---")
