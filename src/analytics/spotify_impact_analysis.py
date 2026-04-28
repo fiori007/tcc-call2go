@@ -68,7 +68,7 @@ def run_spotify_impact_test():
     print("ANÁLISE PRIMÁRIA — Lógica OR (H3)")
     print("=" * 60)
 
-    group_or_no  = df[df['has_call2go_or'] == 0]['popularity']
+    group_or_no = df[df['has_call2go_or'] == 0]['popularity']
     group_or_yes = df[df['has_call2go_or'] == 1]['popularity']
 
     print("--- ESTATÍSTICA DESCRITIVA: POPULARIDADE NO SPOTIFY (OR) ---")
@@ -84,7 +84,8 @@ def run_spotify_impact_test():
 
     if p_or < alpha:
         print("CONCLUSÃO (OR): Rejeitamos H0.")
-        print(">> Uso de Call2Go (OR) impacta significativamente a popularidade no Spotify.")
+        print(
+            ">> Uso de Call2Go (OR) impacta significativamente a popularidade no Spotify.")
     else:
         print("CONCLUSÃO (OR): Não rejeitamos H0.")
         print(">> Sem evidência de diferença significativa com lógica OR. (Excelente para discussão no TCC).")
@@ -96,7 +97,7 @@ def run_spotify_impact_test():
     print("SUB-ANÁLISE — Lógica AND (vídeo E canal)")
     print("=" * 60)
 
-    group_and_no  = df[df['has_call2go'] == 0]['popularity']
+    group_and_no = df[df['has_call2go'] == 0]['popularity']
     group_and_yes = df[df['has_call2go'] == 1]['popularity']
 
     print("--- ESTATÍSTICA DESCRITIVA: POPULARIDADE NO SPOTIFY (AND) ---")

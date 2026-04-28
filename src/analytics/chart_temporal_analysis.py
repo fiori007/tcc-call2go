@@ -137,7 +137,8 @@ def run_chart_temporal_analysis():
     # Diagnostico: quantos videos Call2Go (OR: video OU canal) existem no corpus
     if 'video_call2go' in df_yt.columns and 'channel_call2go' in df_yt.columns:
         n_or_c2g = (
-            (df_yt['video_call2go'] != 'nenhum') | (df_yt['channel_call2go'] != 'nenhum')
+            (df_yt['video_call2go'] != 'nenhum') | (
+                df_yt['channel_call2go'] != 'nenhum')
         ).sum()
     else:
         n_or_c2g = 0

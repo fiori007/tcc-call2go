@@ -1,0 +1,71 @@
+============================================================
+AUDITORIA DE REGRAS REGEX -- DETECTOR CALL2GO
+Gerado em: 2026-04-26 16:55:07
+============================================================
+
+Total de videos no corpus:     1641
+Positivos (detector original): 88
+Positivos (auditoria regras):  196
+Negativos (auditoria regras):  1445
+
+------------------------------------------------------------
+BREAKDOWN POR REGRA (% do total de positivos na auditoria)
+------------------------------------------------------------
+  R1   145 videos ( 74.0% positivos | 8.84% corpus)  -- Link direto (open.spotify.com / spoti.fi / sptfy.com)
+  R2    33 videos ( 16.8% positivos | 2.01% corpus)  -- Labeled redirect (spotify: https://...)
+  R3     2 videos (  1.0% positivos | 0.12% corpus)  -- URL com spotify/sptfy no path (bit.ly etc.)
+  R4     0 videos (  0.0% positivos | 0.00% corpus)  -- Texto implicito CTA (ouca/disponivel/stream/ouvir)
+  R5    16 videos (  8.2% positivos | 0.98% corpus)  -- Fallback \bspotify\b [RISCO MAIS ALTO DE FP]
+  NEG  1445 videos -- Nao detectado
+
+------------------------------------------------------------
+PERFIL DE RISCO DO FALLBACK R5
+------------------------------------------------------------
+  Videos R5 / total positivos: 16/196 = 8.2%
+  [OK] R5 dentro do limiar aceito (threshold = 30%)
+
+------------------------------------------------------------
+PRIMEIROS 10 EXEMPLOS DE DETECCAO SOMENTE POR R5 (FALLBACK)
+------------------------------------------------------------
+  [Veigh] l54a1O53ZiA
+    Descricao: Uma produção Supernova Ent.  Composição: Thiago Veigh Produção: Nagalli & Viper Captação de Voz: Darren Jones / Miloco S
+  [Vitinho Imperador] DeGbvNUzl8o
+    Descricao: Ouça #VitinhoImperador - https://onerpm.link/vitinhoimperador Inscreva-se no canal e ative o sino para não perder nenhum
+  [MC Meno K] SU6KgbCEKL0
+    Descricao: Inscreva-se  no meu Canal   Artista: MC Meno K Musica: Camisa do Grêmio  Produção: DJ NEEH  Siga MC Meno K nas Redes 
+  [MC Meno K] gM5u_k9ps8Y
+    Descricao: Inscreva-se  no meu Canal    Artista: MCS Meno K E Cria Musica: Uma Cavala Mesmo Produção: DJ Matheus Silva   Siga MC
+  [MC Meno K] jyhXbCA3o1w
+    Descricao: Inscreva-se  no meu Canal   Artista: MC Meno K Musica: Falcão no Morro Produção: DJ Borest   Siga MC Meno K nas Redes
+  [MC Meno K] KiBwpClp4LQ
+    Descricao: Inscreva-se  no meu Canal    Artista: MC Meno K e Ricky Ribeiro Musica: Pique Neymar Produção: Kelwin Lopes   Siga MC
+  [MC Meno K] KscNYF5_arg
+    Descricao: Inscreva-se  no meu Canal    Artista: MC Meno K Musica: Camisa Do Flamengo Produção: DJ 2L da Rocinha   Siga MC Meno 
+  [MC Meno K] 8zKIsvamH1k
+    Descricao: Inscreva-se  no meu Canal   Artista: MC Meno K Musica: Ppkinha da Cohab Produção: DJ Aladdin   Siga MC Meno K nas Red
+  [NandaTsunami] gxrm-Dh-gHU
+    Descricao: Artist Team Intérprete: NandaTsunami Produção: Pluck D, C4rlinhxs, vvallace Composição: Fernanda Xavier Ferreira Santana
+  [Marquinho no Beat] e-Kqhy84P_M
+    Descricao: Nome da Música : Bom e Novo Artistas : Marquinho no Beat, Nego Trufa e Boladin 211 Produção Musical : Marquinho no Beat 
+
+------------------------------------------------------------
+TOP 10 ARTISTAS COM MAIOR TAXA DE CALL2GO
+------------------------------------------------------------
+  MC Menor ZL                    100.0%  (R1=30 R2=0 R3=0 R4=0 R5=0)
+  Vinicius Cruz                  100.0%  (R1=1 R2=0 R3=0 R4=0 R5=0)
+  Julliany Souza                  80.0%  (R1=24 R2=0 R3=0 R4=0 R5=0)
+  MC Meno K                       76.7%  (R1=17 R2=0 R3=0 R4=0 R5=6)
+  Marquinho no Beat               66.7%  (R1=13 R2=0 R3=1 R4=0 R5=6)
+  Júnior e Cézar                  60.0%  (R1=0 R2=18 R3=0 R4=0 R5=0)
+  Melk Villar                     50.0%  (R1=0 R2=15 R3=0 R4=0 R5=0)
+  Mc Negão Original               50.0%  (R1=15 R2=0 R3=0 R4=0 R5=0)
+  Panda                           40.0%  (R1=8 R2=0 R3=0 R4=0 R5=0)
+  Mc Brinquedo                    26.7%  (R1=8 R2=0 R3=0 R4=0 R5=0)
+
+------------------------------------------------------------
+ARTISTAS COM R5 > 50% DOS PROPRIOS POSITIVOS (alto risco individual)
+------------------------------------------------------------
+  NandaTsunami                   R5=100% (1/1 positivos)
+  Veigh                          R5=100% (1/1 positivos)
+
+============================================================

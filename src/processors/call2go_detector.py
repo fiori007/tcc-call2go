@@ -305,7 +305,8 @@ def process_videos():
     or_count = df['has_call2go_or'].sum()
     print(f"\n--- LÓGICA OR (Vídeo OU Canal) ---")
     print(f"  has_call2go_or = 1: {or_count} ({or_count/len(df)*100:.1f}%)")
-    print(f"  has_call2go_or = 0: {len(df) - or_count} ({(len(df)-or_count)/len(df)*100:.1f}%)")
+    print(
+        f"  has_call2go_or = 0: {len(df) - or_count} ({(len(df)-or_count)/len(df)*100:.1f}%)")
 
     # Resumo por fonte
     print(f"\n--- FONTE DA DETECÇÃO ---")

@@ -162,11 +162,13 @@ def run_regex_audit(
     for _, row in df.iterrows():
         vid = str(row.get(video_id_col, ''))
         desc = desc_map.get(vid, row.get('description', ''))
-        artist = row.get(artist_col, 'DESCONHECIDO') if artist_col else 'DESCONHECIDO'
+        artist = row.get(
+            artist_col, 'DESCONHECIDO') if artist_col else 'DESCONHECIDO'
         rule = _which_rule_fired(desc)
 
         # Flag do detector original (usado para comparar com auditoria)
-        has_video = int(row.get('has_call2go_video', row.get('has_call2go', 0)))
+        has_video = int(row.get('has_call2go_video',
+                        row.get('has_call2go', 0)))
 
         rows.append({
             'video_id': vid,
@@ -212,14 +214,17 @@ def run_regex_audit(
         if rule not in artist_stats.columns:
             artist_stats[rule] = 0
 
-    artist_stats['total_videos'] = artist_stats[['R1', 'R2', 'R3', 'R4', 'R5', 'NEG']].sum(axis=1)
-    artist_stats['total_positivos'] = artist_stats[['R1', 'R2', 'R3', 'R4', 'R5']].sum(axis=1)
+    artist_stats['total_videos'] = artist_stats[[
+        'R1', 'R2', 'R3', 'R4', 'R5', 'NEG']].sum(axis=1)
+    artist_stats['total_positivos'] = artist_stats[[
+        'R1', 'R2', 'R3', 'R4', 'R5']].sum(axis=1)
     artist_stats['call2go_rate'] = (
         artist_stats['total_positivos'] / artist_stats['total_videos'] * 100
     ).round(1)
     artist_stats['r5_only'] = artist_stats['R5']
     artist_stats['r5_pct_of_positive'] = (
-        artist_stats['R5'] / artist_stats['total_positivos'].replace(0, float('nan')) * 100
+        artist_stats['R5'] /
+        artist_stats['total_positivos'].replace(0, float('nan')) * 100
     ).fillna(0).round(1)
 
     # Exemplos do fallback R5
@@ -243,7 +248,8 @@ def run_regex_audit(
     lines.append(f"Total de videos no corpus:     {total_videos}")
     lines.append(f"Positivos (detector original): {total_positivos_original}")
     lines.append(f"Positivos (auditoria regras):  {total_positivos_audit}")
-    lines.append(f"Negativos (auditoria regras):  {total_videos - total_positivos_audit}")
+    lines.append(
+        f"Negativos (auditoria regras):  {total_videos - total_positivos_audit}")
     lines.append("")
     lines.append("-" * 60)
     lines.append("BREAKDOWN POR REGRA (% do total de positivos na auditoria)")
@@ -260,19 +266,25 @@ def run_regex_audit(
             'R4': 'Texto implicito CTA (ouca/disponivel/stream/ouvir)',
             'R5': 'Fallback \\bspotify\\b [RISCO MAIS ALTO DE FP]',
         }[rule]
-        lines.append(f"  {rule}  {n:4d} videos ({pct_pos:5.1f}% positivos | {pct_tot:4.2f}% corpus)  -- {desc}")
+        lines.append(
+            f"  {rule}  {n:4d} videos ({pct_pos:5.1f}% positivos | {pct_tot:4.2f}% corpus)  -- {desc}")
 
-    lines.append(f"  NEG  {rule_counts.get('NEG', total_videos - total_positivos_audit):4d} videos -- Nao detectado")
+    lines.append(
+        f"  NEG  {rule_counts.get('NEG', total_videos - total_positivos_audit):4d} videos -- Nao detectado")
     lines.append("")
     lines.append("-" * 60)
     lines.append(f"PERFIL DE RISCO DO FALLBACK R5")
     lines.append("-" * 60)
-    lines.append(f"  Videos R5 / total positivos: {n_r5}/{total_positivos_audit} = {fallback_pct*100:.1f}%")
+    lines.append(
+        f"  Videos R5 / total positivos: {n_r5}/{total_positivos_audit} = {fallback_pct*100:.1f}%")
     if fallback_risk:
-        lines.append(f"  [ALERTA] R5 > {FALLBACK_RISK_THRESHOLD*100:.0f}% dos positivos -- RISCO METODOLOGICO ELEVADO")
-        lines.append("  Considerar auditoria manual dos casos R5 antes de publicar resultados.")
+        lines.append(
+            f"  [ALERTA] R5 > {FALLBACK_RISK_THRESHOLD*100:.0f}% dos positivos -- RISCO METODOLOGICO ELEVADO")
+        lines.append(
+            "  Considerar auditoria manual dos casos R5 antes de publicar resultados.")
     else:
-        lines.append(f"  [OK] R5 dentro do limiar aceito (threshold = {FALLBACK_RISK_THRESHOLD*100:.0f}%)")
+        lines.append(
+            f"  [OK] R5 dentro do limiar aceito (threshold = {FALLBACK_RISK_THRESHOLD*100:.0f}%)")
 
     lines.append("")
     lines.append("-" * 60)
@@ -298,7 +310,8 @@ def run_regex_audit(
 
     lines.append("")
     lines.append("-" * 60)
-    lines.append("ARTISTAS COM R5 > 50% DOS PROPRIOS POSITIVOS (alto risco individual)")
+    lines.append(
+        "ARTISTAS COM R5 > 50% DOS PROPRIOS POSITIVOS (alto risco individual)")
     lines.append("-" * 60)
     high_r5 = artist_stats[
         (artist_stats['total_positivos'] > 0) &

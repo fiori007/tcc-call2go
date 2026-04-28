@@ -1,52 +1,52 @@
 artist_name_seed,artist_normalized,found_as_primary_sp,found_as_primary_yt,found_as_featured_sp,found_as_featured_yt,in_fusion_table
-Aaron Modesto,aaron modesto,False,False,True,True,True
-Boladin 211,boladin 211,False,False,True,True,True
-Bvga Beatz,bvga beatz,False,False,True,True,True
-DJ DAVI DOGDOG,dj davi dogdog,False,False,True,True,True
-DJ GORDINHO DA VF,dj gordinho da vf,False,False,True,True,True
-DJ Guh Mix,dj guh mix,False,False,True,True,True
+Aaron Modesto,aaron modesto,False,False,True,True,False
+Boladin 211,boladin 211,False,False,True,True,False
+Bvga Beatz,bvga beatz,False,False,True,True,False
+DJ DAVI DOGDOG,dj davi dogdog,False,False,True,True,False
+DJ GORDINHO DA VF,dj gordinho da vf,False,False,True,True,False
+DJ Guh Mix,dj guh mix,False,False,True,True,False
 DJ Japa NK,dj japa nk,True,True,False,False,True
-DJ Kaioken,dj kaioken,False,False,True,True,True
+DJ Kaioken,dj kaioken,False,False,True,True,False
 DJ Oreia,dj oreia,True,True,False,False,True
-DU'L,dul,False,False,True,True,True
+DU'L,dul,False,False,True,True,False
 Diego & Victor Hugo,diego victor hugo,True,False,False,False,True
-Dj Andrabeat,dj andrabeat,False,False,True,True,True
-Dj Felipe Maia,dj felipe maia,False,False,True,True,True
+Dj Andrabeat,dj andrabeat,False,False,True,True,False
+Dj Felipe Maia,dj felipe maia,False,False,True,True,False
 Felipe e Rodrigo,felipe e rodrigo,True,False,False,False,True
-Grelo,grelo,False,False,True,True,True
+Grelo,grelo,False,False,True,True,False
 Grupo Menos É Mais,grupo menos e mais,True,True,False,False,True
-Gubeatz,gubeatz,False,False,True,True,True
+Gubeatz,gubeatz,False,False,True,True,False
 Gusttavo Lima,gusttavo lima,True,True,False,False,True
 Henrique & Juliano,henrique juliano,True,False,False,False,True
 Julliany Souza,julliany souza,True,True,False,False,True
 Júnior e Cézar,junior e cezar,True,True,False,False,True
 Léo Santana,leo santana,True,True,False,False,True
-MC GH Original,mc gh original,False,False,True,True,True
+MC GH Original,mc gh original,False,False,True,True,False
 MC GP,mc gp,True,True,False,False,True
 MC Leozinho ZS,mc leozinho zs,True,True,False,False,True
 MC Meno K,mc meno k,True,True,False,False,True
-MC Menor ZL,mc menor zl,False,False,True,True,True
-MC RN do Capão,mc rn do capao,False,False,True,True,True
-MC Rick,mc rick,False,False,True,True,True
+MC Menor ZL,mc menor zl,False,False,True,True,False
+MC RN do Capão,mc rn do capao,False,False,True,True,False
+MC Rick,mc rick,False,False,True,True,False
 MC Ryan SP,mc ryan sp,True,False,False,True,True
 MC Tuto,mc tuto,True,True,False,False,True
 MORADA,morada,True,True,False,False,True
 Mari Fernandez,mari fernandez,True,True,False,False,True
 Marina Sena,marina sena,True,True,False,False,True
-Marquinho no Beat,marquinho no beat,False,False,True,True,True
+Marquinho no Beat,marquinho no beat,False,False,True,True,False
 Mc Brinquedo,mc brinquedo,True,False,False,True,True
-Mc DR,mc dr,False,False,True,True,True
+Mc DR,mc dr,False,False,True,True,False
 Mc Don Juan,mc don juan,True,True,False,False,True
-Mc Gw,mc gw,False,False,True,True,True
+Mc Gw,mc gw,False,False,True,True,False
 Mc IG,mc ig,True,True,False,False,True
 Mc Jacaré,mc jacare,True,True,False,False,True
-Mc Jhey,mc jhey,False,False,True,True,True
+Mc Jhey,mc jhey,False,False,True,True,False
 Mc Lele JP,mc lele jp,True,True,False,False,True
-Mc Morena,mc morena,False,False,True,True,True
+Mc Morena,mc morena,False,False,True,True,False
 Mc Negão Original,mc negao original,True,True,False,False,True
-Mc Rodrigo do CN,mc rodrigo do cn,False,False,True,True,True
-Melk Villar,melk villar,False,False,True,True,True
-Melody,melody,False,False,True,True,True
+Mc Rodrigo do CN,mc rodrigo do cn,False,False,True,True,False
+Melk Villar,melk villar,False,False,True,True,False
+Melody,melody,False,False,True,True,False
 NATTAN,nattan,True,True,False,False,True
 NandaTsunami,nandatsunami,True,True,False,False,True
 Natanzinho Lima,natanzinho lima,True,True,False,False,True
@@ -56,13 +56,13 @@ PEDRO SAMPAIO,pedro sampaio,True,True,False,False,True
 Panda,panda,True,True,False,False,True
 Racionais MC's,racionais mcs,True,True,False,False,True
 Simone Mendes,simone mendes,True,True,False,False,True
-Stick,stick,False,False,True,True,True
+Stick,stick,False,False,True,True,False
 Taylor Swift,taylor swift,True,True,False,False,True
-Torelli,torelli,False,False,True,True,True
+Torelli,torelli,False,False,True,True,False
 Veigh,veigh,True,True,False,False,True
-Vinicius Cruz,vinicius cruz,False,False,True,True,True
+Vinicius Cruz,vinicius cruz,False,False,True,True,False
 Vitinho Imperador,vitinho imperador,True,True,False,False,True
 Xand Avião,xand aviao,True,False,False,True,True
 Yasmin Sensação,yasmin sensacao,True,True,False,False,True
 cjnobeat,cjnobeat,True,True,False,False,True
-Ícaro e Gilmar,icaro e gilmar,False,False,True,True,True
+Ícaro e Gilmar,icaro e gilmar,False,False,True,True,False

@@ -23,7 +23,7 @@ def run_hypothesis_test():
     print("ANÁLISE PRIMÁRIA — Lógica OR (H2)")
     print("=" * 60)
 
-    group_or_no  = df[df['has_call2go_or'] == 0]['view_count']
+    group_or_no = df[df['has_call2go_or'] == 0]['view_count']
     group_or_yes = df[df['has_call2go_or'] == 1]['view_count']
 
     print(f"Grupo Controle  (OR=0, Sem Call2Go):  {len(group_or_no)}")
@@ -54,7 +54,7 @@ def run_hypothesis_test():
     print("SUB-ANÁLISE — Lógica AND (requer vídeo E canal)")
     print("=" * 60)
 
-    group_and_no  = df[df['has_call2go'] == 0]['view_count']
+    group_and_no = df[df['has_call2go'] == 0]['view_count']
     group_and_yes = df[df['has_call2go'] == 1]['view_count']
 
     print(f"Grupo Controle  (AND=0, Sem Call2Go):  {len(group_and_no)}")

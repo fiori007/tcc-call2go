@@ -85,8 +85,10 @@ def _build_featured_map(weekly_charts_sp: dict, weekly_charts_yt: dict) -> dict:
             for p in parts:
                 all_yt.add(_normalize_name(p))
 
-    print(f"  Spotify: {len(primary_sp)} primarios, {len(all_sp)} total (incl. featured)")
-    print(f"  YouTube: {len(primary_yt)} primarios, {len(all_yt)} total (incl. featured)")
+    print(
+        f"  Spotify: {len(primary_sp)} primarios, {len(all_sp)} total (incl. featured)")
+    print(
+        f"  YouTube: {len(primary_yt)} primarios, {len(all_yt)} total (incl. featured)")
     return {
         'primary_sp': primary_sp,
         'all_sp': all_sp,
@@ -342,7 +344,8 @@ def compute_fusion_score(monthly_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Ordena meses em ordem calendaria
-    month_order = {abbr: i for i, abbr in enumerate(calendar.month_abbr) if abbr}
+    month_order = {abbr: i for i, abbr in enumerate(
+        calendar.month_abbr) if abbr}
     months_sorted = sorted(
         pivot.columns.tolist(),
         key=lambda m: month_order.get(m, 99))
@@ -368,7 +371,8 @@ def compute_fusion_score(monthly_df: pd.DataFrame) -> pd.DataFrame:
         rows.append(entry)
 
     df_scores = pd.DataFrame(rows)
-    df_scores = df_scores.sort_values('score', ascending=False).reset_index(drop=True)
+    df_scores = df_scores.sort_values(
+        'score', ascending=False).reset_index(drop=True)
     df_scores['global_rank'] = range(1, len(df_scores) + 1)
     return df_scores
 
@@ -418,8 +422,10 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     sp_monthly = aggregate_to_artist_monthly(sp_charts, "spotify")
     yt_monthly = aggregate_to_artist_monthly(yt_charts, "youtube")
 
-    print(f"  Spotify: {sp_monthly['artist_normalized'].nunique()} artistas unicos")
-    print(f"  YouTube: {yt_monthly['artist_normalized'].nunique()} artistas unicos")
+    print(
+        f"  Spotify: {sp_monthly['artist_normalized'].nunique()} artistas unicos")
+    print(
+        f"  YouTube: {yt_monthly['artist_normalized'].nunique()} artistas unicos")
 
     print("\n--- ESTATISTICAS DE ENTRADA NOS CHARTS ---")
     sp_entry_stats = compute_chart_entry_stats(sp_charts, "spotify")
@@ -605,14 +611,19 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     yt_scores = df_merged['score_youtube'].dropna()
     comb_scores = df_merged['score_combined'].dropna()
 
-    print(f"\n  Total artistas primarios: {total} | In dataset (seed primario): {in_ds}")
-    print(f"  Normalizacao: n_semanas_sp={n_weeks_sp}, n_semanas_yt={n_weeks_yt}")
+    print(
+        f"\n  Total artistas primarios: {total} | In dataset (seed primario): {in_ds}")
+    print(
+        f"  Normalizacao: n_semanas_sp={n_weeks_sp}, n_semanas_yt={n_weeks_yt}")
     if not sp_scores.empty:
-        print(f"  Score Spotify (raw): min={sp_scores.min():.4f}, max={sp_scores.max():.4f}")
+        print(
+            f"  Score Spotify (raw): min={sp_scores.min():.4f}, max={sp_scores.max():.4f}")
     if not yt_scores.empty:
-        print(f"  Score YouTube (raw): min={yt_scores.min():.4f}, max={yt_scores.max():.4f}")
+        print(
+            f"  Score YouTube (raw): min={yt_scores.min():.4f}, max={yt_scores.max():.4f}")
     if not comb_scores.empty:
-        print(f"  Score Combinado (norm): min={comb_scores.min():.6f}, max={comb_scores.max():.6f}")
+        print(
+            f"  Score Combinado (norm): min={comb_scores.min():.6f}, max={comb_scores.max():.6f}")
     print(f"  Salvo em: {output_path}")
 
     return df_merged
@@ -641,9 +652,11 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
         .nlargest(75, 'score_combined')
         .copy()
     )
-    print(f"  Heatmap: {len(df_ds)} artistas selecionados (top 75 score_combined)")
+    print(
+        f"  Heatmap: {len(df_ds)} artistas selecionados (top 75 score_combined)")
 
-    month_order = {abbr: i for i, abbr in enumerate(calendar.month_abbr) if abbr}
+    month_order = {abbr: i for i, abbr in enumerate(
+        calendar.month_abbr) if abbr}
 
     for platform, score_col, suffix, filename in [
         ('Spotify', 'score_spotify', '_sp', 'presence_heatmap_spotify.png'),
@@ -732,7 +745,8 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
         return
 
     # Top 25 por score_combined para legibilidade
-    df_plot = df_plot.sort_values('score_combined', ascending=False, na_position='last')
+    df_plot = df_plot.sort_values(
+        'score_combined', ascending=False, na_position='last')
     df_plot = df_plot.head(25)
 
     # Cores por padrao de presenca (taxonomia estrutural, 6 categorias)
@@ -790,7 +804,8 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
     ax.invert_yaxis()
     ax.set_xlabel('Mes')
     ax.set_ylabel('Posicao no Chart (1 = melhor)')
-    ax.set_title('Evolucao de Rank Spotify Q1 2026 -- Top 25 por Score Combinado')
+    ax.set_title(
+        'Evolucao de Rank Spotify Q1 2026 -- Top 25 por Score Combinado')
 
     # Legenda manual de padroes de presenca
     legend_elements = [
@@ -813,8 +828,8 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
 # ============================================================
 
 def compare_call2go_groups(df_fusion: pd.DataFrame,
-                            df_flagged: pd.DataFrame,
-                            output_dir: str) -> dict:
+                           df_flagged: pd.DataFrame,
+                           output_dir: str) -> dict:
     """
     Compara scores de fusao entre artistas com e sem Call2Go.
 
@@ -847,7 +862,8 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
         right_on='artist_norm',
         how='left',
     )
-    df_merged['has_call2go'] = df_merged['has_call2go_flag'].fillna(0).astype(int)
+    df_merged['has_call2go'] = df_merged['has_call2go_flag'].fillna(
+        0).astype(int)
 
     group_yes = df_merged[df_merged['has_call2go'] == 1]
     group_no = df_merged[df_merged['has_call2go'] == 0]
@@ -868,8 +884,10 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
         mean_n = n.mean() if not n.empty else float('nan')
 
         print(f"\n  {score_col}:")
-        print(f"    Call2Go=1 -- mediana={med_y:.4f}, media={mean_y:.4f} (n={len(y)})")
-        print(f"    Call2Go=0 -- mediana={med_n:.4f}, media={mean_n:.4f} (n={len(n)})")
+        print(
+            f"    Call2Go=1 -- mediana={med_y:.4f}, media={mean_y:.4f} (n={len(y)})")
+        print(
+            f"    Call2Go=0 -- mediana={med_n:.4f}, media={mean_n:.4f} (n={len(n)})")
 
         if len(y) >= 3 and len(n) >= 3:
             stat, pval = stats.mannwhitneyu(y, n, alternative='two-sided')
@@ -893,12 +911,14 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
         pc_y = group_yes['presence_count_spotify'].dropna()
         pc_n = group_no['presence_count_spotify'].dropna()
         if len(pc_y) >= 3 and len(pc_n) >= 3:
-            stat, pval = stats.mannwhitneyu(pc_y, pc_n, alternative='two-sided')
+            stat, pval = stats.mannwhitneyu(
+                pc_y, pc_n, alternative='two-sided')
             sig = ('***' if pval < 0.001 else '**' if pval < 0.01
                    else '*' if pval < 0.05 else 'ns')
             print(f"\n  presence_count_spotify: "
                   f"U={stat:.1f}, p={pval:.4f} [{sig}]")
-            results['presence_count_spotify'] = {'U': stat, 'p': pval, 'sig': sig}
+            results['presence_count_spotify'] = {
+                'U': stat, 'p': pval, 'sig': sig}
 
     # Boxplot: score_spotify e score_youtube por grupo
     plot_cols = [c for c in ['score_spotify', 'score_youtube']
@@ -929,8 +949,8 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
 # ============================================================
 
 def analyze_lastfm_correlations(df_fusion: pd.DataFrame,
-                                 df_lastfm: pd.DataFrame,
-                                 output_dir: str) -> pd.DataFrame:
+                                df_lastfm: pd.DataFrame,
+                                output_dir: str) -> pd.DataFrame:
     """
     Calcula correlacoes (Pearson + Spearman) entre scores de fusao
     e metricas do Last.fm (listeners, playcount).
@@ -1038,9 +1058,9 @@ def _parse_release_date(date_str: str) -> pd.Timestamp:
 
 
 def temporal_lag_analysis(df_fusion: pd.DataFrame,
-                           df_yt_videos: pd.DataFrame,
-                           df_sp_dates: pd.DataFrame,
-                           output_dir: str):
+                          df_yt_videos: pd.DataFrame,
+                          df_sp_dates: pd.DataFrame,
+                          output_dir: str):
     """
     Analisa o lag temporal entre lancamento no Spotify e primeiro video
     Call2Go no YouTube, para artistas com Call2Go no dataset.
@@ -1096,13 +1116,15 @@ def temporal_lag_analysis(df_fusion: pd.DataFrame,
         # Release date Spotify: artista primario nas faixas dos charts
         sp_artist = df_sp_dates[
             df_sp_dates['artist_names'].apply(
-                lambda x: _normalize_name(str(x).split(',')[0].strip()) == artist_norm
+                lambda x: _normalize_name(
+                    str(x).split(',')[0].strip()) == artist_norm
             )
         ]
         if sp_artist.empty:
             sp_first_release = pd.NaT
         else:
-            sp_dates_parsed = sp_artist['release_date'].apply(_parse_release_date)
+            sp_dates_parsed = sp_artist['release_date'].apply(
+                _parse_release_date)
             sp_first_release = sp_dates_parsed.dropna().min()
 
         # lag = yt_first_call2go - sp_first_release (negativo = YT antes do Spotify)
@@ -1152,10 +1174,12 @@ def temporal_lag_analysis(df_fusion: pd.DataFrame,
     if not lags.empty:
         fig, ax = plt.subplots(figsize=(6, 4))
         ax.hist(lags.values, bins=15, edgecolor='black', color='steelblue')
-        ax.axvline(0, color='red', linestyle='--', linewidth=1, label='Simultaneo')
+        ax.axvline(0, color='red', linestyle='--',
+                   linewidth=1, label='Simultaneo')
         ax.set_xlabel('Dias (negativo = YouTube antes do Spotify)')
         ax.set_ylabel('Numero de artistas')
-        ax.set_title('Lag Temporal: Release Spotify vs. Primeiro Video Call2Go')
+        ax.set_title(
+            'Lag Temporal: Release Spotify vs. Primeiro Video Call2Go')
         ax.legend()
         plt.tight_layout()
         out_path = os.path.join(output_dir, 'temporal_lag_analysis.png')
@@ -1200,21 +1224,29 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
     total = len(df_fusion)
     in_ds = int(df_fusion['in_dataset'].sum())
     lines.append(f"Total de artistas primarios nos charts: {total}")
-    lines.append(f"Artistas do dataset (seed, encontrados como primarios): {in_ds}")
+    lines.append(
+        f"Artistas do dataset (seed, encontrados como primarios): {in_ds}")
     lines.append("")
 
     # Nota metodologica de normalizacao
     lines.append("--- METODOLOGIA DE SCORE ---")
-    lines.append("  score = Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)")
-    lines.append("  score_Xplatform = sum(1/best_rank_mes) para cada mes presente")
+    lines.append(
+        "  score = Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)")
+    lines.append(
+        "  score_Xplatform = sum(1/best_rank_mes) para cada mes presente")
     lines.append("  score_X_normalized = score_X / n_semanas_plataforma")
-    lines.append("  score_combined = score_sp_normalized + score_yt_normalized")
-    sp_norm_scores = df_fusion['score_spotify_normalized'].dropna() if 'score_spotify_normalized' in df_fusion.columns else pd.Series(dtype=float)
-    yt_norm_scores = df_fusion['score_youtube_normalized'].dropna() if 'score_youtube_normalized' in df_fusion.columns else pd.Series(dtype=float)
+    lines.append(
+        "  score_combined = score_sp_normalized + score_yt_normalized")
+    sp_norm_scores = df_fusion['score_spotify_normalized'].dropna(
+    ) if 'score_spotify_normalized' in df_fusion.columns else pd.Series(dtype=float)
+    yt_norm_scores = df_fusion['score_youtube_normalized'].dropna(
+    ) if 'score_youtube_normalized' in df_fusion.columns else pd.Series(dtype=float)
     if not sp_norm_scores.empty:
-        lines.append(f"  n_semanas_spotify: implicito em score_spotify_normalized")
+        lines.append(
+            f"  n_semanas_spotify: implicito em score_spotify_normalized")
     if not yt_norm_scores.empty:
-        lines.append(f"  n_semanas_youtube: implicito em score_youtube_normalized")
+        lines.append(
+            f"  n_semanas_youtube: implicito em score_youtube_normalized")
     lines.append("")
 
     # Ranges de score (raw e normalizado)
@@ -1232,7 +1264,8 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
     lines.append("--- TOP 10 POR SCORE COMBINADO (normalizado) ---")
     if 'score_combined' in df_fusion.columns:
         top10_c = (df_fusion[
-            ['artist_normalized', 'artist_name_seed', 'score_combined', 'in_dataset']
+            ['artist_normalized', 'artist_name_seed',
+                'score_combined', 'in_dataset']
         ]
             .dropna(subset=['score_combined'])
             .sort_values('score_combined', ascending=False)
@@ -1241,14 +1274,15 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
             name = (row['artist_name_seed'] if pd.notna(row['artist_name_seed'])
                     else row['artist_normalized'])
             mark = '[*]' if row['in_dataset'] else '   '
-            lines.append(f"  {i:2d}. {mark} {name}: {row['score_combined']:.6f}")
+            lines.append(
+                f"  {i:2d}. {mark} {name}: {row['score_combined']:.6f}")
     lines.append("")
 
     # Top 10 por Spotify
     lines.append("--- TOP 10 POR SCORE SPOTIFY ---")
     if 'score_spotify' in df_fusion.columns:
         top10_sp = (df_fusion[['artist_normalized', 'artist_name_seed',
-                                'score_spotify', 'in_dataset']]
+                               'score_spotify', 'in_dataset']]
                     .dropna(subset=['score_spotify'])
                     .sort_values('score_spotify', ascending=False)
                     .head(10))
@@ -1256,14 +1290,15 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
             name = (row['artist_name_seed'] if pd.notna(row['artist_name_seed'])
                     else row['artist_normalized'])
             mark = '[*]' if row['in_dataset'] else '   '
-            lines.append(f"  {i:2d}. {mark} {name}: {row['score_spotify']:.4f}")
+            lines.append(
+                f"  {i:2d}. {mark} {name}: {row['score_spotify']:.4f}")
     lines.append("")
 
     # Top 10 por YouTube
     lines.append("--- TOP 10 POR SCORE YOUTUBE ---")
     if 'score_youtube' in df_fusion.columns:
         top10_yt = (df_fusion[['artist_normalized', 'artist_name_seed',
-                                'score_youtube', 'in_dataset']]
+                               'score_youtube', 'in_dataset']]
                     .dropna(subset=['score_youtube'])
                     .sort_values('score_youtube', ascending=False)
                     .head(10))
@@ -1271,14 +1306,16 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
             name = (row['artist_name_seed'] if pd.notna(row['artist_name_seed'])
                     else row['artist_normalized'])
             mark = '[*]' if row['in_dataset'] else '   '
-            lines.append(f"  {i:2d}. {mark} {name}: {row['score_youtube']:.4f}")
+            lines.append(
+                f"  {i:2d}. {mark} {name}: {row['score_youtube']:.4f}")
     lines.append("")
 
     # Distribuicao de padroes de presenca (todos os artistas primarios)
     lines.append("--- PADROES DE PRESENCA JAN->MAR (TODOS OS ARTISTAS) ---")
-    lines.append("  Taxonomia estrutural: absent/single/persistent/new/exit/intermittent")
+    lines.append(
+        "  Taxonomia estrutural: absent/single/persistent/new/exit/intermittent")
     for pattern_col, platform in [('pattern_spotify', 'Spotify'),
-                                   ('pattern_youtube', 'YouTube')]:
+                                  ('pattern_youtube', 'YouTube')]:
         if pattern_col in df_fusion.columns:
             lines.append(f"  {platform}:")
             counts = df_fusion[pattern_col].value_counts()
@@ -1292,7 +1329,7 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
     lines.append("--- PADROES DE PRESENCA JAN->MAR (DATASET SEED) ---")
     df_ds_only = df_fusion[df_fusion['in_dataset'] == True]
     for pattern_col, platform in [('pattern_spotify', 'Spotify'),
-                                   ('pattern_youtube', 'YouTube')]:
+                                  ('pattern_youtube', 'YouTube')]:
         if pattern_col in df_fusion.columns:
             lines.append(f"  {platform}:")
             counts = df_ds_only[pattern_col].value_counts()
@@ -1313,7 +1350,8 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
                 if med_n is not None and not (isinstance(med_n, float) and np.isnan(med_n)):
                     lines.append(f"    Call2Go=0: mediana={med_n:.4f}")
             if 'p' in s:
-                lines.append(f"    Mann-Whitney p={s['p']:.4f} [{s.get('sig', '')}]")
+                lines.append(
+                    f"    Mann-Whitney p={s['p']:.4f} [{s.get('sig', '')}]")
     else:
         lines.append("  Nao disponivel")
     lines.append("")
@@ -1383,7 +1421,8 @@ def run_ranking_fusion_analysis():
     call2go_stats = {}
     try:
         df_flagged = pd.read_csv("data/processed/youtube_call2go_flagged.csv")
-        call2go_stats = compare_call2go_groups(df_fusion, df_flagged, output_dir)
+        call2go_stats = compare_call2go_groups(
+            df_fusion, df_flagged, output_dir)
     except Exception as e:
         print(f"[ERRO] Falha na comparacao Call2Go: {e}")
 
@@ -1419,7 +1458,8 @@ def run_ranking_fusion_analysis():
             df_yt_videos = pd.read_csv(
                 "data/processed/youtube_call2go_flagged.csv")
             df_sp_dates = pd.read_csv(sp_dates_path)
-            temporal_lag_analysis(df_fusion, df_yt_videos, df_sp_dates, output_dir)
+            temporal_lag_analysis(df_fusion, df_yt_videos,
+                                  df_sp_dates, output_dir)
         except Exception as e:
             print(f"[ERRO] Falha na analise temporal: {e}")
 

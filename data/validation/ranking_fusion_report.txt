@@ -1,13 +1,35 @@
 ============================================================
 RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Q1 2026
 ============================================================
-Gerado em: 2026-04-24 20:47:06
+Gerado em: 2026-04-28 20:15:58
 
-Total de artistas nos charts: 316
-Artistas do dataset (seed): 67
+Total de artistas primarios nos charts: 288
+Artistas do dataset (seed, encontrados como primarios): 39
 
-score_spotify: min=0.0050, max=3.0000, mediana=0.0221
-score_youtube: min=0.0100, max=3.0000, mediana=0.0274
+--- METODOLOGIA DE SCORE ---
+  score = Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)
+  score_Xplatform = sum(1/best_rank_mes) para cada mes presente
+  score_X_normalized = score_X / n_semanas_plataforma
+  score_combined = score_sp_normalized + score_yt_normalized
+  n_semanas_spotify: implicito em score_spotify_normalized
+  n_semanas_youtube: implicito em score_youtube_normalized
+
+--- RANGES DE SCORE ---
+  score_spotify: min=0.005000, max=3.000000, mediana=0.022080
+  score_youtube: min=0.010000, max=3.000000, mediana=0.027418
+  score_combined: min=0.000385, max=0.365385, mediana=0.002072
+
+--- TOP 10 POR SCORE COMBINADO (normalizado) ---
+   1. [*] PEDRO SAMPAIO: 0.365385
+   2. [*] DJ Japa NK: 0.352564
+   3. [*] DJ Oreia: 0.174451
+   4. [*] Mc Jacaré: 0.170434
+   5. [*] Grupo Menos É Mais: 0.106410
+   6. [*] Panda: 0.102446
+   7.     bts: 0.089744
+   8.     dj gu: 0.089744
+   9. [*] Vitinho Imperador: 0.066334
+  10. [*] MC GP: 0.061900
 
 --- TOP 10 POR SCORE SPOTIFY ---
    1. [*] DJ Japa NK: 3.0000
@@ -33,41 +55,35 @@ score_youtube: min=0.0100, max=3.0000, mediana=0.0274
    9. [*] Oruam: 0.3274
   10. [*] Léo Santana: 0.2520
 
---- TOP 10 POR SCORE COMBINADO ---
-   1. [*] PEDRO SAMPAIO: 4.7500
-   2. [*] DJ Japa NK: 4.5833
-   3. [*] DJ Oreia: 2.2679
-   4. [*] Mc Jacaré: 2.2156
-   5. [*] Grupo Menos É Mais: 1.3833
-   6. [*] Panda: 1.3318
-   7.     bts: 1.1667
-   8.     dj gu: 1.1667
-   9. [*] Vitinho Imperador: 0.8623
-  10. [*] MC GP: 0.8047
-
---- TENDENCIAS JAN->MAR (DATASET) ---
+--- PADROES DE PRESENCA JAN->MAR (TODOS OS ARTISTAS) ---
+  Taxonomia estrutural: absent/single/persistent/new/exit/intermittent
   Spotify:
-    absent: 28
-    falling: 16
-    rising: 11
-    stable: 5
+    persistent: 99 (34.4%)
+    absent: 80 (27.8%)
+    single: 61 (21.2%)
+    exit: 21 (7.3%)
+    new: 21 (7.3%)
+    intermittent: 6 (2.1%)
+  YouTube:
+    absent: 123 (42.7%)
+    single: 76 (26.4%)
+    persistent: 53 (18.4%)
+    new: 16 (5.6%)
+    exit: 14 (4.9%)
+    intermittent: 6 (2.1%)
+
+--- PADROES DE PRESENCA JAN->MAR (DATASET SEED) ---
+  Spotify:
+    persistent: 32
     single: 3
     new: 2
-    fading: 2
+    exit: 2
   YouTube:
-    absent: 34
-    falling: 13
-    rising: 9
-    stable: 7
+    persistent: 29
+    absent: 6
     single: 2
     new: 1
-    fading: 1
-
---- COBERTURA DO SEED ---
-  Artistas seed na tabela: 67
-  Primarios (pelo menos 1 plataforma): 39
-  Featured-only Spotify: 28
-  Featured-only YouTube: 28
+    exit: 1
 
 --- COMPARACAO GRUPOS CALL2GO ---
   score_spotify:

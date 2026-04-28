@@ -14,18 +14,16 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
     9. Testes de Hipótese (Mann-Whitney U)
    10. Análise de Impacto Cross-Platform
    11. Last.fm Bridge — Análise 3 Fontes
-   12. [DEPRECATED 26/04/2026] Geração de amostra para validação manual
-   13. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
-   14. [DEPRECATED 26/04/2026] Censo Excel para validação manual humana
-   15. Coleta de datas de lançamento das faixas Spotify Q1 2026
-   16. Fusão de rankings cross-platform (RRF normalizado, taxonomia estrutural)
-   17. Análise temporal charts (YouTube vs Spotify — defasagem de entrada no chart)
+   12. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
+   13. Coleta de datas de lançamento das faixas Spotify Q1 2026
+   14. Fusão de rankings cross-platform (RRF normalizado, taxonomia estrutural)
+   15. Análise temporal charts (YouTube vs Spotify — defasagem de entrada no chart)
 
 Uso:
     python run_pipeline.py                  # pipeline completo
     python run_pipeline.py --skip-collect   # pula coleta (usa dados existentes)
     python run_pipeline.py --from-step 5    # começa a partir do passo 5
-    python run_pipeline.py --from-step 4    # re-executa a partir do Last.fm
+    python run_pipeline.py --from-step 6    # re-executa análise (pula coleta + scraping)
 """
 
 import os
@@ -160,55 +158,25 @@ def step_11_lastfm_bridge():
     run_lastfm_bridge_analysis()
 
 
-def step_12_generate_sample():  # [DEPRECATED - manual annotation discontinued 2026-04-26]
-    """Gera amostra para validação manual."""
-    from src.validation.sample_generator import generate_validation_sample
-    generate_validation_sample()
-
-
-def step_13_cross_platform_validation():
-    """Executa validação cross-platform bidirecional."""
+def step_12_cross_platform_validation():
+    """Executa validação cross-platform bidirecional (YouTube <-> Spotify)."""
     from src.validation.cross_platform_validator import run_cross_platform_validation
     run_cross_platform_validation()
 
 
-def step_14_generate_census_excel():  # [DEPRECATED - manual annotation discontinued 2026-04-26]
-    """Gera censo completo + Excel formatado para validação manual humana."""
-    from src.validation.blind_annotator import (
-        generate_census_csv, generate_detector_answers)
-    from src.validation.excel_formatter import format_blind_annotation
-
-    # Gera CSVs do censo
-    generate_census_csv()
-    generate_detector_answers()
-
-    # Gera Excel com dropdowns para anotação manual (versão cega)
-    format_blind_annotation(
-        input_csv="data/validation/blind_annotation_census.csv",
-        output_xlsx="data/validation/blind_annotation_census.xlsx",
-        census_mode=True)
-
-    # Gera Excel com respostas do detector (versão gabarito, sem dropdowns)
-    format_blind_annotation(
-        input_csv="data/validation/detector_answers_census.csv",
-        output_xlsx="data/validation/detector_answers_census.xlsx",
-        census_mode=True,
-        readonly_mode=True)
-
-
-def step_15_collect_spotify_track_dates():
+def step_13_collect_spotify_track_dates():
     """Coleta datas de lançamento das faixas dos charts Spotify Q1 2026."""
     from src.collectors.spotify_track_dates_collector import collect_track_dates
     collect_track_dates()
 
 
-def step_16_ranking_fusion_analysis():
-    """Executa análise de fusão de rankings cross-platform."""
+def step_14_ranking_fusion_analysis():
+    """Executa análise de fusão de rankings cross-platform (RRF normalizado)."""
     from src.analytics.ranking_fusion import run_ranking_fusion_analysis
     run_ranking_fusion_analysis()
 
 
-def step_17_chart_temporal_analysis():
+def step_15_chart_temporal_analysis():
     """Analisa defasagem temporal entre atividade YouTube e entrada no chart Spotify."""
     from src.analytics.chart_temporal_analysis import run_chart_temporal_analysis
     run_chart_temporal_analysis()
@@ -220,7 +188,7 @@ def main():
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-16)')
+                        help='Começa a partir de uma etapa específica (1-15)')
     parser.add_argument('--force-channel-scrape', action='store_true',
                         help='Força re-scraping dos canais (ignora cache da etapa 5)')
     args = parser.parse_args()
@@ -228,7 +196,7 @@ def main():
     global FORCE_CHANNEL_SCRAPE
     FORCE_CHANNEL_SCRAPE = args.force_channel_scrape
 
-    total_steps = 17
+    total_steps = 15
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -255,29 +223,21 @@ def main():
     check_file_exists("data/raw", "Diretório raw")
 
     steps = [
-        (1, "CONSTRUÇÃO DA BASE DE ARTISTAS", step_01_build_artist_base, False),
-        (2, "COLETA YOUTUBE", step_02_collect_youtube, False),
-        (3, "COLETA SPOTIFY", step_03_collect_spotify, False),
-        (4, "COLETA LAST.FM (ARTISTAS + CHARTS BR)", step_04_collect_lastfm, False),
-        (5, "SCRAPING LINKS CANAIS (ABOUT PAGE)",
-         step_05_scrape_channel_links, False),
-        (6, "DETECÇÃO CALL2GO (REGEX)", step_06_detect_call2go, True),
-        (7, "CONSTRUÇÃO DO DATA WAREHOUSE", step_07_build_database, True),
-        (8, "ANÁLISE EXPLORATÓRIA (EDA)", step_08_eda_analysis, True),
-        (9, "TESTE DE HIPÓTESE (MANN-WHITNEY)", step_09_hypothesis_testing, True),
-        (10, "ANÁLISE IMPACTO CROSS-PLATFORM", step_10_spotify_impact, True),
-        (11, "LAST.FM BRIDGE (3 FONTES)", step_11_lastfm_bridge, True),
-        (12, "GERAÇÃO DE AMOSTRA VALIDAÇÃO [DEPRECATED]", step_12_generate_sample, True),
-        (13, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
-         step_13_cross_platform_validation, True),
-        (14, "CENSO EXCEL PARA VALIDAÇÃO MANUAL [DEPRECATED]",
-         step_14_generate_census_excel, True),
-        (15, "COLETA DATAS FAIXAS SPOTIFY",
-         step_15_collect_spotify_track_dates, False),
-        (16, "FUSÃO DE RANKINGS + ANÁLISE TEMPORAL",
-         step_16_ranking_fusion_analysis, True),
-        (17, "ANÁLISE TEMPORAL CHARTS (YouTube vs Spotify)",
-         step_17_chart_temporal_analysis, True),
+        (1,  "CONSTRUÇÃO DA BASE DE ARTISTAS",               step_01_build_artist_base,          False),
+        (2,  "COLETA YOUTUBE",                                  step_02_collect_youtube,             False),
+        (3,  "COLETA SPOTIFY",                                  step_03_collect_spotify,             False),
+        (4,  "COLETA LAST.FM (ARTISTAS + CHARTS BR)",           step_04_collect_lastfm,              False),
+        (5,  "SCRAPING LINKS CANAIS (ABOUT PAGE)",              step_05_scrape_channel_links,        False),
+        (6,  "DETECÇÃO CALL2GO (REGEX)",                      step_06_detect_call2go,              True),
+        (7,  "CONSTRUÇÃO DO DATA WAREHOUSE",                  step_07_build_database,              True),
+        (8,  "ANÁLISE EXPLORATÓRIA (EDA)",                    step_08_eda_analysis,                True),
+        (9,  "TESTE DE HIPÓTESE (MANN-WHITNEY)",               step_09_hypothesis_testing,          True),
+        (10, "ANÁLISE IMPACTO CROSS-PLATFORM",                 step_10_spotify_impact,              True),
+        (11, "LAST.FM BRIDGE (3 FONTES)",                       step_11_lastfm_bridge,               True),
+        (12, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",   step_12_cross_platform_validation,  True),
+        (13, "COLETA DATAS FAIXAS SPOTIFY",                     step_13_collect_spotify_track_dates, False),
+        (14, "FUSÃO DE RANKINGS + ANÁLISE TEMPORAL",           step_14_ranking_fusion_analysis,     True),
+        (15, "ANÁLISE TEMPORAL CHARTS (YouTube vs Spotify)",    step_15_chart_temporal_analysis,     True),
     ]
 
     results = {}
@@ -320,31 +280,40 @@ def main():
     # Verifica outputs finais
     print(f"\n--- OUTPUTS GERADOS ---")
     output_files = [
+        # Raw data
         "data/seed/artistas.csv",
         "data/raw/youtube_videos_raw.jsonl",
         "data/raw/channel_links_scraped.json",
+        "data/raw/spotify_track_dates_Q1_2026.csv",
+        # Processed
         "data/processed/youtube_call2go_flagged.csv",
         "data/processed/call2go.db",
+        "data/processed/ranking_fusion_scores.csv",
+        # Plots
         "data/plots/boxplot_call2go_views.png",
         "data/plots/scatter_cross_platform.png",
-        "data/validation/manual_sample.csv",
-        "data/validation/direction_a_youtube_to_spotify.png",
-        "data/validation/direction_b_spotify_to_youtube.png",
-        "data/validation/bidirectional_correlation_matrix.png",
-        "data/validation/cross_platform_report.txt",
-        "data/validation/blind_annotation_census.csv",
-        "data/validation/blind_annotation_census.xlsx",
-        "data/validation/detector_answers_census.csv",
-        "data/raw/spotify_track_dates_Q1_2026.csv",
-        "data/processed/ranking_fusion_scores.csv",
+        "data/plots/rank_comparison_3sources.png",
+        "data/plots/callgo_by_genre.png",
+        "data/plots/mannwhitney_lastfm.png",
+        "data/plots/scatter_3source_bidirectional.png",
+        "data/plots/presence_heatmap_spotify.png",
+        "data/plots/presence_heatmap_youtube.png",
+        "data/plots/rank_evolution_spotify.png",
         "data/plots/fusion_score_by_call2go.png",
         "data/plots/fusion_lastfm_correlation.png",
         "data/plots/temporal_lag_analysis.png",
-        "data/plots/rank_evolution_spotify.png",
-        "data/plots/presence_heatmap_spotify.png",
-        "data/plots/presence_heatmap_youtube.png",
+        "data/plots/chart_temporal_lag_histogram.png",
+        "data/plots/chart_temporal_windows.png",
+        "data/plots/chart_temporal_correlation.png",
+        # Validation
+        "data/validation/cross_platform_report.txt",
+        "data/validation/artist_cross_platform_profile.csv",
+        "data/validation/lastfm_bridge_report.txt",
+        "data/validation/three_way_intersection.csv",
+        "data/validation/track_level_matching.csv",
         "data/validation/ranking_fusion_report.txt",
         "data/validation/seed_matching_diagnostic.csv",
+        "data/validation/chart_temporal_results.csv",
     ]
 
     for f in output_files:
