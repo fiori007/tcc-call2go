@@ -40,6 +40,15 @@ data/processed/*.db
 # === Templates originais (copiados para artigo_latex/) ===
 SBC_Conferences_Template*/
 
+# === Pasta do artigo LaTeX (documento final) ===
+artigo_latex/
+
+# === Padrões e Regras (documentos internos) ===
+PADROES&REGRAS/
+
+# === Memory Bank (contexto do agente, não é código) ===
+memory-bank/
+
 # === LaTeX auxiliares ===
 *.aux
 *.log
