@@ -19,7 +19,7 @@ Antes de responder qualquer pergunta sobre este projeto, leia os arquivos do mem
 - Gráficos acadêmicos com DPI 300
 
 ## Foco do TCC (IMPORTANTE)
-O foco NÃO é estudar música ou artistas. É sobre **confiabilidade metodológica**: validar se o detector automatizado é confiável comparando com classificação humana. Os artistas são apenas o dataset.
+O foco é investigar a **efetividade das estratégias cross-platform** — em especial o **Call2Go** — adotadas por artistas brasileiros no ecossistema YouTube/Spotify. O detector automatizado é apenas o **instrumento de mensuração** construído para viabilizar a análise em escala. Sua validação é pré-requisito metodológico, não o objeto de estudo. Os artistas são o dataset sobre o qual a estratégia é estudada.
 
 ## Contexto Acadêmico
 Este é um TCC (Trabalho de Conclusão de Curso) em Ciência da Computação. Priorize:
