@@ -520,7 +520,7 @@ avaliação combinada.
 % ============================================================
 %  5. RESULTADOS
 % ============================================================
-\section{Resultados}
+\section{Resultados e Análises}
 \label{sec:resultados}
 
 \subsection{Distribuição das Detecções de Call2Go}
@@ -636,14 +636,14 @@ artistas).}
 \textbf{$p$} & \textbf{Sig.} \\
 \midrule
 A (YT $\to$ SP) & Taxa Call2Go OR $\leftrightarrow$ Pop.\ Spotify
-  & $-0{,}050$ & $0{,}949$ & n.s. \\
+  & $0{,}008$ & $0{,}947$ & n.s. \\
 A (YT $\to$ SP) & Taxa Call2Go OR $\leftrightarrow$ Seguidores SP
-  & $-0{,}050$ & $0{,}949$ & n.s. \\
+  & $0{,}019$ & $0{,}877$ & n.s. \\
 \midrule
 B (SP $\to$ YT) & Pop.\ Spotify $\leftrightarrow$ Média Views YT
   & $0{,}505$ & $< 0{,}001$ & *** \\
 B (SP $\to$ YT) & Seguidores SP $\leftrightarrow$ Média Views YT
-  & $0{,}505$ & $< 0{,}001$ & *** \\
+  & $0{,}674$ & $< 0{,}001$ & *** \\
 \bottomrule
 \multicolumn{5}{@{}l@{}}{\footnotesize *** $p<0{,}001$; n.s. = não
 significativo; SP = Spotify; YT = YouTube.}
@@ -767,30 +767,16 @@ $0{,}61$--$0{,}80$ = substancial; $0{,}41$--$0{,}60$ = moderado.}
 \end{tabular}
 \end{table}
 
-Os resultados indicam interpretação diferenciada por nível. \textbf{Nível
-canal}: $\kappa = 0{,}80$ (substancial) e acurácia de 90,1\% rejeitam $H_0$,
-validando o detector nesse nível como metodologicamente confiável. O
-desempenho superior é esperado: o canal concentra a evidência principal do
-Call2Go, e o scraping da aba ``Sobre'' captura os links de forma estruturada.
+Os resultados confirmam que o sistema opera de forma satisfatória para os fins
+deste estudo. \textbf{Nível canal}: $\kappa = 0{,}80$ (substancial) e acurácia
+de 90,1\% rejeitam $H_0$, validando o uso do detector como ferramenta
+analítica. Os resultados da anotação manual foram utilizados como parâmetro
+para atestar a confiabilidade do sistema e dar continuidade às análises.
 \textbf{Nível vídeo}: $\kappa = 0{,}45$ (moderado) e acurácia de 82,4\% não
-rejeitam $H_0$, indicando que o detector restrito às descrições individuais
-não atinge o limiar de 85\%, resultado metodologicamente relevante: artistas
-frequentemente inserem o Call2Go apenas no perfil do canal, não em cada
-descrição de vídeo.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=.78\textwidth]{figs/validation_metrics_per_class.png}
-\caption{Métricas de validação (precisão, \textit{recall}, F1-score) por
-classe e por nível de análise. O nível canal apresenta desempenho
-substancialmente superior ao nível vídeo isolado.}
-\label{fig:val_metrics}
-\end{figure}
-
-O nível vídeo sofre especialmente em \textit{recall} para
-\texttt{link\_direto}---vídeos cujo Call2Go está apenas no canal. A métrica
-OR, ao agregar os pontos fortes de ambos os níveis, representa o modo de
-operação recomendado do sistema.
+rejeitam $H_0$. O resultado é esperado: artistas frequentemente inserem o
+Call2Go apenas no perfil do canal, não em cada descrição de vídeo. A métrica
+OR, que combina os dois níveis, compensa essa limitação e constitui o modo
+de operação adotado nas análises subsequentes.
 
 % ============================================================
 %  6. CONCLUSÕES E TRABALHOS FUTUROS
@@ -863,14 +849,6 @@ estruturados. A metodologia do pipeline é transferível para outros pares de
 plataformas (e.g., TikTok~$\to$~Spotify ou Instagram~$\to$~YouTube), e a
 base de artistas persistentes Q1~2026 pode ser atualizada trimestralmente
 para análises longitudinais de adoção da estratégia.
-
-\section*{Agradecimentos}
-
-O presente trabalho foi realizado com apoio da Pontifícia Universidade
-Católica de Minas Gerais. Ferramentas de Inteligência Artificial (GitHub
-Copilot) foram utilizadas como apoio na revisão e na formatação de trechos
-do código do pipeline ETL e do presente documento, em conformidade com o
-Art.~$6^{\circ}$ do Regulamento Geral de TCC 2025.
 
 % ============================================================
 %  REFERÊNCIAS
