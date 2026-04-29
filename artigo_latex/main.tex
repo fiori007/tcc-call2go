@@ -15,16 +15,15 @@
 
 \sloppy
 
-\title{Detecção Automatizada de Estratégias \textit{Call2Go} em Vídeos do YouTube:\\
-       Um Pipeline Reprodutível para Análise \textit{Cross-Platform}\\
-       na Indústria Musical Brasileira}
+\title{Detecção Automatizada de Estratégias \textit{Call2Go}:\\
+       Pipeline \textit{Cross-Platform} para a Indústria Musical Brasileira}
 
-\author{[Nome Completo]\inst{1}}
+\author{Lucas Fiori Magalhães Machado\inst{1}}
 
 \address{Bacharelado em Ciência da Computação\\
   Pontifícia Universidade Católica de Minas Gerais (PUC Minas)\\
   Belo Horizonte -- MG, Brasil
-  \email{[email@sga.pucminas.br]}
+  \email{lucasfmm54@gmail.com}
 }
 
 \begin{document}
@@ -342,19 +341,19 @@ por 15 etapas sequenciais organizadas em cinco blocos funcionais.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    node distance=0.72cm,
-    box/.style={rectangle, draw=black!70, fill=gray!10, text width=8.8cm,
-                text centered, minimum height=0.58cm, font=\small,
+    node distance=0.85cm,
+    box/.style={rectangle, draw=black!70, fill=gray!10, text width=11cm,
+                text centered, minimum height=0.65cm, font=\small,
                 rounded corners=2pt},
-    abox/.style={rectangle, draw=green!60!black, fill=green!8, text width=8.8cm,
-                 text centered, minimum height=0.58cm, font=\small,
+    abox/.style={rectangle, draw=green!60!black, fill=green!8, text width=11cm,
+                 text centered, minimum height=0.65cm, font=\small,
                  rounded corners=2pt},
-    vbox/.style={rectangle, draw=blue!60, fill=blue!8, text width=8.8cm,
-                 text centered, minimum height=0.58cm, font=\small,
+    vbox/.style={rectangle, draw=blue!60, fill=blue!8, text width=11cm,
+                 text centered, minimum height=0.65cm, font=\small,
                  rounded corners=2pt},
     arr/.style={-{Stealth}, thick, draw=black!60}
 ]
-\node[box]  (s1) {Etapas 1--5: Coleta (Artistas, YouTube, Spotify, Last.fm, \textit{Scraping} Canais)};
+\node[box]  (s1) {Etapas 1--5: Coleta (Artistas, YouTube, Spotify, Last.fm, \textit{Scraping} de Canais)};
 \node[box,  below of=s1] (s2) {Etapa 6: Detecção Call2Go --- \textit{Regex} Multicamada (OR + AND)};
 \node[box,  below of=s2] (s3) {Etapa 7: \textit{Data Warehouse} SQLite (6 tabelas, \textit{star schema})};
 \node[abox, below of=s3] (s4) {Etapas 8--11: EDA + Mann-Whitney + Cross-Platform + Last.fm Bridge};
