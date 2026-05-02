@@ -1,4 +1,5 @@
 import os
+import logging
 import pandas as pd
 import json
 import numpy as np
@@ -7,19 +8,27 @@ from src.processors.call2go_detector import (
     detect_call2go, detect_call2go_channel_scraped
 )
 from src.collectors.channel_link_scraper import load_cached_channel_links
+from src.config import RANDOM_SEED, BOOTSTRAP_RESAMPLES
+
+logger = logging.getLogger(__name__)
 
 
-def _bootstrap_ci(y_true, y_pred, metric_fn, n_boot=2000, ci=0.95, seed=42):
+def _bootstrap_ci(y_true, y_pred, metric_fn, n_boot=BOOTSTRAP_RESAMPLES,
+                  ci=0.95, seed=RANDOM_SEED):
     """
-    Calcula intervalo de confiança via bootstrap para qualquer métrica.
+    Calcula intervalo de confianca via bootstrap para qualquer metrica.
+
+    Reporta perdas: se bootstrap descartou re-amostras (Kappa indefinido
+    quando todas as labels colapsam), informa quantas via logger.warning
+    em vez de mascarar silenciosamente.
 
     Args:
-        y_true: array de rótulos verdadeiros (humano)
-        y_pred: array de rótulos preditos (detector)
-        metric_fn: função(y_true, y_pred) -> float
-        n_boot: número de re-amostras bootstrap
-        ci: nível de confiança (0.95 = 95%)
-        seed: seed para reprodutibilidade
+        y_true: array de rotulos verdadeiros (humano)
+        y_pred: array de rotulos preditos (detector)
+        metric_fn: funcao(y_true, y_pred) -> float
+        n_boot: numero de re-amostras bootstrap (default BOOTSTRAP_RESAMPLES=2000)
+        ci: nivel de confianca (0.95 = 95%)
+        seed: seed para reprodutibilidade (default RANDOM_SEED=42)
 
     Returns:
         (point_estimate, lower_bound, upper_bound)
@@ -29,16 +38,23 @@ def _bootstrap_ci(y_true, y_pred, metric_fn, n_boot=2000, ci=0.95, seed=42):
     point = metric_fn(y_true, y_pred)
 
     boot_scores = []
+    discarded = 0
     for _ in range(n_boot):
         idx = rng.randint(0, n, size=n)
         y_t = [y_true[i] for i in idx]
         y_p = [y_pred[i] for i in idx]
-        # Cohen's Kappa pode dar erro se todos os rótulos forem iguais
+        # Cohen's Kappa indefinido se todas as labels iguais
         try:
             score = metric_fn(y_t, y_p)
             boot_scores.append(score)
         except (ValueError, ZeroDivisionError):
+            discarded += 1
             continue
+
+    if discarded:
+        logger.warning(
+            "Bootstrap descartou %d/%d re-amostras (metrica indefinida). "
+            "IC pode estar subestimado.", discarded, n_boot)
 
     if not boot_scores:
         return point, float('nan'), float('nan')
