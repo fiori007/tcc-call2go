@@ -1,11 +1,15 @@
 import os
+import logging
 import pandas as pd
 import json
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
 
 # Carrega as chaves do arquivo .env
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 def get_youtube_client():
@@ -87,7 +91,19 @@ def get_channel_videos(youtube, channel_id, max_results=20):
                 maxResults=50,
                 pageToken=next_page_token
             ).execute()
-        except Exception:
+        except HttpError as e:
+            # Quota esgotada nao deve ser engolida -- propaga para o caller
+            # decidir se mantem dados parciais e corta a coleta global.
+            if e.resp.status in (403, 429):
+                raise
+            logger.warning(
+                "playlistItems.list falhou em %s pagina (canal %s): %s -- corta paginacao",
+                len(video_ids), channel_id, e)
+            break
+        except Exception as e:
+            logger.error(
+                "Erro inesperado em playlistItems.list (canal %s, %d videos coletados): %s",
+                channel_id, len(video_ids), e)
             break
 
         for item in res.get('items', []):
@@ -102,7 +118,7 @@ def get_channel_videos(youtube, channel_id, max_results=20):
     if not video_ids:
         return []
 
-    # Passo 2: Obter viewCount de todos os vídeos (1 call por 50 vídeos)
+    # Passo 2: Obter viewCount de todos os videos (1 call por 50 videos)
     videos_with_views = []
     for i in range(0, len(video_ids), 50):
         chunk = video_ids[i:i+50]
@@ -114,8 +130,18 @@ def get_channel_videos(youtube, channel_id, max_results=20):
             for item in res.get('items', []):
                 views = int(item.get('statistics', {}).get('viewCount', 0))
                 videos_with_views.append((item['id'], views))
-        except Exception:
-            break
+        except HttpError as e:
+            if e.resp.status in (403, 429):
+                raise
+            logger.warning(
+                "videos.list falhou em chunk %d-%d (canal %s): %s -- pula chunk",
+                i, i + 50, channel_id, e)
+            continue
+        except Exception as e:
+            logger.error(
+                "Erro inesperado em videos.list chunk %d (canal %s): %s",
+                i, channel_id, e)
+            continue
 
     # Passo 3: Ordenar por views e retornar top N
     videos_with_views.sort(key=lambda x: x[1], reverse=True)
