@@ -31,6 +31,9 @@ desktop.ini
 # === Cache ===
 .cache
 *.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # === Banco de Dados Local ===
 data/processed/*.db
