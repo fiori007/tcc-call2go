@@ -1,0 +1,80 @@
+============================================================
+ANALISE DE CONFUNDIDOR -- Call2Go vs Popularidade SP
+============================================================
+
+Pergunta: artistas ja populares no Spotify tendem a adotar
+Call2Go com mais frequencia (pratica REATIVA, nao PREDITIVA)?
+
+Dataset: 67 artistas com metricas Spotify completas.
+  has_any_call2go_or = 1: 30 artistas
+  has_any_call2go_and = 1: 7 artistas
+
+------------------------------------------------------------
+REGRESSAO LOGISTICA -- has_any_call2go_or ~ popularity + followers
+------------------------------------------------------------
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:             has_any_or   No. Observations:                   67
+Model:                          Logit   Df Residuals:                       64
+Method:                           MLE   Df Model:                            2
+Date:                Sat, 02 May 2026   Pseudo R-squ.:                 0.03355
+Time:                        08:43:43   Log-Likelihood:                -44.529
+converged:                       True   LL-Null:                       -46.075
+Covariance Type:            nonrobust   LLR p-value:                    0.2131
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -2.1699      2.286     -0.949      0.342      -6.650       2.310
+popularity     0.0307      0.033      0.939      0.348      -0.033       0.095
+followers  -7.543e-08   6.48e-08     -1.163      0.245   -2.03e-07    5.17e-08
+==============================================================================
+
+Odds Ratio (IC 95%):
+  const: OR=0.114188 IC95=[0.001294, 10.076972]
+  popularity: OR=1.031177 IC95=[0.967183, 1.099405]
+  followers: OR=1.000000 IC95=[1.000000, 1.000000]
+
+Leitura: OR>1 e IC nao cruzando 1 indica que aumento na variavel
+aumenta odds de adotar Call2Go OR. OR=1 = sem efeito.
+
+------------------------------------------------------------
+REGRESSAO LOGISTICA -- has_any_call2go_and ~ popularity + followers
+------------------------------------------------------------
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:            has_any_and   No. Observations:                   67
+Model:                          Logit   Df Residuals:                       64
+Method:                           MLE   Df Model:                            2
+Date:                Sat, 02 May 2026   Pseudo R-squ.:                 0.03283
+Time:                        08:43:43   Log-Likelihood:                -21.696
+converged:                       True   LL-Null:                       -22.432
+Covariance Type:            nonrobust   LLR p-value:                    0.4788
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -5.1186      4.077     -1.256      0.209     -13.109       2.872
+popularity     0.0457      0.057      0.795      0.426      -0.067       0.158
+followers  -1.385e-07   1.74e-07     -0.798      0.425   -4.79e-07    2.02e-07
+==============================================================================
+
+Odds Ratio (IC 95%):
+  const: OR=0.005984 IC95=[0.000002, 17.666769]
+  popularity: OR=1.046796 IC95=[0.935239, 1.171661]
+  followers: OR=1.000000 IC95=[1.000000, 1.000000]
+
+------------------------------------------------------------
+ESTRATIFICACAO POR QUARTIL DE POPULARITY (H2 Mann-Whitney)
+------------------------------------------------------------
+Quartil   n_with    n_without   U              p         Conclusao                
+--------------------------------------------------------------------------------
+Q1        147       224         16454          0.5041    n.s.                     
+Q2        141       310         31051          0.0000    significativo            
+Q3        100       269         9239           1.0000    n.s.                     
+Q4        130       320         16658          0.9995    n.s.                     
+
+------------------------------------------------------------
+INTERPRETACAO
+------------------------------------------------------------
+H2 SIGNIFICATIVA em quartis: ['Q2'].
+Achado nuancado: Call2Go pode ser efetivo em segmentos especificos
+de popularidade. Investigar se popularidade modera o efeito.
