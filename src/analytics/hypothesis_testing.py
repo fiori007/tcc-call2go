@@ -2,6 +2,8 @@ import sqlite3
 import pandas as pd
 from scipy import stats
 
+from src.config import ALPHA_DEFAULT
+
 
 def run_hypothesis_test():
     print("Iniciando Teste de Hipótese Estatística (Mann-Whitney U)...")
@@ -12,7 +14,7 @@ def run_hypothesis_test():
     df = pd.read_sql_query(query, conn)
     conn.close()
 
-    alpha = 0.05
+    alpha = ALPHA_DEFAULT
 
     # ------------------------------------------------------------------ #
     # ANÁLISE PRIMÁRIA: Lógica OR (Vídeo OU Canal com Call2Go)            #

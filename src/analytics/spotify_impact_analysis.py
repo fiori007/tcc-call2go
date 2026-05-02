@@ -7,6 +7,8 @@ from scipy import stats
 import matplotlib
 matplotlib.use('Agg')
 
+from src.config import ALPHA_DEFAULT
+
 
 def run_spotify_impact_test():
     print("Iniciando Análise de Impacto Cross-Platform (YouTube -> Spotify)...")
@@ -60,7 +62,7 @@ def run_spotify_impact_test():
     # ---------------------------------------------------------
     # 2. Testes Estatísticos (Popularidade no Spotify)
     # ---------------------------------------------------------
-    alpha = 0.05
+    alpha = ALPHA_DEFAULT
 
     # -------------------------------------------------------------- #
     # ANÁLISE PRIMÁRIA: Lógica OR (H3)                               #
