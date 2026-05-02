@@ -182,15 +182,31 @@ def step_15_chart_temporal_analysis():
     run_chart_temporal_analysis()
 
 
+def _print_steps_listing(steps):
+    """Imprime a lista numerada de etapas disponiveis (--list-steps)."""
+    print("\nEtapas do pipeline:")
+    print(f"  {'#':>3}  {'Tipo':<8}  Titulo")
+    print(f"  {'-'*3}  {'-'*8}  {'-'*50}")
+    for step_num, title, _, can_skip_collect in steps:
+        kind = "analise" if can_skip_collect else "coleta"
+        print(f"  {step_num:>3}  {kind:<8}  {title}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="TCC Call2Go -- Pipeline Orquestrador")
     parser.add_argument('--skip-collect', action='store_true',
                         help='Pula etapas de coleta (usa dados existentes)')
     parser.add_argument('--from-step', type=int, default=1,
-                        help='Começa a partir de uma etapa específica (1-15)')
+                        help='Comeca a partir de uma etapa especifica (1-15)')
     parser.add_argument('--force-channel-scrape', action='store_true',
-                        help='Força re-scraping dos canais (ignora cache da etapa 5)')
+                        help='Forca re-scraping dos canais (ignora cache da etapa 5)')
+    parser.add_argument('--list-steps', action='store_true',
+                        help='Lista as etapas e sai sem executar')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='Mostra o plano de execucao sem rodar nenhuma etapa')
+    parser.add_argument('--strict', action='store_true',
+                        help='Para o pipeline na primeira falha (default: continua)')
     args = parser.parse_args()
 
     global FORCE_CHANNEL_SCRAPE
@@ -223,7 +239,7 @@ def main():
     check_file_exists("data/raw", "Diretório raw")
 
     steps = [
-        (1,  "CONSTRUÇÃO DA BASE DE ARTISTAS",
+        (1,  "CONSTRUCAO DA BASE DE ARTISTAS",
          step_01_build_artist_base,          False),
         (2,  "COLETA YOUTUBE",
          step_02_collect_youtube,             False),
@@ -233,27 +249,32 @@ def main():
          step_04_collect_lastfm,              False),
         (5,  "SCRAPING LINKS CANAIS (ABOUT PAGE)",
          step_05_scrape_channel_links,        False),
-        (6,  "DETECÇÃO CALL2GO (REGEX)",
+        (6,  "DETECCAO CALL2GO (REGEX)",
          step_06_detect_call2go,              True),
-        (7,  "CONSTRUÇÃO DO DATA WAREHOUSE",
+        (7,  "CONSTRUCAO DO DATA WAREHOUSE",
          step_07_build_database,              True),
-        (8,  "ANÁLISE EXPLORATÓRIA (EDA)",
+        (8,  "ANALISE EXPLORATORIA (EDA)",
          step_08_eda_analysis,                True),
-        (9,  "TESTE DE HIPÓTESE (MANN-WHITNEY)",
+        (9,  "TESTE DE HIPOTESE (MANN-WHITNEY)",
          step_09_hypothesis_testing,          True),
-        (10, "ANÁLISE IMPACTO CROSS-PLATFORM",
+        (10, "ANALISE IMPACTO CROSS-PLATFORM",
          step_10_spotify_impact,              True),
         (11, "LAST.FM BRIDGE (3 FONTES)",
          step_11_lastfm_bridge,               True),
-        (12, "VALIDAÇÃO BIDIRECIONAL (YouTube <-> Spotify)",
+        (12, "VALIDACAO BIDIRECIONAL (YouTube <-> Spotify)",
          step_12_cross_platform_validation,  True),
         (13, "COLETA DATAS FAIXAS SPOTIFY",
          step_13_collect_spotify_track_dates, False),
-        (14, "FUSÃO DE RANKINGS + ANÁLISE TEMPORAL",
+        (14, "FUSAO DE RANKINGS + ANALISE TEMPORAL",
          step_14_ranking_fusion_analysis,     True),
-        (15, "ANÁLISE TEMPORAL CHARTS (YouTube vs Spotify)",
+        (15, "ANALISE TEMPORAL CHARTS (YouTube vs Spotify)",
          step_15_chart_temporal_analysis,     True),
     ]
+
+    # --list-steps: imprime e sai
+    if args.list_steps:
+        _print_steps_listing(steps)
+        return
 
     results = {}
 
@@ -268,14 +289,28 @@ def main():
             results[step_num] = "SKIP"
             continue
 
+        if args.dry_run:
+            print(f"\n  [DRY-RUN] Etapa {step_num}: {title}")
+            results[step_num] = "DRY-RUN"
+            continue
+
         banner(step_num, total_steps, title)
         success = run_step(func, title)
         results[step_num] = "OK" if success else "FALHA"
 
-        if not success and step_num <= 4:
-            print(
-                f"\n  [AVISO] Etapa de coleta falhou. Tentando continuar com dados existentes...")
-            continue
+        if not success:
+            # --strict: para na primeira falha (em qualquer etapa)
+            if args.strict:
+                print(f"\n  [STRICT] Falha na etapa {step_num}, abortando pipeline.")
+                break
+            # Padrao: tolerante para coleta (1-4), strict para analise (5+)
+            if step_num <= 4:
+                print(
+                    f"\n  [AVISO] Etapa de coleta falhou. Tentando continuar com dados existentes...")
+                continue
+            # Etapas analiticas: falha cascateia para as seguintes via dependencias.
+            # Continua mas sinaliza claramente.
+            print(f"\n  [AVISO] Etapa analitica {step_num} falhou -- subsequentes podem falhar tambem.")
 
     # Relatório final
     total_time = time.time() - start_time
