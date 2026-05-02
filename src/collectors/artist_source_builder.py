@@ -1,4 +1,5 @@
 import os
+import logging
 import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -7,6 +8,8 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 def get_spotify_client():
@@ -169,7 +172,16 @@ def _validate_and_deduplicate(sp, enriched, min_followers_threshold=5000):
                         f"CORRIGIDO -> {artist['followers']:,} seg (era {old_followers:,})")
                 else:
                     print(f"mantido (sem perfil melhor encontrado)")
+            except spotipy.exceptions.SpotifyException as e:
+                # Token expirado / quota / 4xx -- nao engole silenciosamente
+                logger.error(
+                    "Spotify Search falhou para artist=%r status=%s msg=%s",
+                    artist.get('artist_name'), getattr(e, 'http_status', '?'), e)
+                print(f"erro na busca Spotify: {e}")
             except Exception as e:
+                logger.exception(
+                    "Erro inesperado em validate_and_deduplicate (artist=%r)",
+                    artist.get('artist_name'))
                 print(f"erro na busca: {e}")
 
         validated.append(artist)
