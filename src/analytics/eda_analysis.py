@@ -60,6 +60,7 @@ def run_analysis():
     
     plot1_path = "data/plots/boxplot_call2go_views.png"
     plt.savefig(plot1_path, dpi=300, bbox_inches='tight') # DPI 300 exigido por bancas acadêmicas
+    plt.close()
     print(f"[OK] Gráfico gerado e salvo para o TCC em: {plot1_path}")
     
     # ---------------------------------------------------------
