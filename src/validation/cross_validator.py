@@ -119,8 +119,8 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
     # Validação de entrada
     if not os.path.exists(ground_truth_file):
         print(f"[ERRO] Ground truth não encontrado: {ground_truth_file}")
-        print("Execute primeiro: python -m src.validation.sample_generator")
-        print("Depois anote manualmente e salve como ground_truth.csv")
+        print("Modulo historico do baseline Fase 8 (10/04/2026).")
+        print("Census annotation descontinuado em 26/04/2026 -- ver memory-bank.")
         return None
 
     if not os.path.exists(raw_file):
