@@ -29,6 +29,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from src.config import ALPHA_RELAXED
+
 
 def load_youtube_data(flagged_file="data/processed/youtube_call2go_flagged.csv",
                       raw_file="data/raw/youtube_videos_raw.jsonl"):
@@ -295,7 +297,7 @@ def bidirectional_synthesis(results_a, results_b, df_profile, output_dir):
     print("SÍNTESE BIDIRECIONAL -- CLASSIFICAÇÃO DA RELAÇÃO")
     print("=" * 60)
 
-    alpha = 0.10  # Relaxado para amostras pequenas
+    alpha = ALPHA_RELAXED  # Relaxado para amostras pequenas (ver src/config.py)
 
     # Avalia Direção A
     a_sig = False

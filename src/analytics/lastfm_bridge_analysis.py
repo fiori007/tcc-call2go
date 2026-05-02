@@ -37,6 +37,8 @@ from scipy import stats
 import matplotlib
 matplotlib.use('Agg')
 
+from src.config import ALPHA_DEFAULT
+
 
 # ============================================================
 # CARGA DE DADOS
@@ -488,7 +490,7 @@ def callgo_vs_hits(df_yt, df_matches, output_dir):
             print(
                 f"\n  Fisher Exact (freq. esperada < 5): OR={odds_ratio:.3f}, p={p:.4f}")
 
-        alpha = 0.05
+        alpha = ALPHA_DEFAULT
         if p < alpha:
             print(f"  CONCLUSAO: Rejeita H0 — Call2Go e hit status NAO sao independentes")
         else:
@@ -636,7 +638,7 @@ def mannwhitney_lastfm(df_profile, output_dir):
         print(f"    Mediana SEM Call2Go: {med_b:,.0f}")
         print(f"    Mann-Whitney U={u_stat:.0f}, p={p_value:.5f}")
 
-        alpha = 0.05
+        alpha = ALPHA_DEFAULT
         if p_value < alpha:
             print(f"    -> SIGNIFICATIVO (p < {alpha})")
         else:
@@ -884,7 +886,7 @@ def genre_analysis(df_profile, df_lastfm, output_dir):
             print(
                 f"\n  Chi-squared (genero x Call2Go): X2={chi2:.3f}, p={p:.4f}, dof={dof}")
 
-            alpha = 0.05
+            alpha = ALPHA_DEFAULT
             if p < alpha:
                 print(f"  -> SIGNIFICATIVO: Call2Go depende do genero")
             else:
