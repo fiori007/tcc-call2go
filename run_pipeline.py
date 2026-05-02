@@ -18,12 +18,14 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
    13. Coleta de datas de lançamento das faixas Spotify Q1 2026
    14. Fusão de rankings cross-platform (RRF normalizado, taxonomia estrutural)
    15. Análise temporal charts (YouTube vs Spotify — defasagem de entrada no chart)
+   16. Análise de confundidor (Call2Go vs popularidade SP pré-existente)
 
 Uso:
     python run_pipeline.py                  # pipeline completo
     python run_pipeline.py --skip-collect   # pula coleta (usa dados existentes)
     python run_pipeline.py --from-step 5    # começa a partir do passo 5
     python run_pipeline.py --from-step 6    # re-executa análise (pula coleta + scraping)
+    python run_pipeline.py --list-steps     # lista as 16 etapas e sai
 """
 
 import os
@@ -182,6 +184,12 @@ def step_15_chart_temporal_analysis():
     run_chart_temporal_analysis()
 
 
+def step_16_confounder_analysis():
+    """Testa se popularidade Spotify pre-existente confunde H2/H3 (Call2Go)."""
+    from src.analytics.confounder_analysis import run_confounder_analysis
+    run_confounder_analysis()
+
+
 def _print_steps_listing(steps):
     """Imprime a lista numerada de etapas disponiveis (--list-steps)."""
     print("\nEtapas do pipeline:")
@@ -212,7 +220,7 @@ def main():
     global FORCE_CHANNEL_SCRAPE
     FORCE_CHANNEL_SCRAPE = args.force_channel_scrape
 
-    total_steps = 15
+    total_steps = 16
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -269,6 +277,8 @@ def main():
          step_14_ranking_fusion_analysis,     True),
         (15, "ANALISE TEMPORAL CHARTS (YouTube vs Spotify)",
          step_15_chart_temporal_analysis,     True),
+        (16, "ANALISE DE CONFUNDIDOR (Call2Go vs popularidade SP)",
+         step_16_confounder_analysis,         True),
     ]
 
     # --list-steps: imprime e sai
@@ -339,6 +349,9 @@ def main():
         "data/processed/youtube_call2go_flagged.csv",
         "data/processed/call2go.db",
         "data/processed/ranking_fusion_scores.csv",
+        # Validation -- confounder analysis (step 16)
+        "data/validation/confounder_analysis.txt",
+        "data/validation/confounder_analysis_strat.csv",
         # Plots
         "data/plots/boxplot_call2go_views.png",
         "data/plots/scatter_cross_platform.png",
