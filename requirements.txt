@@ -1,8 +1,8 @@
 numpy==2.4.3
 pandas==3.0.1
-requests==2.31.0
-python-dotenv==1.0.0
-spotipy==2.23.0
+requests==2.33.0
+python-dotenv==1.2.2
+spotipy==2.25.1
 google-api-python-client==2.97.0
 matplotlib==3.10.8
 seaborn==0.13.2
