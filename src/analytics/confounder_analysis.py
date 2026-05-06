@@ -26,6 +26,7 @@ from scipy import stats
 import statsmodels.api as sm
 
 from src.config import ALPHA_DEFAULT, VALIDATION_DIR
+from src.analytics._universe import filter_videos_to_topk
 
 
 _DB_PATH = "data/processed/call2go.db"
@@ -34,20 +35,26 @@ _CSV_PATH = VALIDATION_DIR / "confounder_analysis_strat.csv"
 
 
 def _load_artist_level_data():
-    """Agrega: para cada artista, has_any Call2Go e popularidade Spotify."""
+    """Agrega: para cada artista, has_any Call2Go e popularidade Spotify.
+
+    Fase 18: restringe ao universo Top-K do Rank Fusion antes de agregar.
+    """
     conn = sqlite3.connect(_DB_PATH)
 
-    df_videos = pd.read_sql_query(
+    df_videos_all = pd.read_sql_query(
         "SELECT artist_name, has_call2go_or, has_call2go, view_count "
         "FROM fact_yt_videos", conn)
 
-    # popularity/followers do snapshot mais recente (MAX por artista)
     df_spotify = pd.read_sql_query(
         "SELECT artist_name, MAX(popularity) AS popularity, "
         "MAX(followers) AS followers FROM fact_spotify_metrics "
         "GROUP BY artist_name", conn)
 
     conn.close()
+
+    # Fase 18: filtra para Top-K
+    df_videos = filter_videos_to_topk(df_videos_all, artist_col='artist_name')
+    print(f"  Videos apos filtro Top-K: {len(df_videos)}/{len(df_videos_all)}")
 
     df_artist = df_videos.groupby('artist_name').agg(
         has_any_or=('has_call2go_or', 'max'),

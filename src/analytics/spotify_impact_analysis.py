@@ -8,6 +8,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 from src.config import ALPHA_DEFAULT
+from src.analytics._universe import filter_videos_to_topk
 
 
 def run_spotify_impact_test():
@@ -16,9 +17,11 @@ def run_spotify_impact_test():
     # Conecta ao Data Warehouse
     conn = sqlite3.connect("data/processed/call2go.db")
 
-    # Trazemos a métrica máxima de popularidade do Spotify atrelada ao artista e os tipos de vídeo dele
+    # Trazemos a métrica máxima de popularidade do Spotify atrelada ao artista
+    # e os tipos de vídeo dele. artist_name na projecao para filtro Top-K.
     query = """
-    SELECT 
+    SELECT
+        y.artist_name,
         y.has_call2go_or,
         y.has_call2go,
         y.view_count,
@@ -28,11 +31,15 @@ def run_spotify_impact_test():
     JOIN fact_spotify_metrics s ON a.spotify_id = s.spotify_id
     """
 
-    df = pd.read_sql_query(query, conn)
+    df_all = pd.read_sql_query(query, conn)
     conn.close()
 
+    # Fase 18: filtra para o universo Top-K do Rank Fusion
+    df = filter_videos_to_topk(df_all, artist_col='artist_name')
+    print(f"  Apos filtro Top-K: {len(df)}/{len(df_all)} videos")
+
     if df.empty:
-        print("[ERRO] Falha no JOIN. O dataset está vazio.")
+        print("[ERRO] Dataset vazio apos filtro Top-K.")
         return
 
     # ---------------------------------------------------------

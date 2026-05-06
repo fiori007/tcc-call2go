@@ -9,10 +9,10 @@ Janela temporal: Q1 2026 (Janeiro-Marco)
    Last.fm per-artist coverage: 100% (todos encontrados)
 
 2. CONVERGENCIA DE RANKINGS
-   YouTube Views_vs_Spotify Pop: rho=0.498, p=0.0000 ***
-   YouTube Views_vs_Spotify Followers: rho=0.682, p=0.0000 ***
-   YouTube Views_vs_Last.fm Listeners: rho=0.514, p=0.0000 ***
-   YouTube Views_vs_Last.fm Scrobbles: rho=0.608, p=0.0000 ***
+   YouTube Views_vs_Spotify Pop: rho=0.411, p=0.0005 ***
+   YouTube Views_vs_Spotify Followers: rho=0.388, p=0.0012 **
+   YouTube Views_vs_Last.fm Listeners: rho=0.393, p=0.0010 ***
+   YouTube Views_vs_Last.fm Scrobbles: rho=0.441, p=0.0002 ***
    Spotify Pop_vs_Spotify Followers: rho=0.720, p=0.0000 ***
    Spotify Pop_vs_Last.fm Listeners: rho=0.663, p=0.0000 ***
    Spotify Pop_vs_Last.fm Scrobbles: rho=0.701, p=0.0000 ***
@@ -21,36 +21,34 @@ Janela temporal: Q1 2026 (Janeiro-Marco)
    Last.fm Listeners_vs_Last.fm Scrobbles: rho=0.952, p=0.0000 ***
 
 3. TRACK-LEVEL MATCHING
-   Videos analisados: 1641
-   Hits Last.fm: 279 (17.0%)
+   Videos analisados: 639
+   Hits Last.fm: 129 (20.2%)
 
 4. CALL2GO vs HIT STATUS
-   Taxa hits (Com Call2Go): 23.9%
-   Taxa hits (Sem Call2Go): 16.6%
-   p-value: 0.1062
+   Taxa hits (Com Call2Go): 22.7%
+   Taxa hits (Sem Call2Go): 20.0%
+   p-value: 0.8101
 
 5. MANN-WHITNEY: CALL2GO vs LAST.FM
-   lastfm_listeners: U=201, p=0.86466 n.s.
-     Mediana COM: 85,831 | SEM: 134,481
-   lastfm_playcount: U=207, p=0.96003 n.s.
-     Mediana COM: 1,040,827 | SEM: 2,286,370
+   lastfm_listeners: U=10, p=0.05154 n.s.
+     Mediana COM: 35,662 | SEM: 214,179
+   lastfm_playcount: U=14, p=0.11308 n.s.
+     Mediana COM: 567,115 | SEM: 4,863,325
 
 6. ANALISE BIDIRECIONAL ESTENDIDA
-   YouTube Avg Views <-> Last.fm Listeners: rho=0.494, p=0.0000 ***
-   YouTube Avg Views <-> Last.fm Scrobbles: rho=0.590, p=0.0000 ***
-   YouTube Call2Go Rate <-> Last.fm Listeners: rho=-0.036, p=0.7731 n.s.
-   Spotify Popularity <-> Last.fm Listeners: rho=0.663, p=0.0000 ***
-   Spotify Followers <-> Last.fm Listeners: rho=0.800, p=0.0000 ***
-   Spotify Followers <-> Last.fm Scrobbles: rho=0.848, p=0.0000 ***
+   YouTube Avg Views <-> Last.fm Listeners: rho=0.025, p=0.9037 n.s.
+   YouTube Avg Views <-> Last.fm Scrobbles: rho=0.203, p=0.3206 n.s.
+   YouTube Call2Go Rate <-> Last.fm Listeners: rho=-0.406, p=0.0396 *
+   Spotify Popularity <-> Last.fm Listeners: rho=0.441, p=0.0241 *
+   Spotify Followers <-> Last.fm Listeners: rho=0.699, p=0.0001 ***
+   Spotify Followers <-> Last.fm Scrobbles: rho=0.721, p=0.0000 ***
 
 7. CALL2GO POR GENERO
-   Gospel: avg_rate=40.0% (N=2)
-   Outros: avg_rate=4.9% (N=27)
-   Funk: avg_rate=4.4% (N=18)
-   Country/Internacional: avg_rate=0.0% (N=1)
-   Forro/Piseiro: avg_rate=0.0% (N=3)
+   Gospel: avg_rate=80.0% (N=1)
+   Outros: avg_rate=9.5% (N=7)
+   Funk: avg_rate=0.0% (N=5)
+   Forro/Piseiro: avg_rate=0.0% (N=1)
    Pagode/Samba: avg_rate=0.0% (N=2)
-   Pop: avg_rate=0.0% (N=2)
-   Rap/Hip-Hop: avg_rate=0.0% (N=5)
+   Rap/Hip-Hop: avg_rate=0.0% (N=3)
    Rock: avg_rate=0.0% (N=2)
    Sertanejo: avg_rate=0.0% (N=5)

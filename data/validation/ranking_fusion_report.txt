@@ -1,10 +1,10 @@
 ============================================================
 RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Q1 2026
 ============================================================
-Gerado em: 2026-04-28 20:15:58
+Gerado em: 2026-05-06 16:34:48
 
-Total de artistas primarios nos charts: 288
-Artistas do dataset (seed, encontrados como primarios): 39
+Total de artistas primarios nos charts: 228
+Artistas do dataset (seed, encontrados como primarios): 37
 
 --- METODOLOGIA DE SCORE ---
   score = Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)
@@ -15,28 +15,28 @@ Artistas do dataset (seed, encontrados como primarios): 39
   n_semanas_youtube: implicito em score_youtube_normalized
 
 --- RANGES DE SCORE ---
-  score_spotify: min=0.005000, max=3.000000, mediana=0.022080
+  score_spotify: min=0.010000, max=3.000000, mediana=0.040454
   score_youtube: min=0.010000, max=3.000000, mediana=0.027418
-  score_combined: min=0.000385, max=0.365385, mediana=0.002072
+  score_combined: min=0.003333, max=1.583333, mediana=0.011231
 
 --- TOP 10 POR SCORE COMBINADO (normalizado) ---
-   1. [*] PEDRO SAMPAIO: 0.365385
-   2. [*] DJ Japa NK: 0.352564
-   3. [*] DJ Oreia: 0.174451
-   4. [*] Mc Jacaré: 0.170434
-   5. [*] Grupo Menos É Mais: 0.106410
-   6. [*] Panda: 0.102446
-   7.     bts: 0.089744
-   8.     dj gu: 0.089744
-   9. [*] Vitinho Imperador: 0.066334
-  10. [*] MC GP: 0.061900
+   1. [*] PEDRO SAMPAIO: 1.583333
+   2. [*] DJ Japa NK: 1.527778
+   3. [*] DJ Oreia: 0.755952
+   4. [*] Mc Jacaré: 0.738549
+   5. [*] Grupo Menos É Mais: 0.461111
+   6. [*] Panda: 0.443933
+   7.     dj gu: 0.388889
+   8.     bts: 0.388889
+   9. [*] Vitinho Imperador: 0.287446
+  10. [*] MC GP: 0.268234
 
 --- TOP 10 POR SCORE SPOTIFY ---
    1. [*] DJ Japa NK: 3.0000
    2. [*] PEDRO SAMPAIO: 1.7500
    3. [*] Mc Jacaré: 1.3537
-   4.     dj gu: 1.1667
-   5. [*] Panda: 1.1667
+   4. [*] Panda: 1.1667
+   5.     dj gu: 1.1667
    6.     bts: 1.0000
    7. [*] MC GP: 0.5611
    8. [*] Grupo Menos É Mais: 0.5167
@@ -58,60 +58,60 @@ Artistas do dataset (seed, encontrados como primarios): 39
 --- PADROES DE PRESENCA JAN->MAR (TODOS OS ARTISTAS) ---
   Taxonomia estrutural: absent/single/persistent/new/exit/intermittent
   Spotify:
-    persistent: 99 (34.4%)
-    absent: 80 (27.8%)
-    single: 61 (21.2%)
-    exit: 21 (7.3%)
-    new: 21 (7.3%)
-    intermittent: 6 (2.1%)
+    absent: 110 (48.2%)
+    persistent: 51 (22.4%)
+    single: 43 (18.9%)
+    exit: 16 (7.0%)
+    new: 8 (3.5%)
   YouTube:
-    absent: 123 (42.7%)
-    single: 76 (26.4%)
-    persistent: 53 (18.4%)
-    new: 16 (5.6%)
-    exit: 14 (4.9%)
-    intermittent: 6 (2.1%)
+    single: 76 (33.3%)
+    absent: 63 (27.6%)
+    persistent: 53 (23.2%)
+    new: 16 (7.0%)
+    exit: 14 (6.1%)
+    intermittent: 6 (2.6%)
 
 --- PADROES DE PRESENCA JAN->MAR (DATASET SEED) ---
   Spotify:
-    persistent: 32
-    single: 3
-    new: 2
-    exit: 2
+    persistent: 26
+    absent: 5
+    exit: 3
+    single: 2
+    new: 1
   YouTube:
     persistent: 29
-    absent: 6
+    absent: 4
     single: 2
     new: 1
     exit: 1
 
 --- COMPARACAO GRUPOS CALL2GO ---
   score_spotify:
-    Call2Go=1: mediana=0.0500
-    Call2Go=0: mediana=0.0781
-    Mann-Whitney p=0.4123 [ns]
+    Call2Go=1: mediana=0.1385
+    Call2Go=0: mediana=0.1747
+    Mann-Whitney p=0.9385 [ns]
   score_youtube:
-    Call2Go=1: mediana=0.0871
-    Call2Go=0: mediana=0.1007
-    Mann-Whitney p=0.5095 [ns]
+    Call2Go=1: mediana=0.1365
+    Call2Go=0: mediana=0.2520
+    Mann-Whitney p=0.2036 [ns]
   presence_count_spotify:
-    Mann-Whitney p=1.0000 [ns]
+    Mann-Whitney p=0.1047 [ns]
 
 --- CORRELACOES LAST.FM ---
-  score_spotify x listeners (n=39):
-    Pearson  r=-0.034 [ns]
-    Spearman rho=0.188 [ns]
-  score_spotify x playcount (n=39):
-    Pearson  r=-0.068 [ns]
-    Spearman rho=0.061 [ns]
-  score_youtube x listeners (n=33):
-    Pearson  r=-0.049 [ns]
-    Spearman rho=-0.141 [ns]
-  score_youtube x playcount (n=33):
-    Pearson  r=-0.084 [ns]
-    Spearman rho=-0.325 [ns]
-  score_spotify x score_youtube (n=33):
-    Pearson  r=0.718 [***]
-    Spearman rho=0.626 [***]
+  score_spotify x listeners (n=26):
+    Pearson  r=0.241 [ns]
+    Spearman rho=0.344 [ns]
+  score_spotify x playcount (n=26):
+    Pearson  r=-0.042 [ns]
+    Spearman rho=0.073 [ns]
+  score_youtube x listeners (n=23):
+    Pearson  r=0.300 [ns]
+    Spearman rho=0.080 [ns]
+  score_youtube x playcount (n=23):
+    Pearson  r=0.026 [ns]
+    Spearman rho=-0.178 [ns]
+  score_spotify x score_youtube (n=23):
+    Pearson  r=0.686 [***]
+    Spearman rho=0.558 [**]
 
 ============================================================

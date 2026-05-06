@@ -3,6 +3,7 @@ import pandas as pd
 from scipy import stats
 
 from src.config import ALPHA_DEFAULT
+from src.analytics._universe import filter_videos_to_topk, topk_summary
 
 
 def run_hypothesis_test():
@@ -10,9 +11,19 @@ def run_hypothesis_test():
 
     # Conecta ao Data Warehouse
     conn = sqlite3.connect("data/processed/call2go.db")
-    query = "SELECT view_count, has_call2go_or, has_call2go FROM fact_yt_videos"
-    df = pd.read_sql_query(query, conn)
+    query = ("SELECT artist_name, view_count, has_call2go_or, has_call2go "
+             "FROM fact_yt_videos")
+    df_all = pd.read_sql_query(query, conn)
     conn.close()
+
+    # Fase 18: restringe ao universo Top-K do Rank Fusion (substitui seed antigo)
+    summary = topk_summary()
+    print(f"  Universo Rank Fusion: {summary['total']} artistas total | "
+          f"Top-K: {summary['in_top_k']}")
+    df = filter_videos_to_topk(df_all, artist_col='artist_name')
+    artists_in_videos = df['artist_name'].nunique()
+    print(f"  Videos apos filtro Top-K: {len(df)}/{len(df_all)} "
+          f"(de {artists_in_videos} artistas com dados)")
 
     alpha = ALPHA_DEFAULT
 
