@@ -45,7 +45,7 @@ from src.analytics._universe import filter_videos_to_topk, load_topk_dataframe
 # CARGA DE DADOS
 # ============================================================
 
-def _load_seed(path="data/seed/artistas.csv"):
+def _load_seed(path="data/seed/legacy_v1_artistas.csv"):
     """Carrega base de artistas (referencia historica do seed Q1 2026).
 
     Fase 18: ainda usado para compatibilidade descritiva. As analises

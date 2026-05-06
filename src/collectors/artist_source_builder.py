@@ -252,7 +252,7 @@ def find_youtube_channel(youtube, artist_name):
         return None, 0
 
 
-def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
+def build_artist_base(playlist_ids=None, output_file="data/seed/legacy_v1_artistas.csv",
                       max_artists=50, min_popularity=60):
     """
     Constrói a base de artistas Top 50 BR cruzando Spotify e YouTube.
@@ -400,7 +400,7 @@ def build_artist_base(playlist_ids=None, output_file="data/seed/artistas.csv",
 
 def build_seed_from_chart_intersection(
         intersection_csv="data/processed/cross_platform_persistent_artists.csv",
-        output_file="data/seed/artistas.csv"):
+        output_file="data/seed/legacy_v1_artistas.csv"):
     """
     Constrói base de artistas a partir da interseção cross-platform dos charts.
 

@@ -1529,7 +1529,7 @@ def run_ranking_fusion_analysis():
     print("\n" + "=" * 60)
     print("1. CONSTRUCAO DA TABELA DE FUSAO")
     print("=" * 60)
-    df_fusion = build_fusion_table("data/seed/artistas.csv")
+    df_fusion = build_fusion_table("data/seed/legacy_v1_artistas.csv")
 
     # ===== 2. HEATMAP DE PRESENCA =====
     print("\n" + "=" * 60)

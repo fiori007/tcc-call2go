@@ -410,7 +410,7 @@ if __name__ == "__main__":
 
     # Carrega artistas -> channel_ids preferencialmente do CSV seed
     artists_channels = {}
-    seed_file = "data/seed/artistas.csv"
+    seed_file = "data/seed/legacy_v1_artistas.csv"
     jsonl_file = "data/raw/youtube_videos_raw.jsonl"
 
     if os.path.exists(seed_file):

@@ -69,7 +69,7 @@ def build_database():
     with sqlite3.connect(db_path) as conn:
         # 1. Dimensao artista
         print("Carregando tabela dim_artist...")
-        df_artists = pd.read_csv("data/seed/artistas.csv")
+        df_artists = pd.read_csv("data/seed/legacy_v1_artistas.csv")
         df_artists.to_sql('dim_artist', conn, if_exists='replace', index=False)
 
         # 2. Fatos YouTube (videos com flags Call2Go)

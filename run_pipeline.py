@@ -19,13 +19,17 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
    14. Fusão de rankings cross-platform (RRF normalizado, taxonomia estrutural)
    15. Análise temporal charts (YouTube vs Spotify — defasagem de entrada no chart)
    16. Análise de confundidor (Call2Go vs popularidade SP pré-existente)
+   17. Coleta Top-K expansion (Fase 19, opcional, --collect-topk-expansion)
+   18. ML Classification (Random Forest predizendo Call2Go) -- sklearn
+   19. ML Clustering (KMeans + silhouette) -- sklearn
+   20. ML PCA 2D (visualização do espaço de artistas) -- sklearn
 
 Uso:
-    python run_pipeline.py                  # pipeline completo
-    python run_pipeline.py --skip-collect   # pula coleta (usa dados existentes)
-    python run_pipeline.py --from-step 5    # começa a partir do passo 5
-    python run_pipeline.py --from-step 6    # re-executa análise (pula coleta + scraping)
-    python run_pipeline.py --list-steps     # lista as 16 etapas e sai
+    python run_pipeline.py                          # pipeline completo
+    python run_pipeline.py --skip-collect           # pula coleta (usa dados existentes)
+    python run_pipeline.py --from-step 5            # começa a partir do passo 5
+    python run_pipeline.py --collect-topk-expansion # habilita step 17
+    python run_pipeline.py --list-steps             # lista as 20 etapas e sai
 """
 
 import os
@@ -87,7 +91,7 @@ def step_01_build_artist_base():
     # Fase B: Enriquece com Spotify/YouTube IDs e salva seed
     build_seed_from_chart_intersection(
         intersection_csv="data/processed/cross_platform_persistent_artists.csv",
-        output_file="data/seed/artistas.csv")
+        output_file="data/seed/legacy_v1_artistas.csv")
 
 
 def step_02_collect_youtube():
@@ -115,7 +119,7 @@ def step_05_scrape_channel_links():
     import pandas as pd
     from src.collectors.channel_link_scraper import scrape_all_channels
 
-    df = pd.read_csv('data/seed/artistas.csv')
+    df = pd.read_csv('data/seed/legacy_v1_artistas.csv')
     artists_channels = {}
     for _, row in df.iterrows():
         if pd.notna(row.get('youtube_channel_id')):
@@ -200,6 +204,24 @@ def step_17_topk_expansion_collection():
     collect_topk_expansion()
 
 
+def step_18_ml_classification():
+    """Random Forest classificador supervisionado para predizer Call2Go (Fase 19)."""
+    from src.analytics.ml_classification import run_ml_classification
+    run_ml_classification()
+
+
+def step_19_ml_clustering():
+    """KMeans clustering nao-supervisionado de artistas (Fase 19)."""
+    from src.analytics.ml_clustering import run_ml_clustering
+    run_ml_clustering()
+
+
+def step_20_ml_pca_analysis():
+    """PCA 2D para visualizacao do espaco de artistas Top-K (Fase 19)."""
+    from src.analytics.ml_pca_analysis import run_ml_pca_analysis
+    run_ml_pca_analysis()
+
+
 def _print_steps_listing(steps):
     """Imprime a lista numerada de etapas disponiveis (--list-steps)."""
     print("\nEtapas do pipeline:")
@@ -232,7 +254,7 @@ def main():
     global FORCE_CHANNEL_SCRAPE
     FORCE_CHANNEL_SCRAPE = args.force_channel_scrape
 
-    total_steps = 17
+    total_steps = 20
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -254,7 +276,7 @@ def main():
     # Verifica estado dos dados
     print("\n--- VERIFICAÇÃO DE DADOS ---")
     check_file_exists(".env", "Variáveis de ambiente")
-    check_file_exists("data/seed/artistas.csv", "Base de artistas")
+    check_file_exists("data/seed/legacy_v1_artistas.csv", "Base de artistas")
     check_file_exists("data/raw/youtube_videos_raw.jsonl", "Vídeos YouTube")
     check_file_exists("data/raw", "Diretório raw")
 
@@ -293,6 +315,12 @@ def main():
          step_16_confounder_analysis,         True),
         (17, "COLETA TOP-K EXPANSION (Fase 19)",
          step_17_topk_expansion_collection,   False),
+        (18, "ML CLASSIFICATION (Random Forest)",
+         step_18_ml_classification,           True),
+        (19, "ML CLUSTERING (KMeans + silhouette)",
+         step_19_ml_clustering,               True),
+        (20, "ML PCA 2D (visualizacao)",
+         step_20_ml_pca_analysis,             True),
     ]
 
     # --list-steps: imprime e sai
@@ -361,7 +389,7 @@ def main():
     print(f"\n--- OUTPUTS GERADOS ---")
     output_files = [
         # Raw data
-        "data/seed/artistas.csv",
+        "data/seed/legacy_v1_artistas.csv",
         "data/raw/youtube_videos_raw.jsonl",
         "data/raw/channel_links_scraped.json",
         "data/raw/spotify_track_dates_Q1_2026.csv",
@@ -372,6 +400,15 @@ def main():
         # Validation -- confounder analysis (step 16)
         "data/validation/confounder_analysis.txt",
         "data/validation/confounder_analysis_strat.csv",
+        # Fase 19 -- ML outputs
+        "data/processed/artist_clusters.csv",
+        "data/validation/ml_classification_report.txt",
+        "data/validation/ml_clustering_report.txt",
+        "data/validation/ml_pca_report.txt",
+        "data/plots/ml_call2go_roc.png",
+        "data/plots/ml_call2go_feature_importance.png",
+        "data/plots/ml_clustering_pca.png",
+        "data/plots/ml_pca_artists.png",
         # Plots
         "data/plots/boxplot_call2go_views.png",
         "data/plots/scatter_cross_platform.png",

@@ -147,7 +147,7 @@ def _get_top_albums(artist_name, api_key, limit=5):
     return albums, None
 
 
-def collect_lastfm_data(seed_file="data/seed/artistas.csv",
+def collect_lastfm_data(seed_file="data/seed/legacy_v1_artistas.csv",
                         output_dir="data/raw"):
     """
     Coleta dados do Last.fm para todos os artistas do seed.

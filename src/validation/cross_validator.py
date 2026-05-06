@@ -213,7 +213,7 @@ def run_cross_validation(ground_truth_file="data/validation/ground_truth.csv",
 
     # 2c. Carrega mapeamento artist_name -> seed channel_id (normalização)
     seed_channels = {}
-    seed_file = "data/seed/artistas.csv"
+    seed_file = "data/seed/legacy_v1_artistas.csv"
     if os.path.exists(seed_file):
         df_seed = pd.read_csv(seed_file)
         if 'youtube_channel_id' in df_seed.columns:

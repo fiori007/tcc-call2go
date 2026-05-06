@@ -34,7 +34,7 @@ YOUTUBE_DOMAINS = ("youtube.com", "youtu.be")
 LASTFM_DOMAINS = ("last.fm",)
 SPOTIFY_DOMAINS = ("open.spotify.com", "spoti.fi", "sptfy.com", "spotify.com")
 
-DEFAULT_SEED = "data/seed/artistas.csv"
+DEFAULT_SEED = "data/seed/legacy_v1_artistas.csv"
 DEFAULT_LASTFM = "data/raw/lastfm_artists_2026-04-18.csv"
 DEFAULT_OUT_CSV = "data/validation/cross_platform_reverse_links_audit.csv"
 DEFAULT_OUT_JSON = "data/validation/cross_platform_reverse_links_summary.json"
