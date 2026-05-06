@@ -1,7 +1,7 @@
 ============================================================
 RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Q1 2026
 ============================================================
-Gerado em: 2026-05-06 16:34:48
+Gerado em: 2026-05-06 18:49:18
 
 Total de artistas primarios nos charts: 228
 Artistas do dataset (seed, encontrados como primarios): 37
@@ -87,15 +87,15 @@ Artistas do dataset (seed, encontrados como primarios): 37
 
 --- COMPARACAO GRUPOS CALL2GO ---
   score_spotify:
-    Call2Go=1: mediana=0.1385
-    Call2Go=0: mediana=0.1747
-    Mann-Whitney p=0.9385 [ns]
+    Call2Go=1: mediana=0.1327
+    Call2Go=0: mediana=0.1705
+    Mann-Whitney p=0.6074 [ns]
   score_youtube:
-    Call2Go=1: mediana=0.1365
-    Call2Go=0: mediana=0.2520
-    Mann-Whitney p=0.2036 [ns]
+    Call2Go=1: mediana=0.1209
+    Call2Go=0: mediana=0.1555
+    Mann-Whitney p=0.5881 [ns]
   presence_count_spotify:
-    Mann-Whitney p=0.1047 [ns]
+    Mann-Whitney p=0.1490 [ns]
 
 --- CORRELACOES LAST.FM ---
   score_spotify x listeners (n=26):

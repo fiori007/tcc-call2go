@@ -21,13 +21,13 @@ Janela temporal: Q1 2026 (Janeiro-Marco)
    Last.fm Listeners_vs_Last.fm Scrobbles: rho=0.952, p=0.0000 ***
 
 3. TRACK-LEVEL MATCHING
-   Videos analisados: 639
-   Hits Last.fm: 129 (20.2%)
+   Videos analisados: 1212
+   Hits Last.fm: 129 (10.6%)
 
 4. CALL2GO vs HIT STATUS
    Taxa hits (Com Call2Go): 22.7%
-   Taxa hits (Sem Call2Go): 20.0%
-   p-value: 0.8101
+   Taxa hits (Sem Call2Go): 9.7%
+   p-value: 0.0103
 
 5. MANN-WHITNEY: CALL2GO vs LAST.FM
    lastfm_listeners: U=10, p=0.05154 n.s.
