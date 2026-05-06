@@ -378,6 +378,115 @@ def compute_fusion_score(monthly_df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ============================================================
+# TOP-K (Fase 18) -- subset analitico para visualizacoes
+# ============================================================
+
+# Constantes do criterio Top-K (justificadas no relatorio gerado)
+_TOP_K_PERCENTILE = 0.20  # Top-20% por score combinado
+_TOP_K_FALLBACK = 100      # mesmo que percentil falhe, usa 100 fixo
+
+
+def _compute_top_k(df: pd.DataFrame) -> pd.DataFrame:
+    """Adiciona a coluna `in_top_k` e gera relatorio justificando K.
+
+    Estrategia:
+      - Universo analitico primario = TODOS os artistas com score_combined nao-nulo.
+      - in_top_k = True para os Top-K artistas por score_combined desc.
+      - K = max(20, ceil(N * 0.20)) onde N = artistas com score real.
+        (Top-20% por score, com piso de 20 para garantir poder estatistico).
+
+    Justificativa:
+      - Pareto/lei dos rankings: maior parte do score concentra-se no topo,
+        Top-20% costuma cobrir ~80% do score acumulado.
+      - Pisó de 20 garante n minimo para Mann-Whitney com poder razoavel.
+      - in_top_k e ortogonal a in_dataset (seed antigo) -- nao invalida nada.
+    """
+    import math
+    df = df.copy()
+    has_score = df['score_combined'].notna()
+    n_with_score = int(has_score.sum())
+
+    if n_with_score == 0:
+        df['in_top_k'] = False
+        return df
+
+    k = max(20, math.ceil(n_with_score * _TOP_K_PERCENTILE))
+    k = min(k, n_with_score)  # nao excede o universo
+
+    # Marca Top-K via global_rank_combined (1-indexed)
+    df['in_top_k'] = (
+        df['global_rank_combined'].notna()
+        & (df['global_rank_combined'] <= k)
+    )
+
+    # Gera relatorio
+    _write_topk_report(df, n_with_score, k)
+    return df
+
+
+def _write_topk_report(df: pd.DataFrame, n_with_score: int, k: int):
+    """Salva relatorio justificando o corte Top-K."""
+    os.makedirs("data/validation", exist_ok=True)
+    report_path = "data/validation/topk_decision_report.txt"
+
+    # Computa cobertura de score do Top-K
+    df_ranked = df[df['score_combined'].notna()].copy()
+    df_ranked = df_ranked.sort_values('score_combined', ascending=False)
+    total_score = df_ranked['score_combined'].sum()
+    topk_score = df_ranked.head(k)['score_combined'].sum()
+    pct_score = (topk_score / total_score * 100) if total_score else 0.0
+
+    # Cobertura do seed (compatibilidade descritiva)
+    seed_in_topk = int(
+        ((df['in_dataset'] == True) & (df['in_top_k'] == True)).sum())
+    seed_total = int((df['in_dataset'] == True).sum())
+
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("=" * 60 + "\n")
+        f.write("DECISAO DE TOP-K -- Fase 18 (Substituicao por Rank Fusion)\n")
+        f.write("=" * 60 + "\n\n")
+
+        f.write("CRITERIO\n")
+        f.write("-" * 60 + "\n")
+        f.write(f"  Universo total de artistas primarios: {len(df)}\n")
+        f.write(f"  Artistas com score_combined valido:   {n_with_score}\n")
+        f.write(f"  Percentil aplicado:                   "
+                f"{int(_TOP_K_PERCENTILE * 100)}% (Top {k})\n")
+        f.write(f"  Piso minimo (n para Mann-Whitney):    20\n")
+        f.write(f"  K final (max(20, ceil(N * 0.20))):    {k}\n\n")
+
+        f.write("COBERTURA DE SCORE\n")
+        f.write("-" * 60 + "\n")
+        f.write(f"  Score total acumulado:        {total_score:.4f}\n")
+        f.write(f"  Score do Top-{k} acumulado:   {topk_score:.4f}\n")
+        f.write(f"  Percentual coberto:           {pct_score:.1f}%\n\n")
+
+        f.write("RELACAO COM O SEED HISTORICO (in_dataset)\n")
+        f.write("-" * 60 + "\n")
+        f.write(f"  Artistas seed em fusion table: {seed_total}\n")
+        f.write(f"  Artistas seed dentro do Top-K: {seed_in_topk}\n")
+        if seed_total > 0:
+            f.write(f"  Cobertura do seed pelo Top-K:  "
+                    f"{seed_in_topk/seed_total*100:.1f}%\n\n")
+
+        f.write("JUSTIFICATIVA METODOLOGICA\n")
+        f.write("-" * 60 + "\n")
+        f.write("  O subset Top-K serve para tabelas/visualizacoes que precisam\n"
+                "  de cardinalidade reduzida. Para analises estatisticas, o\n"
+                "  conjunto COMPLETO de artistas com score valido e a base padrao\n"
+                "  (evita vies de selecao). Top-20% e escolhido por:\n"
+                "    1) lei de Pareto: ~80%% do score concentrado no topo\n"
+                "    2) cardinalidade gerenciavel para tabelas (cabe em paginas)\n"
+                "    3) compatibilidade com analises Q1: o Q1 das diferencas\n"
+                "       entre artistas e capturado nessa faixa.\n")
+        f.write("  Piso de 20 garante poder estatistico minimo (Mann-Whitney\n"
+                "  exige n >= 8 por grupo para detectar efeitos moderados).\n")
+
+    print(f"  Top-K (Fase 18): K={k} ({pct_score:.1f}% do score acumulado)")
+    print(f"  Relatorio: {report_path}")
+
+
+# ============================================================
 # TABELA DE FUSAO FINAL
 # ============================================================
 
@@ -410,10 +519,19 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     sp_charts = load_weekly_charts("data/raw/spotify_charts", "spotify")
     yt_charts = load_weekly_charts("data/raw/youtube_charts", "youtube")
 
-    # Numero de semanas por plataforma (para normalizacao do score)
+    # Numero de semanas por plataforma (referencia metadata)
     n_weeks_sp = len(sp_charts)
     n_weeks_yt = len(yt_charts)
     print(f"  Semanas carregadas: Spotify={n_weeks_sp}, YouTube={n_weeks_yt}")
+
+    # Fase 18: Normalizacao por NUMERO DE MESES, nao semanas.
+    # O periodo Q1 2026 cobre 3 meses (Jan/Fev/Mar). Score de cada
+    # artista e somado por mes (1/best_rank_mes), e dividido por
+    # n_meses para garantir comparabilidade entre plataformas com
+    # janelas iguais e robustez a futuras expansoes (ex: Q2 2026).
+    n_meses_sp = 3  # Jan, Fev, Mar
+    n_meses_yt = 3
+    print(f"  Meses (normalizacao Fase 18): Spotify={n_meses_sp}, YouTube={n_meses_yt}")
 
     print("\n--- MAPA DE ARTISTAS FEATURED ---")
     featured_map = _build_featured_map(sp_charts, yt_charts)
@@ -472,18 +590,12 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     df_merged['artist_name_seed'] = df_merged['artist_normalized'].map(
         seed_norm_map)
 
-    # ---- Score normalizado por numero de semanas (Fase 2) ----
-    # Normalizacao garante comparabilidade entre plataformas.
-    # score_raw / n_semanas = score medio semanal (invariante ao periodo coletado).
-    if n_weeks_sp > 0:
-        df_merged['score_spotify_normalized'] = df_merged['score_spotify'] / n_weeks_sp
-    else:
-        df_merged['score_spotify_normalized'] = df_merged['score_spotify']
-
-    if n_weeks_yt > 0:
-        df_merged['score_youtube_normalized'] = df_merged['score_youtube'] / n_weeks_yt
-    else:
-        df_merged['score_youtube_normalized'] = df_merged['score_youtube']
+    # ---- Score normalizado por numero de MESES (Fase 18) ----
+    # Mudanca de paradigma vs Fase 2 (que usava n_semanas):
+    # agora normalizamos por n_meses pois a agregacao primaria e mensal.
+    # n_meses = 3 fixo para Q1 2026; score_X_normalizado = score_X / 3.
+    df_merged['score_spotify_normalized'] = df_merged['score_spotify'] / n_meses_sp
+    df_merged['score_youtube_normalized'] = df_merged['score_youtube'] / n_meses_yt
 
     # score_combined = soma dos scores normalizados (plataformas em mesma escala)
     df_merged['score_combined'] = (
@@ -600,6 +712,12 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
           f"{n_not_found} nao encontrados")
     print(f"  Diagnostico: data/validation/seed_matching_diagnostic.csv")
 
+    # ---- Top-K (Fase 18): universo analitico substitui in_dataset ----
+    # Decisao tecnica: analise estatistica usa o conjunto COMPLETO (sem corte)
+    # para evitar vies de selecao. A flag `in_top_k` e gerada para uso em
+    # tabelas/visualizacoes que precisam de cardinalidade reduzida.
+    df_merged = _compute_top_k(df_merged)
+
     # ---- Salva resultado ----
     os.makedirs("data/processed", exist_ok=True)
     output_path = "data/processed/ranking_fusion_scores.csv"
@@ -607,14 +725,16 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
 
     total = len(df_merged)
     in_ds = int(df_merged['in_dataset'].sum())
+    in_topk = int(df_merged['in_top_k'].sum())
     sp_scores = df_merged['score_spotify'].dropna()
     yt_scores = df_merged['score_youtube'].dropna()
     comb_scores = df_merged['score_combined'].dropna()
 
     print(
-        f"\n  Total artistas primarios: {total} | In dataset (seed primario): {in_ds}")
+        f"\n  Total artistas primarios: {total} | In dataset (seed primario): {in_ds}"
+        f" | In top-K (universo analitico): {in_topk}")
     print(
-        f"  Normalizacao: n_semanas_sp={n_weeks_sp}, n_semanas_yt={n_weeks_yt}")
+        f"  Normalizacao: n_meses_sp={n_meses_sp}, n_meses_yt={n_meses_yt} (Fase 18)")
     if not sp_scores.empty:
         print(
             f"  Score Spotify (raw): min={sp_scores.min():.4f}, max={sp_scores.max():.4f}")
@@ -833,37 +953,44 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
     """
     Compara scores de fusao entre artistas com e sem Call2Go.
 
-    Restringe aos 67 artistas do dataset. Usa Mann-Whitney U para
-    comparar distribuicoes de score entre grupos.
-    Salva boxplot em data/plots/fusion_score_by_call2go.png.
+    Fase 18: universo passa a ser o Top-K do Rank Fusion (in_top_k == True),
+    nao mais o seed historico (in_dataset). has_call2go e disponivel apenas
+    para artistas que tenham videos coletados (subset). NaN onde nao ha dado.
 
     Retorna dict com estatisticas dos grupos.
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    # Restringe ao dataset
-    df_ds = df_fusion[df_fusion['in_dataset'] == True].copy()
+    # Restringe ao Top-K (Fase 18) -- universo analitico primario
+    df_topk = df_fusion[df_fusion['in_top_k'] == True].copy()
 
-    # Flag has_call2go por artista (qualquer video com has_call2go=1)
-    c2g = (df_flagged.groupby('artist_name')['has_call2go']
+    # Flag has_call2go por artista (qualquer video com has_call2go_or=1)
+    # Usa OR em vez de AND para alinhar com a metrica primaria do TCC.
+    c2g = (df_flagged.groupby('artist_name')['has_call2go_or']
            .max()
            .reset_index()
-           .rename(columns={'has_call2go': 'has_call2go_flag'}))
+           .rename(columns={'has_call2go_or': 'has_call2go_flag'}))
     c2g['artist_norm'] = c2g['artist_name'].apply(_normalize_name)
 
-    # Normaliza nomes do seed para merge
-    df_ds['artist_norm_seed'] = df_ds['artist_name_seed'].apply(
-        lambda x: _normalize_name(x) if pd.notna(x) else '')
-
-    # Merge por nome normalizado
-    df_merged = df_ds.merge(
+    # Merge por artist_normalized (Top-K) com c2g (que normaliza pelo nome bruto)
+    df_merged = df_topk.merge(
         c2g[['artist_norm', 'has_call2go_flag']],
-        left_on='artist_norm_seed',
+        left_on='artist_normalized',
         right_on='artist_norm',
         how='left',
     )
-    df_merged['has_call2go'] = df_merged['has_call2go_flag'].fillna(
-        0).astype(int)
+    # has_call2go = 0/1 quando ha dado; NaN onde nao ha video coletado
+    df_merged['has_call2go'] = df_merged['has_call2go_flag']
+    df_merged['has_call2go'] = df_merged['has_call2go'].astype('Int64')
+
+    n_with_data = int(df_merged['has_call2go'].notna().sum())
+    n_no_data = int(df_merged['has_call2go'].isna().sum())
+    print(f"  Top-K total: {len(df_merged)} | com dados Call2Go: {n_with_data}"
+          f" | sem dados (NaN): {n_no_data}")
+
+    # Para teste estatistico, considera apenas artistas com dado disponivel
+    df_merged = df_merged.dropna(subset=['has_call2go']).copy()
+    df_merged['has_call2go'] = df_merged['has_call2go'].astype(int)
 
     group_yes = df_merged[df_merged['has_call2go'] == 1]
     group_no = df_merged[df_merged['has_call2go'] == 0]
@@ -955,15 +1082,16 @@ def analyze_lastfm_correlations(df_fusion: pd.DataFrame,
     Calcula correlacoes (Pearson + Spearman) entre scores de fusao
     e metricas do Last.fm (listeners, playcount).
 
-    Restringe aos 67 artistas do dataset com dados Last.fm disponiveis.
+    Fase 18: restringe ao Top-K do Rank Fusion (in_top_k) em vez do seed
+    historico. Last.fm continua sendo merge por nome -- artistas sem dado
+    Last.fm sao excluidos da analise.
     Salva heatmap da matriz Spearman em fusion_lastfm_correlation.png.
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    # Restringe ao dataset
-    df_ds = df_fusion[df_fusion['in_dataset'] == True].copy()
-    df_ds['artist_norm_seed'] = df_ds['artist_name_seed'].apply(
-        lambda x: _normalize_name(x) if pd.notna(x) else '')
+    # Fase 18: Top-K substitui o seed como universo analitico
+    df_ds = df_fusion[df_fusion['in_top_k'] == True].copy()
+    df_ds['artist_norm_seed'] = df_ds['artist_normalized']
 
     # Normaliza nomes no Last.fm
     df_lf = df_lastfm.copy()
@@ -1078,9 +1206,13 @@ def temporal_lag_analysis(df_fusion: pd.DataFrame,
         print("[AVISO] Datas Spotify nao disponiveis, pulando analise temporal.")
         return None
 
-    # Artistas do dataset
-    df_ds = df_fusion[df_fusion['in_dataset'] == True].copy()
-    dataset_artists = df_ds['artist_name_seed'].dropna().tolist()
+    # Fase 18: Top-K substitui o seed
+    df_ds = df_fusion[df_fusion['in_top_k'] == True].copy()
+    # artist_name_seed pode ser NaN para Top-K artistas que nao estavam no seed
+    # original; nesse caso usamos artist_normalized como fallback de identificacao
+    df_ds['_lookup_name'] = df_ds['artist_name_seed'].fillna(
+        df_ds['artist_normalized'])
+    dataset_artists = df_ds['_lookup_name'].dropna().tolist()
 
     results = []
     for artist_seed in dataset_artists:

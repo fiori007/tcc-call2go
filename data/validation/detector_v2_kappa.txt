@@ -1,0 +1,78 @@
+============================================================
+DETECTOR v2 -- Fase 18 (02/05/2026)
+============================================================
+
+Mudancas em src/processors/call2go_detector.py:
+  + R6: Deep links Spotify (spotify:artist:..., spotify:track:..., etc.)
+  + R7: Agregadores de redes sociais (linktr.ee/.../spotify, lnk.bio/.../spotify,
+        beacons.ai/.../spotify, allmylinks.com/.../spotify, etc.)
+  + R8: CTAs com emoji musical (notas, fones, microfone) proximo a "spotify"
+  + Heuristica STRICT: rebaixa videos auto-gerados (Provided to YouTube by...)
+        para confianca menor -- nao contam como Call2Go organico.
+
+============================================================
+COMPARACAO DE DISTRIBUICOES (1641 videos)
+============================================================
+
+                     v1 (sem R6/R7/R8)     v2 (com R6/R7/R8)
+has_call2go (AND)    88 (5.4%)             88 (5.4%)
+has_call2go_or       518 (31.6%)           518 (31.6%)
+has_call2go_strict   N/A                   468 (28.5%) [NOVO]
+
+Diferenca v2 vs v1:
+  - R6/R7/R8 nao adicionaram detecoes nos 1641 videos atuais
+    (esses padroes sao RAROS no corpus -- artistas mainstream do seed
+    usam predominantemente links diretos open.spotify.com).
+  - STRICT rebaixou 50 videos (518 -> 468): videos OAC que tinham
+    Call2Go via copia-padrao da distribuidora.
+
+============================================================
+COBERTURA DE TESTES
+============================================================
+
+tests/test_call2go_detector.py:
+  - 77 testes adversariais legados (v1)
+  - 18 testes novos (v2):
+      * 5 testes para R6 (deep links: artist, track, album, playlist, ID curto)
+      * 5 testes para R7 (linktr.ee, lnk.bio, beacons.ai, allmylinks, sem
+        spotify no path)
+      * 5 testes para R8 (emoji nota, fone, microfone, distante, sem spotify)
+      * 3 testes para STRICT (auto-gen Provided, Auto-generated, organico)
+  Total: 95/95 passando.
+
+============================================================
+LIMITACAO METODOLOGICA -- KAPPA COHEN
+============================================================
+
+A validacao Kappa Cohen exige ground truth humano. O arquivo
+`data/validation/ground_truth.csv` foi removido em 18/04/2026 durante
+o cleanup metodologico (Fase 3 era validacao circular). O baseline
+oficial mantido era de 91 videos adversariais com Kappa video=0.45 e
+Kappa canal=0.80.
+
+Como nao ha ground truth disponivel para re-anotar com R6/R7/R8 in scope,
+a validacao formal de acuracia v2 e DIFERIDA. Em vez disso:
+
+  1. Os 18 testes adversariais novos sao a "validacao funcional" das regras:
+     cobrem todos os casos esperados (links validos, links invalidos por
+     ID curto, emojis distantes, etc.) -- com precisao 100% em testes.
+  2. A heuristica STRICT e *mais conservadora* que has_call2go_or, logo
+     nao pode AUMENTAR falsos positivos -- so reduzir.
+  3. R6/R7/R8 detectam padroes de CTA *inequivocos* (deep link, agregador
+     com spotify, emoji + spotify) -- precision esperada ~100%.
+
+============================================================
+RECOMENDACAO PARA O TCC
+============================================================
+
+Para a analise estatistica (Fase 3), recomenda-se reportar TRES metricas
+em paralelo:
+
+  - has_call2go     (AND): sinal mais conservador, 88 videos
+  - has_call2go_or  (OR):  sinal primario, 518 videos
+  - has_call2go_strict:    sinal organico (sem OAC), 468 videos
+
+A comparacao v1 vs v2 mostra que adicionar R6/R7/R8 nao tem custo
+(zero novos FPs nos casos de teste, distribuicao OR identica) e
+abre futuro para corpora com descricoes mais modernas (linktr.ee,
+deep links, emojis).

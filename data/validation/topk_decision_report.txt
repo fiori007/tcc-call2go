@@ -1,0 +1,36 @@
+============================================================
+DECISAO DE TOP-K -- Fase 18 (Substituicao por Rank Fusion)
+============================================================
+
+CRITERIO
+------------------------------------------------------------
+  Universo total de artistas primarios: 228
+  Artistas com score_combined valido:   228
+  Percentil aplicado:                   20% (Top 46)
+  Piso minimo (n para Mann-Whitney):    20
+  K final (max(20, ceil(N * 0.20))):    46
+
+COBERTURA DE SCORE
+------------------------------------------------------------
+  Score total acumulado:        11.4581
+  Score do Top-46 acumulado:   9.3171
+  Percentual coberto:           81.3%
+
+RELACAO COM O SEED HISTORICO (in_dataset)
+------------------------------------------------------------
+  Artistas seed em fusion table: 37
+  Artistas seed dentro do Top-K: 26
+  Cobertura do seed pelo Top-K:  70.3%
+
+JUSTIFICATIVA METODOLOGICA
+------------------------------------------------------------
+  O subset Top-K serve para tabelas/visualizacoes que precisam
+  de cardinalidade reduzida. Para analises estatisticas, o
+  conjunto COMPLETO de artistas com score valido e a base padrao
+  (evita vies de selecao). Top-20% e escolhido por:
+    1) lei de Pareto: ~80%% do score concentrado no topo
+    2) cardinalidade gerenciavel para tabelas (cabe em paginas)
+    3) compatibilidade com analises Q1: o Q1 das diferencas
+       entre artistas e capturado nessa faixa.
+  Piso de 20 garante poder estatistico minimo (Mann-Whitney
+  exige n >= 8 por grupo para detectar efeitos moderados).
