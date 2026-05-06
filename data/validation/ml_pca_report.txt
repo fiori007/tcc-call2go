@@ -1,0 +1,40 @@
+============================================================
+PCA 2D -- Artistas Top-K (sklearn)
+Fase 19 -- reducao dimensional
+============================================================
+
+DATASET
+------------------------------------------------------------
+  Top-K artistas: 46
+  Features: 5
+    - score_combined
+    - score_spotify_normalized
+    - score_youtube_normalized
+    - presence_count_spotify
+    - presence_count_youtube
+
+VARIANCIA EXPLICADA
+------------------------------------------------------------
+  PC1: 55.35%
+  PC2: 24.77%
+  Acumulada (PC1+PC2): 80.12%
+
+INTERPRETACAO
+------------------------------------------------------------
+  Variancia explicada >= 60% -> visualizacao 2D representativa.
+  Variancia explicada <  60% -> 3 componentes podem ser necessarios.
+
+LOADING SCORES (peso de cada feature em cada componente)
+------------------------------------------------------------
+                             PC1     PC2
+score_combined            0.5966  0.0088
+score_spotify_normalized  0.5391 -0.1394
+score_youtube_normalized  0.5450  0.1590
+presence_count_spotify    0.1879 -0.6518
+presence_count_youtube    0.1452  0.7282
+
+LEITURA DOS LOADINGS
+------------------------------------------------------------
+  |loading| > 0,5 -> feature dominante naquele componente.
+  PC1 e o eixo onde a maioria da variabilidade reside;
+  PC2 captura variabilidade residual ortogonal a PC1.

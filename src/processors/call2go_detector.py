@@ -306,7 +306,7 @@ def process_videos():
         print(f"  Links scrapeados dos canais carregados: {len(scraped_data)} canais")
 
     # Mapeamento artist_name -> seed channel_id (resolve mismatches video<->seed)
-    seed_file = "data/seed/artistas.csv"
+    seed_file = "data/seed/legacy_v1_artistas.csv"
     seed_channels = {}
     if os.path.exists(seed_file):
         df_seed = pd.read_csv(seed_file)

@@ -177,7 +177,7 @@ def collect_youtube_data(max_videos_per_artist=20):
     print(
         f"Iniciando coleta dos {max_videos_per_artist} vídeos MAIS VISUALIZADOS por artista...")
     youtube = get_youtube_client()
-    df_artists = pd.read_csv("data/seed/artistas.csv")
+    df_artists = pd.read_csv("data/seed/legacy_v1_artistas.csv")
 
     # Resume: carrega dados existentes para não re-coletar artistas já processados
     all_data = []

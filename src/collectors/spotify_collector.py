@@ -26,7 +26,7 @@ def collect_spotify_data():
     sp = get_spotify_client()
 
     # Lê a lista de artistas
-    df_artists = pd.read_csv("data/seed/artistas.csv")
+    df_artists = pd.read_csv("data/seed/legacy_v1_artistas.csv")
 
     results = []
     today_date = datetime.now(timezone.utc).strftime('%Y-%m-%d')

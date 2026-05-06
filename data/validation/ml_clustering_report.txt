@@ -1,0 +1,66 @@
+============================================================
+ML CLUSTERING -- KMeans + silhouette (sklearn)
+Fase 19 -- agrupamento comportamental nao-supervisionado
+============================================================
+
+FEATURES USADAS
+------------------------------------------------------------
+  - rank_Jan_sp
+  - rank_Feb_sp
+  - rank_Mar_sp
+  - rank_Jan_yt
+  - rank_Feb_yt
+  - rank_Mar_yt
+  - score_combined
+
+BUSCA DE K (silhouette_score, k in [2,6])
+------------------------------------------------------------
+    k    silhouette       inertia
+    6        0.4838       59.3837
+    3        0.4561      124.4375
+    5        0.4325       78.4911
+    4        0.4169       98.9752
+    2        0.3428      216.6825
+
+  K otimo: 6 (silhouette = 0.4838)
+
+INTERPRETACAO DO SILHOUETTE
+------------------------------------------------------------
+  s ~ +1  -> cluster bem separado e coeso
+  s ~  0  -> objeto esta na fronteira entre clusters
+  s ~ -1  -> objeto esta no cluster errado
+  Heuristica: silhouette >= 0,5 = boa separacao;
+              silhouette >= 0,25 = aceitavel para dados ruidosos.
+
+CLUSTERS RESULTANTES
+------------------------------------------------------------
+  Total artistas: 46
+  Cluster 0: 8 artistas
+  Cluster 1: 12 artistas
+  Cluster 2: 9 artistas
+  Cluster 3: 2 artistas
+  Cluster 4: 8 artistas
+  Cluster 5: 7 artistas
+
+MEDIANAS POR CLUSTER
+------------------------------------------------------------
+              rank_Jan_sp         rank_Feb_sp         rank_Mar_sp         rank_Jan_yt         rank_Feb_yt         rank_Mar_yt         score_combined        has_any_call2go_or       
+                   median    mean      median    mean      median    mean      median    mean      median    mean      median    mean         median   mean             median   mean
+cluster_label                                                                                                                                                                        
+0                     6.5  13.500         6.0   7.250         9.5  12.625         9.0  11.750         6.5   8.000         8.0    9.25          0.366  0.415                0.5  0.500
+1                    90.5  81.750        80.0  80.000        59.0  59.000        21.0  21.000        19.5  20.083        22.5   20.25          0.054  0.061                0.0  0.250
+2                    67.0  63.600        30.0  28.625        32.0  31.778        59.0  68.000        34.5  34.750        29.5   36.25          0.050  0.100                1.0  0.556
+3                     1.5   1.500         1.0   1.000         2.5   2.500         1.0   1.000         2.0   2.000         2.5    2.50          1.556  1.556                0.0  0.000
+4                    21.0  20.000        23.0  19.875        18.5  24.875         NaN     NaN         NaN     NaN       100.0  100.00          0.050  0.093                0.5  0.500
+5                    19.0  21.429        18.0  30.286        29.0  34.167        37.0  36.143        41.0  45.143        79.0   78.00          0.079  0.073                0.0  0.286
+
+DISTRIBUICAO DE CALL2GO POR CLUSTER
+------------------------------------------------------------
+has_any_call2go_or  0  1
+cluster_label           
+0                   4  4
+1                   9  3
+2                   4  5
+3                   2  0
+4                   4  4
+5                   5  2

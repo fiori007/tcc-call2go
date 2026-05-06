@@ -1,0 +1,54 @@
+============================================================
+ML CLASSIFICATION -- Random Forest predizendo Call2Go
+Fase 19 (sklearn integration)
+============================================================
+
+DATASET
+------------------------------------------------------------
+  Universo: Top-K do Rank Fusion (31 artistas)
+  Classe 1 (com Call2Go OR): 13
+  Classe 0 (sem Call2Go):    18
+
+HIPERPARAMETROS
+------------------------------------------------------------
+  RandomForestClassifier(n_estimators=200, min_samples_leaf=2, class_weight='balanced',
+                          random_state=42)
+  StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+METRICAS DE VALIDACAO CRUZADA (5-fold estratificada)
+------------------------------------------------------------
+  AUC ROC      : 0.578 +/- 0.255
+  Accuracy     : 0.548 +/- 0.066
+  ROC AUC (out-of-fold agregado): 0.496
+
+LEITURA DA AUC ROC
+------------------------------------------------------------
+  AUC = 0,5 -> classificador no nivel do acaso
+  AUC = 0,7 -> bom poder discriminativo
+  AUC = 0,8 -> excelente
+  AUC = 1,0 -> perfeito
+
+CLASSIFICATION REPORT (out-of-fold)
+------------------------------------------------------------
+              precision    recall  f1-score   support
+
+          no       0.62      0.56      0.59        18
+         yes       0.47      0.54      0.50        13
+
+    accuracy                           0.55        31
+   macro avg       0.55      0.55      0.54        31
+weighted avg       0.56      0.55      0.55        31
+
+CONFUSION MATRIX (out-of-fold)
+------------------------------------------------------------
+                  pred=0   pred=1
+  real=0 (sem)        10        8
+  real=1 (com)         6        7
+
+FEATURE IMPORTANCE (modelo treinado em todo o dataset)
+------------------------------------------------------------
+  score_combined                      0.3314
+  score_spotify_normalized            0.2679
+  score_youtube_normalized            0.2661
+  presence_count_youtube              0.0736
+  presence_count_spotify              0.0609
