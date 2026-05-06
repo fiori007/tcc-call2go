@@ -537,5 +537,141 @@ class TestFalsosPositivosConhecidos:
         assert has == 1
 
 
+# =====================================================================
+# GRUPO R6 — Deep links nativos do Spotify (Fase 18)
+# =====================================================================
+
+class TestR6DeepLinks:
+    """Detecta deep links spotify:tipo:id que abrem o app Spotify diretamente."""
+
+    def test_deep_link_artist(self):
+        text = "Siga: spotify:artist:6eUKZXaKkcviH0Ku9w2n3V"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_deep_link_track(self):
+        text = "Tocando agora: spotify:track:7ouMYWpwJ422jRcDASZB7P"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_deep_link_album(self):
+        text = "Album completo: spotify:album:1DFixLWuPkv3KT3TnV35m3"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_deep_link_playlist(self):
+        text = "Playlist oficial: spotify:playlist:37i9dQZF1DXcBWIGoYBM5M"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_deep_link_id_curto_invalido(self):
+        """ID muito curto (<8 chars) NAO deve casar (R6 exige 8+ chars)."""
+        text = "spotify:artist:abc"
+        has, typ = detect_call2go(text)
+        # Cai no R5 fallback (\bspotify\b) → texto_implicito
+        assert has == 1 and typ == 'texto_implicito'
+
+
+# =====================================================================
+# GRUPO R7 — Agregadores de redes sociais com referência a Spotify (Fase 18)
+# =====================================================================
+
+class TestR7Aggregators:
+    """Detecta linktr.ee/foo/spotify, lnk.bio/.../spotify, etc."""
+
+    def test_linktree_spotify(self):
+        text = "Todas as plataformas: https://linktr.ee/maluma/spotify"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_lnk_bio_spotify(self):
+        text = "Veja em https://lnk.bio/artist/spotify-link"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_beacons_ai_spotify(self):
+        text = "Acesse: beacons.ai/artistname/spotify"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_allmylinks_spotify(self):
+        text = "Links: https://allmylinks.com/artist/spotify-page"
+        has, typ = detect_call2go(text)
+        assert has == 1 and typ == 'link_direto'
+
+    def test_aggregator_sem_spotify_no_path(self):
+        """linktr.ee/x/y SEM spotify no path NAO casa o R7."""
+        text = "Ver mais em https://linktr.ee/artistname/website"
+        has, typ = detect_call2go(text)
+        # nao deve detectar como Call2Go (sem spotify mencionado)
+        assert has == 0
+
+
+# =====================================================================
+# GRUPO R8 — CTA com emoji musical próximo a "spotify" (Fase 18)
+# =====================================================================
+
+class TestR8EmojiCTA:
+    """Detecta CTAs como '🎵 Ouca no Spotify', '🎧 Spotify aqui', etc."""
+
+    def test_emoji_nota_musical(self):
+        text = "🎵 Disponivel no Spotify agora!"
+        has, typ = detect_call2go(text)
+        assert has == 1
+        # pode cair como texto_implicito ou link_direto dependendo da ordem
+
+    def test_emoji_fone_de_ouvido(self):
+        text = "🎧 Escute no Spotify"
+        has, typ = detect_call2go(text)
+        assert has == 1
+
+    def test_emoji_microfone(self):
+        text = "🎶 Spotify ja tem!"
+        has, typ = detect_call2go(text)
+        assert has == 1
+
+    def test_emoji_distante_spotify(self):
+        """Emoji muito distante (>60 chars) NAO casa R8."""
+        text = (
+            "🎵 Aqui vai a letra completa da musica que escrevi durante o "
+            "verao em Salvador depois de muitas inspiracoes do Spotify"
+        )
+        # Distancia entre emoji e 'spotify' > 60 chars -- R8 nao casa
+        # Mas R5 fallback ainda pode pegar
+        has, typ = detect_call2go(text)
+        assert has == 1  # via R5
+
+    def test_emoji_sem_spotify(self):
+        """Emoji sem mencao a Spotify -> nao detecta Call2Go."""
+        text = "🎵 Que dia lindo para musica nova"
+        has, typ = detect_call2go(text)
+        assert has == 0
+
+
+# =====================================================================
+# GRUPO STRICT (heuristica de auto-gen rebaixar confianca, Fase 18)
+# =====================================================================
+
+class TestStrictHeuristic:
+    """A coluna has_call2go_strict so e 1 quando ha link direto E nao auto-gerado.
+
+    Esses testes nao podem ser feitos em detect_call2go() puro -- o strict e
+    aplicado apenas no process_videos() que percorre o JSONL. Aqui apenas
+    valida que is_auto_generated() segue funcionando.
+    """
+
+    def test_auto_gen_provided_to_youtube(self):
+        text = "Provided to YouTube by Universal Music Group\n\nSong title - Artist"
+        assert is_auto_generated(text) is True
+
+    def test_auto_gen_youtube_generated(self):
+        text = "Auto-generated by YouTube.\n\nMore details below"
+        assert is_auto_generated(text) is True
+
+    def test_organic_video(self):
+        text = "Bem-vindo ao meu novo clipe! Ouca no Spotify"
+        assert is_auto_generated(text) is False
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
