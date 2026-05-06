@@ -107,11 +107,11 @@ def run_chart_temporal_analysis():
     df_fusion = pd.read_csv(FUSION_CSV)
     df_yt = pd.read_csv(FLAGGED_CSV)
 
-    # Filtra apenas artistas seed primarios com chart entry Spotify
+    # Fase 18: filtra Top-K do Rank Fusion (substitui in_dataset)
     seed_artists = df_fusion[
-        (df_fusion['in_dataset'] == True) &
+        (df_fusion['in_top_k'] == True) &
         (df_fusion['first_chart_week_spotify'].notna())
-    ][['artist_name_seed', 'first_chart_week_spotify',
+    ][['artist_normalized', 'artist_name_seed', 'first_chart_week_spotify',
        'score_spotify_normalized', 'score_combined',
        'total_weeks_spotify']].copy()
 
@@ -120,9 +120,9 @@ def run_chart_temporal_analysis():
     seed_artists = seed_artists[seed_artists['first_chart_week_spotify'].notna(
     )]
 
-    # Normaliza nome para matching
-    seed_artists['name_norm'] = seed_artists['artist_name_seed'].apply(
-        _normalize)
+    # Para artistas Top-K que nao estao no seed, artist_name_seed e NaN.
+    # Usa artist_normalized como chave de matching.
+    seed_artists['name_norm'] = seed_artists['artist_normalized']
 
     df_yt['published_at'] = pd.to_datetime(
         df_yt['published_at'], utc=True, errors='coerce')

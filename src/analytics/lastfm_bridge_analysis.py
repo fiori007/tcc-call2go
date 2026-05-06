@@ -38,6 +38,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 from src.config import ALPHA_DEFAULT
+from src.analytics._universe import filter_videos_to_topk, load_topk_dataframe
 
 
 # ============================================================
@@ -45,16 +46,21 @@ from src.config import ALPHA_DEFAULT
 # ============================================================
 
 def _load_seed(path="data/seed/artistas.csv"):
-    """Carrega base de artistas (seed Q1 2026)."""
+    """Carrega base de artistas (referencia historica do seed Q1 2026).
+
+    Fase 18: ainda usado para compatibilidade descritiva. As analises
+    estatisticas seguem o universo Top-K via filter_videos_to_topk().
+    """
     return pd.read_csv(path)
 
 
 def _load_youtube_flagged(path="data/processed/youtube_call2go_flagged.csv"):
-    """Carrega videos do YouTube com flags Call2Go."""
+    """Carrega videos do YouTube com flags Call2Go (filtrado para Top-K)."""
     df = pd.read_csv(path)
     for col in ['view_count', 'like_count', 'comment_count']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
-    return df
+    # Fase 18: restringe ao Top-K do Rank Fusion
+    return filter_videos_to_topk(df, artist_col='artist_name')
 
 
 def _load_spotify(data_dir="data/raw"):
