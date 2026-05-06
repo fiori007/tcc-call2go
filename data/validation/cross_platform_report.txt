@@ -1,18 +1,18 @@
 RELATÓRIO DE VALIDAÇÃO CROSS-PLATFORM BIDIRECIONAL
 ============================================================
 
-CLASSIFICAÇÃO: UNIDIRECIONAL: Spotify -> YouTube
+CLASSIFICAÇÃO: BIDIRECIONAL (Feedback Loop)
 Nível de significância: alpha = 0.1
 
 INTERPRETAÇÃO:
-Métricas do Spotify correlacionam com engajamento no YouTube, mas Call2Go no YouTube não demonstra impacto significativo no Spotify.
+Evidências sugerem que YouTube e Spotify se alimentam mutuamente. Call2Go no YouTube correlaciona com métricas Spotify, E métricas Spotify correlacionam com engajamento no YouTube.
 
 ------------------------------------------------------------
 DIREÇÃO A: YouTube -> Spotify
 ------------------------------------------------------------
   call2go_vs_popularity: {'rho': np.float64(-0.25642666572573586), 'p': np.float64(0.2060543406614664)}
   call2go_vs_followers: {'rho': np.float64(-0.3036837744518865), 'p': np.float64(0.13150025016976116)}
-  views_mannwhitney: {'U': np.float64(14064.0), 'p': np.float64(0.4100208859515647), 'median_with': np.float64(3129244.0), 'median_without': np.float64(2619709.0)}
+  views_mannwhitney: {'U': np.float64(31420.0), 'p': np.float64(0.01203356035317999), 'median_with': np.float64(3129244.0), 'median_without': np.float64(1508925.0)}
 
 ------------------------------------------------------------
 DIREÇÃO B: Spotify -> YouTube (A VOLTA)

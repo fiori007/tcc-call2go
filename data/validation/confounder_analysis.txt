@@ -18,7 +18,7 @@ Dep. Variable:             has_any_or   No. Observations:                   26
 Model:                          Logit   Df Residuals:                       23
 Method:                           MLE   Df Model:                            2
 Date:                Wed, 06 May 2026   Pseudo R-squ.:                 0.06794
-Time:                        16:34:50   Log-Likelihood:                -16.726
+Time:                        18:50:57   Log-Likelihood:                -16.726
 converged:                       True   LL-Null:                       -17.945
 Covariance Type:            nonrobust   LLR p-value:                    0.2955
 ==============================================================================
@@ -46,7 +46,7 @@ Dep. Variable:            has_any_and   No. Observations:                   26
 Model:                          Logit   Df Residuals:                       23
 Method:                           MLE   Df Model:                            2
 Date:                Wed, 06 May 2026   Pseudo R-squ.:                  0.1590
-Time:                        16:34:50   Log-Likelihood:                -7.8195
+Time:                        18:50:57   Log-Likelihood:                -7.8195
 converged:                       True   LL-Null:                       -9.2983
 Covariance Type:            nonrobust   LLR p-value:                    0.2279
 ==============================================================================

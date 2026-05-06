@@ -190,6 +190,16 @@ def step_16_confounder_analysis():
     run_confounder_analysis()
 
 
+def step_17_topk_expansion_collection():
+    """Coleta videos dos artistas Top-K que ficaram fora do seed v1 (Fase 19).
+
+    So roda quando --collect-topk-expansion e passado, pois consome quota
+    YouTube. Cobertura objetivo: 100% do Top-K (~46/46 artistas).
+    """
+    from src.collectors.topk_expansion_collector import collect_topk_expansion
+    collect_topk_expansion()
+
+
 def _print_steps_listing(steps):
     """Imprime a lista numerada de etapas disponiveis (--list-steps)."""
     print("\nEtapas do pipeline:")
@@ -215,12 +225,14 @@ def main():
                         help='Mostra o plano de execucao sem rodar nenhuma etapa')
     parser.add_argument('--strict', action='store_true',
                         help='Para o pipeline na primeira falha (default: continua)')
+    parser.add_argument('--collect-topk-expansion', action='store_true',
+                        help='Habilita step 17 (coleta Top-K expansion, consome quota YouTube)')
     args = parser.parse_args()
 
     global FORCE_CHANNEL_SCRAPE
     FORCE_CHANNEL_SCRAPE = args.force_channel_scrape
 
-    total_steps = 16
+    total_steps = 17
     start_time = time.time()
 
     print("\n" + "#" * 60)
@@ -279,6 +291,8 @@ def main():
          step_15_chart_temporal_analysis,     True),
         (16, "ANALISE DE CONFUNDIDOR (Call2Go vs popularidade SP)",
          step_16_confounder_analysis,         True),
+        (17, "COLETA TOP-K EXPANSION (Fase 19)",
+         step_17_topk_expansion_collection,   False),
     ]
 
     # --list-steps: imprime e sai
@@ -296,6 +310,12 @@ def main():
 
         if args.skip_collect and not can_skip_collect:
             print(f"\n  [SKIP] Etapa {step_num}: {title} (--skip-collect)")
+            results[step_num] = "SKIP"
+            continue
+
+        # Step 17 (Top-K expansion) so roda com flag explicita
+        if step_num == 17 and not args.collect_topk_expansion:
+            print(f"\n  [SKIP] Etapa {step_num}: {title} (sem --collect-topk-expansion)")
             results[step_num] = "SKIP"
             continue
 
