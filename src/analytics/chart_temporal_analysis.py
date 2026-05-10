@@ -334,7 +334,7 @@ def run_chart_temporal_analysis():
         "Defasagem (dias) -- negativo = YouTube antes do chart", fontsize=9)
     ax.set_ylabel("Artistas", fontsize=9)
     ax.set_title(
-        "Lag YouTube vs Entrada no Chart Spotify (Q1 2026)", fontsize=10)
+        "Lag YouTube vs Entrada no Chart Spotify (Janeiro-Abril 2026)", fontsize=10)
     ax.legend(fontsize=8)
     plt.tight_layout()
     plt.savefig(HIST_PNG, dpi=300)
@@ -361,7 +361,7 @@ def run_chart_temporal_analysis():
             "Janela de tempo relativa ao chart entry (dias)", fontsize=9)
         ax.set_ylabel("Total de videos (todos artistas)", fontsize=9)
         ax.set_title(
-            "Videos por Janela Temporal (Q1 2026 -- 39 artistas seed)", fontsize=10)
+            "Videos por Janela Temporal (Janeiro-Abril 2026)", fontsize=10)
         ax.legend(fontsize=8)
     plt.tight_layout()
     plt.savefig(WINDOWS_PNG, dpi=300)

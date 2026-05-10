@@ -3,7 +3,7 @@ TCC Call2Go -- Pipeline Orquestrador
 
 Executa todo o pipeline de dados do início ao fim, na ordem correta:
 
-    1. Construção da base de artistas (Charts Q1 2026 cross-platform)
+    1. Construção da base de artistas (Charts Janeiro-Abril 2026 cross-platform)
     2. Coleta de vídeos do YouTube (por artista)
     3. Coleta de métricas do Spotify (por artista)
     4. Coleta de métricas do Last.fm (artistas + charts BR)
@@ -15,7 +15,7 @@ Executa todo o pipeline de dados do início ao fim, na ordem correta:
    10. Análise de Impacto Cross-Platform
    11. Last.fm Bridge — Análise 3 Fontes
    12. Validação Cross-Platform Bidirecional (YouTube <-> Spotify)
-   13. Coleta de datas de lançamento das faixas Spotify Q1 2026
+   13. Coleta de datas de lançamento das faixas Spotify Janeiro-Abril 2026
    14. Fusão de rankings cross-platform (RRF normalizado, taxonomia estrutural)
    15. Análise temporal charts (YouTube vs Spotify — defasagem de entrada no chart)
    16. Análise de confundidor (Call2Go vs popularidade SP pré-existente)
@@ -171,7 +171,7 @@ def step_12_cross_platform_validation():
 
 
 def step_13_collect_spotify_track_dates():
-    """Coleta datas de lançamento das faixas dos charts Spotify Q1 2026."""
+    """Coleta datas de lançamento das faixas dos charts Spotify Janeiro-Abril 2026."""
     from src.collectors.spotify_track_dates_collector import collect_track_dates
     collect_track_dates()
 

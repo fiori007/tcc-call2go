@@ -27,13 +27,13 @@ def get_spotify_client():
 
 
 def collect_track_dates():
-    """Coleta datas de lancamento de todas as faixas dos charts Spotify Q1 2026."""
+    """Coleta datas de lancamento de todas as faixas dos charts Spotify Janeiro-Abril 2026."""
     # Cache-first: se arquivo ja existe, pula coleta
     if os.path.exists(OUTPUT_FILE):
         print(f"[OK] Arquivo ja existe, pulando coleta: {OUTPUT_FILE}")
         return
 
-    print("Iniciando coleta de datas de lancamento das faixas Spotify Q1 2026...")
+    print("Iniciando coleta de datas de lancamento das faixas Spotify Janeiro-Abril 2026...")
 
     # Carrega todos os CSVs de charts do Spotify
     csv_files = sorted(glob.glob(os.path.join(

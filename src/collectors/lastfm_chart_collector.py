@@ -10,7 +10,7 @@ se um artista aparece nos charts do Spotify, YouTube E Last.fm, sua relevancia
 e triplamente confirmada por fontes independentes.
 
 NOTA TEMPORAL: A API retorna dados da semana mais recente, nao historicos.
-Para o TCC (janela Q1 2026: jan-mar), isso serve como snapshot de validacao,
+Para o TCC (janela Janeiro-Abril 2026: jan-mar), isso serve como snapshot de validacao,
 ja que artistas persistentes nos charts mantem posicoes estaveis ao longo
 do trimestre.
 

@@ -1,10 +1,10 @@
 ============================================================
-RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Q1 2026
+RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Janeiro-Abril 2026
 ============================================================
-Gerado em: 2026-05-06 18:49:18
+Gerado em: 2026-05-10 11:05:10
 
-Total de artistas primarios nos charts: 228
-Artistas do dataset (seed, encontrados como primarios): 37
+Total de artistas primarios nos charts: 276
+Artistas do dataset (seed, encontrados como primarios): 39
 
 --- METODOLOGIA DE SCORE ---
   score = Reciprocal Rank Fusion (Cormack et al., SIGIR 2009)
@@ -15,103 +15,106 @@ Artistas do dataset (seed, encontrados como primarios): 37
   n_semanas_youtube: implicito em score_youtube_normalized
 
 --- RANGES DE SCORE ---
-  score_spotify: min=0.010000, max=3.000000, mediana=0.040454
-  score_youtube: min=0.010000, max=3.000000, mediana=0.027418
-  score_combined: min=0.003333, max=1.583333, mediana=0.011231
+  score_spotify: min=0.005051, max=3.250000, mediana=0.026420
+  score_youtube: min=0.010000, max=3.333333, mediana=0.034807
+  score_combined: min=0.001263, max=1.290064, mediana=0.009079
 
 --- TOP 10 POR SCORE COMBINADO (normalizado) ---
-   1. [*] PEDRO SAMPAIO: 1.583333
-   2. [*] DJ Japa NK: 1.527778
-   3. [*] DJ Oreia: 0.755952
-   4. [*] Mc Jacaré: 0.738549
-   5. [*] Grupo Menos É Mais: 0.461111
-   6. [*] Panda: 0.443933
-   7.     dj gu: 0.388889
-   8.     bts: 0.388889
-   9. [*] Vitinho Imperador: 0.287446
-  10. [*] MC GP: 0.268234
+   1. [*] PEDRO SAMPAIO: 1.290064
+   2. [*] DJ Japa NK: 1.258333
+   3. [*] DJ Oreia: 0.879464
+   4. [*] Mc Jacaré: 0.728911
+   5.     dj gu: 0.541667
+   6. [*] Panda: 0.435514
+   7.     bts: 0.425595
+   8. [*] Mc Lele JP: 0.422009
+   9. [*] Grupo Menos É Mais: 0.404275
+  10. [*] Vitinho Imperador: 0.261219
 
 --- TOP 10 POR SCORE SPOTIFY ---
-   1. [*] DJ Japa NK: 3.0000
-   2. [*] PEDRO SAMPAIO: 1.7500
-   3. [*] Mc Jacaré: 1.3537
-   4. [*] Panda: 1.1667
-   5.     dj gu: 1.1667
-   6.     bts: 1.0000
-   7. [*] MC GP: 0.5611
-   8. [*] Grupo Menos É Mais: 0.5167
-   9. [*] DJ Oreia: 0.4345
-  10. [*] Vitinho Imperador: 0.4338
+   1. [*] DJ Japa NK: 3.2500
+   2.     dj gu: 2.1667
+   3. [*] PEDRO SAMPAIO: 1.8269
+   4. [*] Mc Jacaré: 1.5537
+   5.     bts: 1.5000
+   6. [*] Panda: 1.5000
+   7. [*] Mc Lele JP: 0.7103
+   8. [*] DJ Oreia: 0.6845
+   9. [*] MC GP: 0.6236
+  10. [*] Grupo Menos É Mais: 0.6076
 
 --- TOP 10 POR SCORE YOUTUBE ---
-   1. [*] PEDRO SAMPAIO: 3.0000
-   2. [*] DJ Oreia: 1.8333
-   3. [*] DJ Japa NK: 1.5833
-   4. [*] Grupo Menos É Mais: 0.8667
-   5. [*] Mc Jacaré: 0.8619
-   6. [*] Mc Lele JP: 0.4778
-   7. [*] Vitinho Imperador: 0.4286
-   8.     mc vine7: 0.3750
-   9. [*] Oruam: 0.3274
-  10. [*] Léo Santana: 0.2520
+   1. [*] PEDRO SAMPAIO: 3.3333
+   2. [*] DJ Oreia: 2.8333
+   3. [*] DJ Japa NK: 1.7833
+   4. [*] Mc Jacaré: 1.3619
+   5. [*] Grupo Menos É Mais: 1.0095
+   6. [*] Mc Lele JP: 0.9778
+   7.     mc vine7: 0.6250
+   8. [*] Vitinho Imperador: 0.5397
+   9. [*] Oruam: 0.4274
+  10.     felipe rodrigues: 0.3024
 
 --- PADROES DE PRESENCA JAN->MAR (TODOS OS ARTISTAS) ---
   Taxonomia estrutural: absent/single/persistent/new/exit/intermittent
   Spotify:
-    absent: 110 (48.2%)
-    persistent: 51 (22.4%)
-    single: 43 (18.9%)
-    exit: 16 (7.0%)
-    new: 8 (3.5%)
+    absent: 107 (38.8%)
+    single: 73 (26.4%)
+    persistent: 51 (18.5%)
+    new: 25 (9.1%)
+    exit: 10 (3.6%)
+    intermittent: 10 (3.6%)
   YouTube:
-    single: 76 (33.3%)
-    absent: 63 (27.6%)
-    persistent: 53 (23.2%)
-    new: 16 (7.0%)
-    exit: 14 (6.1%)
-    intermittent: 6 (2.6%)
+    absent: 88 (31.9%)
+    single: 75 (27.2%)
+    new: 35 (12.7%)
+    exit: 33 (12.0%)
+    persistent: 32 (11.6%)
+    intermittent: 13 (4.7%)
 
 --- PADROES DE PRESENCA JAN->MAR (DATASET SEED) ---
   Spotify:
     persistent: 26
-    absent: 5
-    exit: 3
-    single: 2
+    single: 4
+    absent: 4
+    intermittent: 3
+    exit: 1
     new: 1
   YouTube:
-    persistent: 29
+    persistent: 21
+    exit: 8
+    single: 4
     absent: 4
-    single: 2
     new: 1
-    exit: 1
+    intermittent: 1
 
 --- COMPARACAO GRUPOS CALL2GO ---
   score_spotify:
-    Call2Go=1: mediana=0.1327
-    Call2Go=0: mediana=0.1705
-    Mann-Whitney p=0.6074 [ns]
+    Call2Go=1: mediana=0.1754
+    Call2Go=0: mediana=0.1429
+    Mann-Whitney p=0.5897 [ns]
   score_youtube:
-    Call2Go=1: mediana=0.1209
-    Call2Go=0: mediana=0.1555
-    Mann-Whitney p=0.5881 [ns]
+    Call2Go=1: mediana=0.1724
+    Call2Go=0: mediana=0.1775
+    Mann-Whitney p=0.8756 [ns]
   presence_count_spotify:
-    Mann-Whitney p=0.1490 [ns]
+    Mann-Whitney p=0.1838 [ns]
 
 --- CORRELACOES LAST.FM ---
-  score_spotify x listeners (n=26):
-    Pearson  r=0.241 [ns]
-    Spearman rho=0.344 [ns]
-  score_spotify x playcount (n=26):
-    Pearson  r=-0.042 [ns]
-    Spearman rho=0.073 [ns]
-  score_youtube x listeners (n=23):
-    Pearson  r=0.300 [ns]
-    Spearman rho=0.080 [ns]
-  score_youtube x playcount (n=23):
-    Pearson  r=0.026 [ns]
-    Spearman rho=-0.178 [ns]
-  score_spotify x score_youtube (n=23):
-    Pearson  r=0.686 [***]
-    Spearman rho=0.558 [**]
+  score_spotify x listeners (n=27):
+    Pearson  r=0.216 [ns]
+    Spearman rho=0.316 [ns]
+  score_spotify x playcount (n=27):
+    Pearson  r=-0.060 [ns]
+    Spearman rho=0.043 [ns]
+  score_youtube x listeners (n=24):
+    Pearson  r=0.232 [ns]
+    Spearman rho=0.113 [ns]
+  score_youtube x playcount (n=24):
+    Pearson  r=-0.006 [ns]
+    Spearman rho=-0.169 [ns]
+  score_spotify x score_youtube (n=24):
+    Pearson  r=0.655 [***]
+    Spearman rho=0.563 [**]
 
 ============================================================

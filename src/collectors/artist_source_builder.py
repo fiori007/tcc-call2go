@@ -514,13 +514,13 @@ def build_seed_from_chart_intersection(
             'followers': followers,
             'popularity': popularity,
             'genres': genres,
-            'source': 'Charts Q1 2026',
+            'source': 'Charts Janeiro-Abril 2026',
             'occurrence_count': total_chart_weeks,
             'youtube_channel_id': channel_id or '',
             'total_youtube_views': total_views,
             'extraction_date': today,
             'selection_criteria':
-                'Persistência temporal 3 meses × 2 plataformas',
+                'Persistência temporal 4 meses × 2 plataformas',
         })
 
     # Ordena por total de views no YouTube (descendente)

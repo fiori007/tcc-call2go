@@ -10,7 +10,7 @@ Metodologia:
   1. Spotify: extrai artistas de cada track (split por vírgula)
   2. YouTube: extrai artistas de cada track (split por ' & ', com proteção de duplas)
   3. Presença binária: artista apareceu ≥1 vez no mês = presente naquele mês
-  4. Filtro de persistência: artista presente em TODOS os 3 meses
+  4. Filtro de persistência: artista presente em TODOS os 4 meses
   5. Interseção cross-platform: artistas persistentes em AMBAS as plataformas
 
 Problema resolvido — Ambiguidade do '&' no YouTube:
@@ -414,7 +414,7 @@ def process_spotify_charts(input_dir=_SPOTIFY_CHARTS_DIR):
 
     Returns:
         tuple: (persistent, all_names, monthly_stats, source_labels)
-            persistent: artistas presentes nos 3 meses
+            persistent: artistas presentes nos 4 meses
             all_names: todos os nomes canônicos (para extração de duplas)
             monthly_stats: contagem de artistas únicos por mês
             source_labels: set de nomes de distribuidoras/selos dos charts
@@ -447,7 +447,7 @@ def process_spotify_charts(input_dir=_SPOTIFY_CHARTS_DIR):
             1 for d in artist_data.values() if m in d['months']
         )
 
-    # Filtro de persistência: presença nos 3 meses
+    # Filtro de persistência: presença nos 4 meses
     persistent = {
         key: data for key, data in artist_data.items()
         if _REQUIRED_MONTHS.issubset(data['months'])
@@ -457,7 +457,7 @@ def process_spotify_charts(input_dir=_SPOTIFY_CHARTS_DIR):
     for m in ['jan', 'fev', 'mar']:
         print(f"    {m.upper()}: {monthly_stats[m]}")
     print(f"  Total artistas únicos (todas as semanas): {len(artist_data)}")
-    print(f"  ✓ PERSISTENTES (presença nos 3 meses): {len(persistent)}")
+    print(f"  ✓ PERSISTENTES (presença nos 4 meses): {len(persistent)}")
 
     return persistent, all_names, monthly_stats, source_labels
 
@@ -514,7 +514,7 @@ def process_youtube_charts(input_dir=_YOUTUBE_CHARTS_DIR, known_duos=None):
     for m in ['jan', 'fev', 'mar']:
         print(f"    {m.upper()}: {monthly_stats[m]}")
     print(f"  Total artistas únicos (todas as semanas): {len(artist_data)}")
-    print(f"  ✓ PERSISTENTES (presença nos 3 meses): {len(persistent)}")
+    print(f"  ✓ PERSISTENTES (presença nos 4 meses): {len(persistent)}")
 
     return persistent, monthly_stats
 
@@ -620,7 +620,7 @@ def cross_platform_intersection(spotify_persistent, youtube_persistent,
 
     # Lista completa da interseção
     print(f"\n  Lista dos artistas consolidados "
-          f"(3 meses × 2 plataformas):")
+          f"(4 meses × 2 plataformas):")
     for i, entry in enumerate(intersection, 1):
         sp_name = entry['artist_name_spotify']
         yt_name = entry['artist_name_youtube']
@@ -697,7 +697,7 @@ def run_chart_processing(spotify_dir=_SPOTIFY_CHARTS_DIR,
     Pipeline completo de processamento de charts.
 
     Etapas:
-      A. Processa Spotify Charts → artistas persistentes (3 meses)
+      A. Processa Spotify Charts → artistas persistentes (4 meses)
       B. Extrai duplas conhecidas do Spotify (nomes com '&')
       C. Processa YouTube Charts → artistas persistentes (duo-aware)
       D. Calcula interseção cross-platform
@@ -709,8 +709,8 @@ def run_chart_processing(spotify_dir=_SPOTIFY_CHARTS_DIR,
     """
     print("=" * 60)
     print("  CHART PROCESSOR — Artistas Persistentes Cross-Platform")
-    print("  Período: Q1 2026 (Janeiro–Março)")
-    print("  Critério: presença binária em TODOS os 3 meses")
+    print("  Período: Janeiro-Abril 2026 (Janeiro–Março)")
+    print("  Critério: presença binária em TODOS os 4 meses")
     print("=" * 60)
 
     # ── Fase A: Spotify ──
@@ -755,11 +755,11 @@ def run_chart_processing(spotify_dir=_SPOTIFY_CHARTS_DIR,
     print(f"\n{'=' * 60}")
     print(f"  RESULTADO FINAL")
     print(f"{'=' * 60}")
-    print(f"  Spotify persistentes (3 meses): {len(spotify_persistent)}")
-    print(f"  YouTube persistentes (3 meses): {len(youtube_persistent)}")
+    print(f"  Spotify persistentes (4 meses): {len(spotify_persistent)}")
+    print(f"  YouTube persistentes (4 meses): {len(youtube_persistent)}")
     print(f"  Só Spotify: {len(sp_only)}")
     print(f"  Só YouTube: {len(yt_only)}")
-    print(f"\n  ★ ARTISTAS CONSOLIDADOS (3 meses × 2 plataformas, "
+    print(f"\n  ★ ARTISTAS CONSOLIDADOS (4 meses × 2 plataformas, "
           f"labels excluídas): {len(intersection)}")
     print(f"{'=' * 60}")
 
