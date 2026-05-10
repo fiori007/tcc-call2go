@@ -3,64 +3,76 @@ ANALISE DE CONFUNDIDOR -- Call2Go vs Popularidade SP
 ============================================================
 
 Pergunta: artistas ja populares no Spotify tendem a adotar
-Call2Go com mais frequencia (pratica REATIVA, nao PREDITIVA)?
+Call2Go com mais frequencia, gerando uma associacao espuria
+entre Call2Go e maior numero de views?
 
-Dataset: 26 artistas com metricas Spotify completas.
+Dataset: 27 artistas com metricas Spotify completas.
   has_any_call2go_or = 1: 12 artistas
   has_any_call2go_and = 1: 3 artistas
 
 ------------------------------------------------------------
 REGRESSAO LOGISTICA -- has_any_call2go_or ~ popularity + followers
 ------------------------------------------------------------
-                           Logit Regression Results                           
-==============================================================================
-Dep. Variable:             has_any_or   No. Observations:                   26
-Model:                          Logit   Df Residuals:                       23
-Method:                           MLE   Df Model:                            2
-Date:                Wed, 06 May 2026   Pseudo R-squ.:                 0.06794
-Time:                        18:50:57   Log-Likelihood:                -16.726
-converged:                       True   LL-Null:                       -17.945
-Covariance Type:            nonrobust   LLR p-value:                    0.2955
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-const          3.0302      5.363      0.565      0.572      -7.480      13.541
-popularity    -0.0371      0.072     -0.516      0.606      -0.178       0.104
-followers  -9.802e-08   1.08e-07     -0.905      0.366    -3.1e-07    1.14e-07
-==============================================================================
+======================================================================
+Logistic Regression Inference Report (sklearn-based)
+======================================================================
+  N observations              : 27
+  Convergiu                   : True
+  Log-likelihood (modelo)     : -17.4312
+  Log-likelihood (null)       : -18.5480
+  Pseudo-R² (McFadden)        : 0.0602
+  LLR statistic               : 2.2336
+  LLR df                      : 2
+  LLR p-value                 : 0.3273
 
-Odds Ratio (IC 95%):
-  const: OR=20.701810 IC95=[0.000564, 759639.213626]
-  popularity: OR=0.963587 IC95=[0.837057, 1.109244]
-  followers: OR=1.000000 IC95=[1.000000, 1.000000]
+  Coeficientes (Wald):
+  ------------------------------------------------------------------
+  variável                    coef        se       z         p
+  ------------------------------------------------------------------
+  (intercept)               0.0000    5.2237   0.000    1.0000
+  popularity                0.0028    0.0701   0.039    0.9685
+  followers                -0.0000    0.0000  -1.011    0.3121
 
-Leitura: OR>1 e IC nao cruzando 1 indica que aumento na variavel
-aumenta odds de adotar Call2Go OR. OR=1 = sem efeito.
+  Odds Ratios (IC 95%):
+  (intercept)           OR=1.0000 IC95=[0.0000, 27956.4053]
+  popularity            OR=1.0028 IC95=[0.8740, 1.1505]
+  followers             OR=1.0000 IC95=[1.0000, 1.0000]
+======================================================================
+
+Leitura: OR > 1 e IC 95% nao cruzando 1 indica que aumento na
+variavel aumenta as odds de adotar Call2Go. OR = 1 = sem efeito.
 
 ------------------------------------------------------------
 REGRESSAO LOGISTICA -- has_any_call2go_and ~ popularity + followers
 ------------------------------------------------------------
-                           Logit Regression Results                           
-==============================================================================
-Dep. Variable:            has_any_and   No. Observations:                   26
-Model:                          Logit   Df Residuals:                       23
-Method:                           MLE   Df Model:                            2
-Date:                Wed, 06 May 2026   Pseudo R-squ.:                  0.1590
-Time:                        18:50:57   Log-Likelihood:                -7.8195
-converged:                       True   LL-Null:                       -9.2983
-Covariance Type:            nonrobust   LLR p-value:                    0.2279
-==============================================================================
-                 coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------
-const          4.2440      7.237      0.586      0.558      -9.941      18.429
-popularity    -0.0729      0.103     -0.709      0.478      -0.274       0.129
-followers  -4.304e-07   5.05e-07     -0.852      0.394   -1.42e-06     5.6e-07
-==============================================================================
+======================================================================
+Logistic Regression Inference Report (sklearn-based)
+======================================================================
+  N observations              : 27
+  Convergiu                   : True
+  Log-likelihood (modelo)     : -8.0247
+  Log-likelihood (null)       : -9.4185
+  Pseudo-R² (McFadden)        : 0.1480
+  LLR statistic               : 2.7875
+  LLR df                      : 2
+  LLR p-value                 : 0.2481
 
-Odds Ratio (IC 95%):
-  const: OR=69.686243 IC95=[0.000048, 100801663.581245]
-  popularity: OR=0.929712 IC95=[0.760053, 1.137241]
-  followers: OR=1.000000 IC95=[0.999999, 1.000001]
+  Coeficientes (Wald):
+  ------------------------------------------------------------------
+  variável                    coef        se       z         p
+  ------------------------------------------------------------------
+  (intercept)              -0.0002    6.9535  -0.000    1.0000
+  popularity               -0.0136    0.0964  -0.141    0.8880
+  followers                -0.0000    0.0000  -1.020    0.3076
+
+  Odds Ratios (IC 95%):
+  (intercept)           OR=0.9998 IC95=[0.0000, 829327.5197]
+  popularity            OR=0.9865 IC95=[0.8167, 1.1916]
+  followers             OR=1.0000 IC95=[1.0000, 1.0000]
+======================================================================
+
+Leitura: OR > 1 e IC 95% nao cruzando 1 indica que aumento na
+variavel aumenta as odds de adotar Call2Go. OR = 1 = sem efeito.
 
 ------------------------------------------------------------
 ESTRATIFICACAO POR QUARTIL DE POPULARITY (H2 Mann-Whitney)
@@ -69,12 +81,15 @@ Quartil   n_with    n_without   U              p         Conclusao
 --------------------------------------------------------------------------------
 Q1        86        104         6784           0.0000    significativo            
 Q2        51        115         1007           1.0000    n.s.                     
-Q3        30        73          1166           0.3044    n.s.                     
+Q3        30        103         1685           0.2263    n.s.                     
 Q4        33        147         3010           0.0154    significativo            
 
 ------------------------------------------------------------
 INTERPRETACAO
 ------------------------------------------------------------
+Modelo logistico (LRT): p = 0.3273 > 0.05.
+Popularidade Spotify NAO prediz adocao de Call2Go.
+Hipotese de pratica reativa nao se sustenta em escala global.
+
 H2 SIGNIFICATIVA em quartis: ['Q1', 'Q4'].
-Achado nuancado: Call2Go pode ser efetivo em segmentos especificos
-de popularidade. Investigar se popularidade modera o efeito.
+Heterogeneidade do efeito por nivel de popularidade.

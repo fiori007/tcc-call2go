@@ -8,7 +8,7 @@ O Last.fm agrega audiencia REAL de todas as plataformas (scrobbles vem
 do Spotify, YouTube Music, Apple Music, Deezer, etc.), funcionando como
 ponte neutra entre YouTube e Spotify.
 
-Janela temporal: Q1 2026 (jan-mar). Metricas Last.fm sao cumulativas,
+Janela temporal: Janeiro-Abril 2026. Metricas Last.fm sao cumulativas,
 servindo como proxy de popularidade consolidada.
 
 Analises implementadas:
@@ -46,7 +46,7 @@ from src.analytics._universe import filter_videos_to_topk, load_topk_dataframe
 # ============================================================
 
 def _load_seed(path="data/seed/legacy_v1_artistas.csv"):
-    """Carrega base de artistas (referencia historica do seed Q1 2026).
+    """Carrega base de artistas (referencia historica do seed Janeiro-Abril 2026).
 
     Fase 18: ainda usado para compatibilidade descritiva. As analises
     estatisticas seguem o universo Top-K via filter_videos_to_topk().
@@ -176,7 +176,7 @@ def validate_three_way_intersection(df_seed, df_chart_artists, output_dir):
     count_3way = df_inter['in_lastfm_chart_br'].sum()
     total = len(df_inter)
 
-    print(f"\n  Seed (Spotify + YouTube Q1 2026): {total} artistas")
+    print(f"\n  Seed (Spotify + YouTube Janeiro-Abril 2026): {total} artistas")
     print(f"  Presentes no Last.fm Top 200 BR: {count_3way} "
           f"({count_3way/total*100:.1f}%)")
     print(f"  Ausentes do Last.fm Top 200 BR: {total - count_3way}")
@@ -917,7 +917,7 @@ def genre_analysis(df_profile, df_lastfm, output_dir):
                            fontsize=9)
         ax.set_ylabel('Taxa Media de Call2Go (%)', fontsize=10)
         ax.set_title('Call2Go Rate por Genero Musical\n'
-                     '(tags Last.fm, artistas Q1 2026 BR)',
+                     '(tags Last.fm, artistas Janeiro-Abril 2026 BR)',
                      fontsize=11, fontweight='bold')
 
         # Anotacoes com N
@@ -950,7 +950,7 @@ def generate_bridge_report(results, output_dir):
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write("=" * 60 + "\n")
         f.write("RELATORIO: LAST.FM BRIDGE — ANALISE CROSS-PLATFORM 3 FONTES\n")
-        f.write("Janela temporal: Q1 2026 (Janeiro-Marco)\n")
+        f.write("Janela temporal: Janeiro-Abril 2026\n")
         f.write("=" * 60 + "\n\n")
 
         # Intersecao
@@ -959,7 +959,7 @@ def generate_bridge_report(results, output_dir):
             total = len(inter)
             in_chart = inter['in_lastfm_chart_br'].sum()
             f.write("1. INTERSECAO 3 FONTES\n")
-            f.write(f"   Seed (Spotify+YouTube Q1 2026): {total} artistas\n")
+            f.write(f"   Seed (Spotify+YouTube Janeiro-Abril 2026): {total} artistas\n")
             f.write(
                 f"   No Last.fm Top 200 BR: {in_chart} ({in_chart/total*100:.1f}%)\n")
             f.write(f"   Last.fm per-artist coverage: 100% (todos encontrados)\n\n")
@@ -1072,7 +1072,7 @@ def run_lastfm_bridge_analysis():
     """Executa a analise completa Last.fm Bridge (3 fontes)."""
     print("\n" + "#" * 60)
     print("#    LAST.FM BRIDGE — ANALISE CROSS-PLATFORM 3 FONTES")
-    print("#    Janela: Q1 2026 (Janeiro-Marco)")
+    print("#    Janela: Janeiro-Abril 2026")
     print("#" * 60)
 
     # Carga de dados

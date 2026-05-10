@@ -1,5 +1,5 @@
 artist_name_seed,artist_normalized,found_as_primary_sp,found_as_primary_yt,found_as_featured_sp,found_as_featured_yt,in_fusion_table
-Aaron Modesto,aaron modesto,False,False,True,True,False
+Aaron Modesto,aaron modesto,True,True,False,False,True
 Boladin 211,boladin 211,False,False,True,True,False
 Bvga Beatz,bvga beatz,False,False,True,True,False
 DJ DAVI DOGDOG,dj davi dogdog,False,False,True,True,False
@@ -23,12 +23,12 @@ Júnior e Cézar,junior e cezar,True,True,False,False,True
 Léo Santana,leo santana,True,True,False,False,True
 MC GH Original,mc gh original,False,False,True,True,False
 MC GP,mc gp,True,True,False,False,True
-MC Leozinho ZS,mc leozinho zs,False,True,True,False,True
+MC Leozinho ZS,mc leozinho zs,True,True,False,False,True
 MC Meno K,mc meno k,True,True,False,False,True
 MC Menor ZL,mc menor zl,False,False,True,True,False
 MC RN do Capão,mc rn do capao,False,False,True,True,False
 MC Rick,mc rick,False,False,True,True,False
-MC Ryan SP,mc ryan sp,False,False,True,True,False
+MC Ryan SP,mc ryan sp,False,True,True,False,True
 MC Tuto,mc tuto,True,True,False,False,True
 MORADA,morada,True,True,False,False,True
 Mari Fernandez,mari fernandez,True,True,False,False,True
@@ -50,11 +50,11 @@ Melody,melody,False,False,True,True,False
 NATTAN,nattan,True,True,False,False,True
 NandaTsunami,nandatsunami,True,True,False,False,True
 Natanzinho Lima,natanzinho lima,True,True,False,False,True
-Orochi,orochi,False,True,False,False,True
+Orochi,orochi,False,True,True,False,True
 Oruam,oruam,True,True,False,False,True
 PEDRO SAMPAIO,pedro sampaio,True,True,False,False,True
 Panda,panda,True,True,False,False,True
-Racionais MC's,racionais mcs,False,True,False,False,True
+Racionais MC's,racionais mcs,True,True,False,False,True
 Simone Mendes,simone mendes,True,True,False,False,True
 Stick,stick,False,False,True,True,False
 Taylor Swift,taylor swift,True,True,False,False,True

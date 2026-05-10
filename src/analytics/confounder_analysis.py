@@ -1,44 +1,47 @@
-"""Analise de confundidor: Call2Go vs popularidade pre-existente.
+"""Analise de confundidor: Call2Go vs popularidade Spotify pre-existente.
 
 Pergunta de pesquisa secundaria:
-    Os resultados nao-significativos de H2/H3 (Call2Go vs views/popularity)
-    podem ser artefato de um confundidor: artistas ja populares no Spotify
-    talvez adotem Call2Go com mais frequencia (pratica REATIVA), em vez de
-    Call2Go gerar popularidade (pratica PREDITIVA).
+    O efeito observado em H2 (Call2Go associado a maiores views no YouTube)
+    pode ser artefato de um confundidor: artistas ja populares no Spotify
+    talvez adotem Call2Go com mais frequencia, e naturalmente ja teriam
+    mais views, independente da estrategia.
 
 Estrategia em 2 niveis:
-    1. Regressao logistica: has_any_call2go_or ~ popularity + followers
-       Mede se popularidade pre-existente prediz adocao de Call2Go.
-    2. Estratificacao: divide os 67 artistas em quartis de popularity e
-       roda H2 (Mann-Whitney views vs Call2Go) DENTRO de cada quartil.
-       Se H2 continua n.s. em todos os quartis -> resultado robusto.
-       Se H2 vira significativa em algum quartil -> nuance interessante.
-
-Os resultados originais de H2 (U=280705, p=0.872) e H3 (p=1.000) NAO sao
-alterados -- esta analise e complementar, para guiar a interpretacao.
+    1. Regressao logistica (sklearn): has_any_call2go_or ~ popularity + followers
+       Mede se a popularidade pre-existente prediz a adocao de Call2Go.
+       Inferencia (p-values via Wald, pseudo-R^2 McFadden, LRT, IC 95%) e
+       calculada manualmente sobre o LogisticRegression do sklearn -- veja
+       `_logistic_inference.py`.
+    2. Estratificacao: divide os artistas com dados em quartis de
+       popularidade Spotify e roda H2 (Mann-Whitney views vs Call2Go) DENTRO
+       de cada quartil. Heterogeneidade entre quartis indica que o efeito
+       depende do nivel de popularidade.
 """
 
 import os
 import sqlite3
+
 import pandas as pd
 import numpy as np
 from scipy import stats
-import statsmodels.api as sm
 
 from src.config import ALPHA_DEFAULT, VALIDATION_DIR
 from src.analytics._universe import filter_videos_to_topk
+from src.analytics._logistic_inference import (
+    fit_logistic_with_inference,
+    LogitInference,
+)
 
 
 _DB_PATH = "data/processed/call2go.db"
 _REPORT_PATH = VALIDATION_DIR / "confounder_analysis.txt"
 _CSV_PATH = VALIDATION_DIR / "confounder_analysis_strat.csv"
 
+_FEATURES = ['popularity', 'followers']
+
 
 def _load_artist_level_data():
-    """Agrega: para cada artista, has_any Call2Go e popularidade Spotify.
-
-    Fase 18: restringe ao universo Top-K do Rank Fusion antes de agregar.
-    """
+    """Para cada artista do Top-K, agrega has_any Call2Go e popularidade Spotify."""
     conn = sqlite3.connect(_DB_PATH)
 
     df_videos_all = pd.read_sql_query(
@@ -52,7 +55,7 @@ def _load_artist_level_data():
 
     conn.close()
 
-    # Fase 18: filtra para Top-K
+    # Restringe ao Top-K do Rank Fusion
     df_videos = filter_videos_to_topk(df_videos_all, artist_col='artist_name')
     print(f"  Videos apos filtro Top-K: {len(df_videos)}/{len(df_videos_all)}")
 
@@ -67,24 +70,22 @@ def _load_artist_level_data():
     return df, df_videos
 
 
-def _fit_logit(df, target_col):
-    """Ajusta logit Call2Go ~ popularity + followers. Retorna fit + odds + IC."""
-    X = df[['popularity', 'followers']].astype(float)
-    X = sm.add_constant(X)
-    y = df[target_col].astype(int)
+def _fit_logit(df: pd.DataFrame, target_col: str) -> LogitInference | None:
+    """Ajusta logit Call2Go ~ popularity + followers via sklearn + inferencia.
+
+    Retorna None se a variavel-resposta nao tem variabilidade (todos 0 ou 1).
+    """
+    X = df[_FEATURES].astype(float).values
+    y = df[target_col].astype(int).values
 
     if y.sum() == 0 or y.sum() == len(y):
-        return None, None, None  # sem variabilidade -> logit nao converge
+        return None
 
     try:
-        model = sm.Logit(y, X).fit(disp=0, maxiter=100)
-    except Exception:
-        return None, None, None
-
-    odds = np.exp(model.params)
-    ci = np.exp(model.conf_int())
-    ci.columns = ['ci_lower', 'ci_upper']
-    return model, odds, ci
+        return fit_logistic_with_inference(X, y, feature_names=_FEATURES)
+    except Exception as e:
+        print(f"  [AVISO] Logit falhou para {target_col}: {e}")
+        return None
 
 
 def _stratified_mann_whitney(df_artist, df_videos):
@@ -126,62 +127,49 @@ def _stratified_mann_whitney(df_artist, df_videos):
     return results
 
 
+def _write_logit_section(f, title: str, fit: LogitInference | None):
+    f.write("-" * 60 + "\n")
+    f.write(title + "\n")
+    f.write("-" * 60 + "\n")
+    if fit is None:
+        f.write("[AVISO] Logit nao convergiu (falta de variabilidade ou erro).\n\n")
+        return
+    f.write(fit.summary_text() + "\n\n")
+    f.write("Leitura: OR > 1 e IC 95% nao cruzando 1 indica que aumento na\n")
+    f.write("variavel aumenta as odds de adotar Call2Go. OR = 1 = sem efeito.\n\n")
+
+
 def run_confounder_analysis():
     print("Iniciando analise de confundidor (Call2Go vs popularidade SP)...")
 
     df_artist, df_videos = _load_artist_level_data()
     print(f"  Artistas com metricas completas: {len(df_artist)}")
 
-    # 1. Regressao logistica
-    model_or, odds_or, ci_or = _fit_logit(df_artist, 'has_any_or')
-    model_and, odds_and, ci_and = _fit_logit(df_artist, 'has_any_and')
-
-    # 2. Estratificacao
+    fit_or = _fit_logit(df_artist, 'has_any_or')
+    fit_and = _fit_logit(df_artist, 'has_any_and')
     strat = _stratified_mann_whitney(df_artist, df_videos)
 
-    # 3. Persiste CSV de estratificacao
     os.makedirs(VALIDATION_DIR, exist_ok=True)
     pd.DataFrame(strat).to_csv(_CSV_PATH, index=False)
 
-    # 4. Relatorio textual
     with open(_REPORT_PATH, 'w', encoding='utf-8') as f:
         f.write("=" * 60 + "\n")
         f.write("ANALISE DE CONFUNDIDOR -- Call2Go vs Popularidade SP\n")
         f.write("=" * 60 + "\n\n")
         f.write("Pergunta: artistas ja populares no Spotify tendem a adotar\n")
-        f.write("Call2Go com mais frequencia (pratica REATIVA, nao PREDITIVA)?\n\n")
+        f.write("Call2Go com mais frequencia, gerando uma associacao espuria\n")
+        f.write("entre Call2Go e maior numero de views?\n\n")
         f.write(f"Dataset: {len(df_artist)} artistas com metricas Spotify completas.\n")
         f.write(f"  has_any_call2go_or = 1: {int(df_artist['has_any_or'].sum())} artistas\n")
         f.write(f"  has_any_call2go_and = 1: {int(df_artist['has_any_and'].sum())} artistas\n\n")
 
-        f.write("-" * 60 + "\n")
-        f.write("REGRESSAO LOGISTICA -- has_any_call2go_or ~ popularity + followers\n")
-        f.write("-" * 60 + "\n")
-        if model_or is not None:
-            f.write(model_or.summary().as_text() + "\n\n")
-            f.write("Odds Ratio (IC 95%):\n")
-            for var in odds_or.index:
-                f.write(f"  {var}: OR={odds_or[var]:.6f} "
-                        f"IC95=[{ci_or.loc[var,'ci_lower']:.6f}, "
-                        f"{ci_or.loc[var,'ci_upper']:.6f}]\n")
-            f.write("\nLeitura: OR>1 e IC nao cruzando 1 indica que aumento na variavel\n")
-            f.write("aumenta odds de adotar Call2Go OR. OR=1 = sem efeito.\n\n")
-        else:
-            f.write("[AVISO] Logit nao convergiu (provavel falta de variabilidade).\n\n")
+        _write_logit_section(
+            f, "REGRESSAO LOGISTICA -- has_any_call2go_or ~ popularity + followers",
+            fit_or)
 
-        f.write("-" * 60 + "\n")
-        f.write("REGRESSAO LOGISTICA -- has_any_call2go_and ~ popularity + followers\n")
-        f.write("-" * 60 + "\n")
-        if model_and is not None:
-            f.write(model_and.summary().as_text() + "\n\n")
-            f.write("Odds Ratio (IC 95%):\n")
-            for var in odds_and.index:
-                f.write(f"  {var}: OR={odds_and[var]:.6f} "
-                        f"IC95=[{ci_and.loc[var,'ci_lower']:.6f}, "
-                        f"{ci_and.loc[var,'ci_upper']:.6f}]\n")
-            f.write("\n")
-        else:
-            f.write("[AVISO] Logit nao convergiu para AND.\n\n")
+        _write_logit_section(
+            f, "REGRESSAO LOGISTICA -- has_any_call2go_and ~ popularity + followers",
+            fit_and)
 
         f.write("-" * 60 + "\n")
         f.write("ESTRATIFICACAO POR QUARTIL DE POPULARITY (H2 Mann-Whitney)\n")
@@ -196,7 +184,6 @@ def run_confounder_analysis():
                     f"{u_str:<15}{p_str:<10}{r['note']:<25}\n")
         f.write("\n")
 
-        # Interpretacao final
         f.write("-" * 60 + "\n")
         f.write("INTERPRETACAO\n")
         f.write("-" * 60 + "\n")
@@ -204,23 +191,29 @@ def run_confounder_analysis():
         all_ns = valid and all(r['p'] >= ALPHA_DEFAULT for r in valid)
         any_sig = any(r['p'] is not None and r['p'] < ALPHA_DEFAULT for r in strat)
 
+        if fit_or is not None:
+            llr_p = fit_or.llr_p_value
+            if llr_p > ALPHA_DEFAULT:
+                f.write(f"Modelo logistico (LRT): p = {llr_p:.4f} > {ALPHA_DEFAULT}.\n")
+                f.write("Popularidade Spotify NAO prediz adocao de Call2Go.\n")
+                f.write("Hipotese de pratica reativa nao se sustenta em escala global.\n\n")
+            else:
+                f.write(f"Modelo logistico (LRT): p = {llr_p:.4f} < {ALPHA_DEFAULT}.\n")
+                f.write("Popularidade Spotify prediz adocao de Call2Go.\n")
+                f.write("Sugere pratica reativa: artistas populares adotam mais.\n\n")
+
         if all_ns:
-            f.write("H2 continua NAO-significativa em TODOS os quartis de popularidade.\n")
-            f.write("Resultado ROBUSTO: Call2Go nao gera mais views, independente do nivel\n")
-            f.write("de popularidade Spotify pre-existente. Confundidor nao explica o\n")
-            f.write("resultado nulo de H2 -- o efeito (ou ausencia dele) e consistente.\n")
+            f.write("H2 nao-significativa em TODOS os quartis: efeito uniforme/ausente.\n")
         elif any_sig:
             sig = [r['quartile'] for r in strat
                    if r['p'] is not None and r['p'] < ALPHA_DEFAULT]
             f.write(f"H2 SIGNIFICATIVA em quartis: {sig}.\n")
-            f.write("Achado nuancado: Call2Go pode ser efetivo em segmentos especificos\n")
-            f.write("de popularidade. Investigar se popularidade modera o efeito.\n")
+            f.write("Heterogeneidade do efeito por nivel de popularidade.\n")
         else:
             f.write("[AVISO] Nenhum quartil teve amostra suficiente para o teste.\n")
 
     print(f"[OK] Analise de confundidor salva em: {_REPORT_PATH}")
     print(f"[OK] Estratificacao em CSV: {_CSV_PATH}")
-    return df_artist
 
 
 if __name__ == "__main__":

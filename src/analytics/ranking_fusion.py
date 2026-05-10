@@ -1,8 +1,8 @@
 """
-ANALISE DE FUSAO DE RANKINGS -- Cross-Platform Q1 2026
+ANALISE DE FUSAO DE RANKINGS -- Cross-Platform Janeiro-Abril 2026
 
 Calcula score de fusao para artistas presentes nos charts semanais
-do Spotify e YouTube Brasil (Q1 2026: jan-mar, 13 semanas cada).
+do Spotify e YouTube Brasil (Janeiro-Abril 2026, 17 semanas cada).
 
 Score de fusao: soma de 1/rank para cada mes em que o artista aparece.
 Meses sem presenca contribuem 0 para o score.
@@ -178,7 +178,7 @@ def assign_month_label(week_date_str: str) -> str:
     Retorna abreviacao de 3 letras do mes para a semana.
 
     Usa calendar.month_abbr para abreviacoes em ingles independente do locale.
-    Nota Q1 2026: semana 2026-04-02 pertence a marco (ultima semana do Q1).
+    Nota Janeiro-Abril 2026: semana 2026-04-02 pertence a marco (ultima semana do Q1).
     """
     dt = datetime.strptime(week_date_str, '%Y-%m-%d')
     # Semana 2026-04-02 representa a ultima semana do Q1 (marco)
@@ -277,44 +277,46 @@ def compute_chart_entry_stats(weekly_charts: dict, platform: str) -> dict:
 # PADRAO DE PRESENCA TEMPORAL JAN -> MAR
 # ============================================================
 
-def classify_presence_pattern(rank_jan, rank_feb, rank_mar) -> str:
+def classify_presence_pattern(rank_jan, rank_feb, rank_mar, rank_apr=None) -> str:
     """
-    Classifica o padrao de presenca de um artista nos charts Q1 (Jan -> Mar).
+    Classifica o padrao de presenca de um artista nos charts Janeiro-Abril 2026.
 
     Taxonomia estrutural pura baseada unicamente na presenca/ausencia
-    em cada mes do trimestre. Nenhum threshold numerico e usado.
+    em cada mes da janela. Nenhum threshold numerico e usado.
     A magnitude da variacao de rank e representada em separado pela
-    variavel continua rank_delta (rank_jan - rank_mar).
+    variavel continua rank_delta (rank_jan - rank_apr).
 
     Categorias (6):
         'absent':       nenhum mes presente
         'single':       exatamente 1 mes presente
-        'persistent':   presente nos 3 meses (Jan + Fev + Mar)
-        'new':          Jan=ausente E Mar=presente (emergiu no Q1)
-        'exit':         Jan=presente E Mar=ausente (saiu no Q1)
-        'intermittent': Jan=presente E Fev=ausente E Mar=presente
+        'persistent':   presente nos 4 meses (Jan + Fev + Mar + Abr)
+        'new':          Jan=ausente E ultimo mes presente (emergiu na janela)
+        'exit':         Jan=presente E ultimo mes ausente (saiu na janela)
+        'intermittent': padrao alternado (com lacunas internas)
 
     Parametros:
-        rank_jan, rank_feb, rank_mar: int ou None (None = ausente no mes)
+        rank_jan, rank_feb, rank_mar, rank_apr: int ou None (None = ausente no mes)
     """
-    present_count = sum(
-        1 for r in [rank_jan, rank_feb, rank_mar] if r is not None)
+    months = [rank_jan, rank_feb, rank_mar, rank_apr]
+    present = [r is not None for r in months]
+    present_count = sum(present)
 
     if present_count == 0:
         return 'absent'
     if present_count == 1:
         return 'single'
-    if present_count == 3:
+    if present_count == 4:
         return 'persistent'
-    # Exatamente 2 meses presentes: identificar padrao estrutural
-    if rank_jan is None and rank_mar is not None:
+
+    first_present = present[0]
+    last_present = present[-1]
+
+    if not first_present and last_present:
         return 'new'
-    if rank_jan is not None and rank_mar is None:
+    if first_present and not last_present:
         return 'exit'
-    if rank_jan is not None and rank_feb is None and rank_mar is not None:
-        return 'intermittent'
-    # Fallback (Jan + Fev, sem Mar -- coberto por present_count==2 acima)
-    return 'single'
+    # Lacuna interna entre meses presentes
+    return 'intermittent'
 
 
 # ============================================================
@@ -378,7 +380,7 @@ def compute_fusion_score(monthly_df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ============================================================
-# TOP-K (Fase 18) -- subset analitico para visualizacoes
+# TOP-K  -- subset analitico para visualizacoes
 # ============================================================
 
 # Constantes do criterio Top-K (justificadas no relatorio gerado)
@@ -482,7 +484,7 @@ def _write_topk_report(df: pd.DataFrame, n_with_score: int, k: int):
         f.write("  Piso de 20 garante poder estatistico minimo (Mann-Whitney\n"
                 "  exige n >= 8 por grupo para detectar efeitos moderados).\n")
 
-    print(f"  Top-K (Fase 18): K={k} ({pct_score:.1f}% do score acumulado)")
+    print(f"  Top-K : K={k} ({pct_score:.1f}% do score acumulado)")
     print(f"  Relatorio: {report_path}")
 
 
@@ -493,7 +495,7 @@ def _write_topk_report(df: pd.DataFrame, n_with_score: int, k: int):
 def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     """
     Constroi tabela de fusao cross-platform para todos os artistas primarios
-    nos charts Spotify Top 200 e YouTube Top 100 Brasil (Q1 2026).
+    nos charts Spotify Top 200 e YouTube Top 100 Brasil (Janeiro-Abril 2026).
 
     Escopo: apenas artistas primarios (primeiro artista de cada faixa).
     Featurings e colaboracoes secundarias sao excluidos da tabela.
@@ -525,12 +527,12 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     print(f"  Semanas carregadas: Spotify={n_weeks_sp}, YouTube={n_weeks_yt}")
 
     # Fase 18: Normalizacao por NUMERO DE MESES, nao semanas.
-    # O periodo Q1 2026 cobre 3 meses (Jan/Fev/Mar). Score de cada
+    # O periodo Janeiro-Abril 2026 cobre 4 meses (Jan/Fev/Mar/Abr). Score de cada
     # artista e somado por mes (1/best_rank_mes), e dividido por
     # n_meses para garantir comparabilidade entre plataformas com
     # janelas iguais e robustez a futuras expansoes (ex: Q2 2026).
-    n_meses_sp = 3  # Jan, Fev, Mar
-    n_meses_yt = 3
+    n_meses_sp = 4  # Jan, Fev, Mar, Abr
+    n_meses_yt = 4
     print(f"  Meses (normalizacao Fase 18): Spotify={n_meses_sp}, YouTube={n_meses_yt}")
 
     print("\n--- MAPA DE ARTISTAS FEATURED ---")
@@ -590,10 +592,10 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     df_merged['artist_name_seed'] = df_merged['artist_normalized'].map(
         seed_norm_map)
 
-    # ---- Score normalizado por numero de MESES (Fase 18) ----
+    # ---- Score normalizado por numero de MESES  ----
     # Mudanca de paradigma vs Fase 2 (que usava n_semanas):
     # agora normalizamos por n_meses pois a agregacao primaria e mensal.
-    # n_meses = 3 fixo para Q1 2026; score_X_normalizado = score_X / 3.
+    # n_meses = 3 fixo para Janeiro-Abril 2026; score_X_normalizado = score_X / 3.
     df_merged['score_spotify_normalized'] = df_merged['score_spotify'] / n_meses_sp
     df_merged['score_youtube_normalized'] = df_merged['score_youtube'] / n_meses_yt
 
@@ -635,6 +637,7 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
                 _safe_rank(r.get('rank_Jan_sp')),
                 _safe_rank(r.get('rank_Feb_sp')),
                 _safe_rank(r.get('rank_Mar_sp')),
+                _safe_rank(r.get('rank_Apr_sp')),
             ), axis=1)
 
     if 'rank_Jan_yt' in df_merged.columns:
@@ -643,28 +646,29 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
                 _safe_rank(r.get('rank_Jan_yt')),
                 _safe_rank(r.get('rank_Feb_yt')),
                 _safe_rank(r.get('rank_Mar_yt')),
+                _safe_rank(r.get('rank_Apr_yt')),
             ), axis=1)
 
-    # ---- rank_delta: variavel continua de variacao Jan->Mar (Fase 4) ----
+    # ---- rank_delta: variavel continua de variacao Jan->Abr ----
     # rank_delta positivo = melhorou (numero menor); negativo = piorou.
-    # None quando Jan ou Mar ausentes (sem magnitude calculavel).
-    def _rank_delta(jan_val, mar_val):
-        """Retorna rank_jan - rank_mar (int) ou None se algum estiver ausente."""
+    # None quando Jan ou Abr ausentes (sem magnitude calculavel).
+    def _rank_delta(jan_val, last_val):
+        """Retorna rank_jan - rank_apr (int) ou None se algum estiver ausente."""
         rj = _safe_rank(jan_val)
-        rm = _safe_rank(mar_val)
+        rm = _safe_rank(last_val)
         if rj is None or rm is None:
             return None
         return rj - rm
 
-    if 'rank_Jan_sp' in df_merged.columns and 'rank_Mar_sp' in df_merged.columns:
+    if 'rank_Jan_sp' in df_merged.columns and 'rank_Apr_sp' in df_merged.columns:
         df_merged['rank_delta_spotify'] = df_merged.apply(
-            lambda r: _rank_delta(r.get('rank_Jan_sp'), r.get('rank_Mar_sp')),
+            lambda r: _rank_delta(r.get('rank_Jan_sp'), r.get('rank_Apr_sp')),
             axis=1,
         )
 
-    if 'rank_Jan_yt' in df_merged.columns and 'rank_Mar_yt' in df_merged.columns:
+    if 'rank_Jan_yt' in df_merged.columns and 'rank_Apr_yt' in df_merged.columns:
         df_merged['rank_delta_youtube'] = df_merged.apply(
-            lambda r: _rank_delta(r.get('rank_Jan_yt'), r.get('rank_Mar_yt')),
+            lambda r: _rank_delta(r.get('rank_Jan_yt'), r.get('rank_Apr_yt')),
             axis=1,
         )
 
@@ -712,7 +716,7 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
           f"{n_not_found} nao encontrados")
     print(f"  Diagnostico: data/validation/seed_matching_diagnostic.csv")
 
-    # ---- Top-K (Fase 18): universo analitico substitui in_dataset ----
+    # ---- Top-K : universo analitico substitui in_dataset ----
     # Decisao tecnica: analise estatistica usa o conjunto COMPLETO (sem corte)
     # para evitar vies de selecao. A flag `in_top_k` e gerada para uso em
     # tabelas/visualizacoes que precisam de cardinalidade reduzida.
@@ -734,7 +738,7 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
         f"\n  Total artistas primarios: {total} | In dataset (seed primario): {in_ds}"
         f" | In top-K (universo analitico): {in_topk}")
     print(
-        f"  Normalizacao: n_meses_sp={n_meses_sp}, n_meses_yt={n_meses_yt} (Fase 18)")
+        f"  Normalizacao: n_meses_sp={n_meses_sp}, n_meses_yt={n_meses_yt} ")
     if not sp_scores.empty:
         print(
             f"  Score Spotify (raw): min={sp_scores.min():.4f}, max={sp_scores.max():.4f}")
@@ -819,7 +823,7 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
             vmax=1,
         )
         ax.set_title(
-            f'Presenca Mensal -- Top 75 por Score Combinado ({platform} Q1 2026)')
+            f'Presenca Mensal -- Top 75 por Score Combinado ({platform} Janeiro-Abril 2026)')
         ax.set_xlabel('Mes')
         ax.set_ylabel('Artista')
         plt.tight_layout()
@@ -836,7 +840,7 @@ def plot_presence_heatmap(df_fusion: pd.DataFrame, output_dir: str):
 
 def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
     """
-    Gera line chart mostrando evolucao de rank no Spotify Q1 2026
+    Gera line chart mostrando evolucao de rank no Spotify Janeiro-Abril 2026
     para os top 25 artistas por score_combined com presenca >= 2 meses.
 
     Eixo Y invertido (posicao 1 no topo). Linhas coloridas por padrao
@@ -850,7 +854,7 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
     # Universo completo (nao restrito ao seed)
     df_all = df_fusion.dropna(subset=['score_combined']).copy()
 
-    sp_rank_cols = [c for c in ['rank_Jan_sp', 'rank_Feb_sp', 'rank_Mar_sp']
+    sp_rank_cols = [c for c in ['rank_Jan_sp', 'rank_Feb_sp', 'rank_Mar_sp', 'rank_Apr_sp']
                     if c in df_all.columns]
     if len(sp_rank_cols) < 2:
         print("[AVISO] Colunas de rank insuficientes para plot de evolucao")
@@ -871,7 +875,7 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
 
     # Cores por padrao de presenca (taxonomia estrutural, 6 categorias)
     pattern_colors = {
-        'persistent':   '#2ca02c',   # verde -- presente nos 3 meses
+        'persistent':   '#2ca02c',   # verde -- presente nos 4 meses
         'new':          '#9467bd',   # roxo  -- emergiu no Q1
         'exit':         '#d62728',   # vermelho -- saiu no Q1
         'intermittent': '#ff7f0e',   # laranja -- alternado
@@ -879,9 +883,9 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
         'absent':       '#c7c7c7',   # cinza claro -- ausente
     }
 
-    month_cols = ['rank_Jan_sp', 'rank_Feb_sp', 'rank_Mar_sp']
-    month_labels_x = ['Jan', 'Fev', 'Mar']
-    x_positions = [1, 2, 3]
+    month_cols = ['rank_Jan_sp', 'rank_Feb_sp', 'rank_Mar_sp', 'rank_Apr_sp']
+    month_labels_x = ['Jan', 'Fev', 'Mar', 'Abr']
+    x_positions = [1, 2, 3, 4]
 
     fig, ax = plt.subplots(figsize=(6, 8))
 
@@ -925,7 +929,7 @@ def plot_rank_evolution(df_fusion: pd.DataFrame, output_dir: str):
     ax.set_xlabel('Mes')
     ax.set_ylabel('Posicao no Chart (1 = melhor)')
     ax.set_title(
-        'Evolucao de Rank Spotify Q1 2026 -- Top 25 por Score Combinado')
+        'Evolucao de Rank Spotify Janeiro-Abril 2026 -- Top 25 por Score Combinado')
 
     # Legenda manual de padroes de presenca
     legend_elements = [
@@ -961,7 +965,7 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    # Restringe ao Top-K (Fase 18) -- universo analitico primario
+    # Restringe ao Top-K  -- universo analitico primario
     df_topk = df_fusion[df_fusion['in_top_k'] == True].copy()
 
     # Flag has_call2go por artista (qualquer video com has_call2go_or=1)
@@ -1155,7 +1159,7 @@ def analyze_lastfm_correlations(df_fusion: pd.DataFrame,
             ax=ax,
             linewidths=0.3,
         )
-        ax.set_title('Correlacao Spearman -- Fusao x Last.fm Q1 2026')
+        ax.set_title('Correlacao Spearman -- Fusao x Last.fm Janeiro-Abril 2026')
         plt.tight_layout()
         out_path = os.path.join(output_dir, 'fusion_lastfm_correlation.png')
         fig.savefig(out_path, dpi=300)
@@ -1347,7 +1351,7 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
 
     lines = []
     lines.append("=" * 60)
-    lines.append("RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Q1 2026")
+    lines.append("RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Janeiro-Abril 2026")
     lines.append("=" * 60)
     lines.append(f"Gerado em: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     lines.append("")
@@ -1516,7 +1520,7 @@ def generate_ranking_report(df_fusion, call2go_stats, corr_results, output_dir):
 def run_ranking_fusion_analysis():
     """Executa a analise completa de fusao de rankings cross-platform."""
     print("\n" + "#" * 60)
-    print("#    FUSAO DE RANKINGS -- ANALISE CROSS-PLATFORM Q1 2026")
+    print("#    FUSAO DE RANKINGS -- ANALISE CROSS-PLATFORM Janeiro-Abril 2026")
     print("#    Plataformas: Spotify + YouTube Brasil")
     print("#" * 60)
 

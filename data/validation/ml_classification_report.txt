@@ -5,9 +5,9 @@ Fase 19 (sklearn integration)
 
 DATASET
 ------------------------------------------------------------
-  Universo: Top-K do Rank Fusion (31 artistas)
-  Classe 1 (com Call2Go OR): 13
-  Classe 0 (sem Call2Go):    18
+  Universo: Top-K do Rank Fusion (38 artistas)
+  Classe 1 (com Call2Go OR): 14
+  Classe 0 (sem Call2Go):    24
 
 HIPERPARAMETROS
 ------------------------------------------------------------
@@ -17,9 +17,9 @@ HIPERPARAMETROS
 
 METRICAS DE VALIDACAO CRUZADA (5-fold estratificada)
 ------------------------------------------------------------
-  AUC ROC      : 0.578 +/- 0.255
-  Accuracy     : 0.548 +/- 0.066
-  ROC AUC (out-of-fold agregado): 0.496
+  AUC ROC      : 0.567 +/- 0.207
+  Accuracy     : 0.632 +/- 0.091
+  ROC AUC (out-of-fold agregado): 0.551
 
 LEITURA DA AUC ROC
 ------------------------------------------------------------
@@ -32,23 +32,23 @@ CLASSIFICATION REPORT (out-of-fold)
 ------------------------------------------------------------
               precision    recall  f1-score   support
 
-          no       0.62      0.56      0.59        18
-         yes       0.47      0.54      0.50        13
+          no       0.68      0.79      0.73        24
+         yes       0.50      0.36      0.42        14
 
-    accuracy                           0.55        31
-   macro avg       0.55      0.55      0.54        31
-weighted avg       0.56      0.55      0.55        31
+    accuracy                           0.63        38
+   macro avg       0.59      0.57      0.57        38
+weighted avg       0.61      0.63      0.62        38
 
 CONFUSION MATRIX (out-of-fold)
 ------------------------------------------------------------
                   pred=0   pred=1
-  real=0 (sem)        10        8
-  real=1 (com)         6        7
+  real=0 (sem)        19        5
+  real=1 (com)         9        5
 
 FEATURE IMPORTANCE (modelo treinado em todo o dataset)
 ------------------------------------------------------------
-  score_combined                      0.3314
-  score_spotify_normalized            0.2679
-  score_youtube_normalized            0.2661
-  presence_count_youtube              0.0736
-  presence_count_spotify              0.0609
+  score_spotify_normalized            0.2782
+  score_youtube_normalized            0.2695
+  score_combined                      0.2641
+  presence_count_youtube              0.1054
+  presence_count_spotify              0.0827

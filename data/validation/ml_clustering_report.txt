@@ -16,13 +16,13 @@ FEATURES USADAS
 BUSCA DE K (silhouette_score, k in [2,6])
 ------------------------------------------------------------
     k    silhouette       inertia
-    6        0.4838       59.3837
-    3        0.4561      124.4375
-    5        0.4325       78.4911
-    4        0.4169       98.9752
-    2        0.3428      216.6825
+    6        0.4267       82.9530
+    5        0.4195       99.5633
+    3        0.4098      163.2912
+    4        0.4022      128.6583
+    2        0.3176      270.0176
 
-  K otimo: 6 (silhouette = 0.4838)
+  K otimo: 6 (silhouette = 0.4267)
 
 INTERPRETACAO DO SILHOUETTE
 ------------------------------------------------------------
@@ -34,33 +34,33 @@ INTERPRETACAO DO SILHOUETTE
 
 CLUSTERS RESULTANTES
 ------------------------------------------------------------
-  Total artistas: 46
-  Cluster 0: 8 artistas
+  Total artistas: 56
+  Cluster 0: 13 artistas
   Cluster 1: 12 artistas
-  Cluster 2: 9 artistas
-  Cluster 3: 2 artistas
-  Cluster 4: 8 artistas
-  Cluster 5: 7 artistas
+  Cluster 2: 6 artistas
+  Cluster 3: 12 artistas
+  Cluster 4: 9 artistas
+  Cluster 5: 4 artistas
 
 MEDIANAS POR CLUSTER
 ------------------------------------------------------------
-              rank_Jan_sp         rank_Feb_sp         rank_Mar_sp         rank_Jan_yt         rank_Feb_yt         rank_Mar_yt         score_combined        has_any_call2go_or       
-                   median    mean      median    mean      median    mean      median    mean      median    mean      median    mean         median   mean             median   mean
-cluster_label                                                                                                                                                                        
-0                     6.5  13.500         6.0   7.250         9.5  12.625         9.0  11.750         6.5   8.000         8.0    9.25          0.366  0.415                0.5  0.500
-1                    90.5  81.750        80.0  80.000        59.0  59.000        21.0  21.000        19.5  20.083        22.5   20.25          0.054  0.061                0.0  0.250
-2                    67.0  63.600        30.0  28.625        32.0  31.778        59.0  68.000        34.5  34.750        29.5   36.25          0.050  0.100                1.0  0.556
-3                     1.5   1.500         1.0   1.000         2.5   2.500         1.0   1.000         2.0   2.000         2.5    2.50          1.556  1.556                0.0  0.000
-4                    21.0  20.000        23.0  19.875        18.5  24.875         NaN     NaN         NaN     NaN       100.0  100.00          0.050  0.093                0.5  0.500
-5                    19.0  21.429        18.0  30.286        29.0  34.167        37.0  36.143        41.0  45.143        79.0   78.00          0.079  0.073                0.0  0.286
+              rank_Jan_sp       rank_Feb_sp       rank_Mar_sp       rank_Jan_yt       rank_Feb_yt       rank_Mar_yt        score_combined      has_any_call2go_or     
+                   median  mean      median  mean      median  mean      median  mean      median  mean      median   mean         median mean             median mean
+cluster_label                                                                                                                                                         
+0                   20.50 20.83       24.00 22.39       25.00 25.92       52.00 52.00       56.00 56.00      100.00 100.00           0.05 0.09               0.00 0.39
+1                   90.50 81.75       80.00 80.00       59.00 59.00       21.00 21.00       19.50 20.08       22.50  20.25           0.05 0.06               0.00 0.25
+2                    4.50  8.50        6.50  8.17       10.50 15.50        9.00  9.33        8.00  9.83       11.00  11.83           0.33 0.31               1.00 0.67
+3                   48.00 46.67       23.00 26.25       32.50 36.17       56.00 50.22       38.00 35.08       62.00  54.18           0.06 0.07               0.50 0.50
+4                   68.00 68.33       78.00 71.67       41.50 42.00       91.00 91.00       71.00 72.00       18.50  28.50           0.04 0.09               0.00 0.11
+5                    5.00 15.00        2.00  2.75        2.50  3.25        2.00 10.00        2.50  2.25        1.50   2.00           1.07 1.04               0.00 0.00
 
 DISTRIBUICAO DE CALL2GO POR CLUSTER
 ------------------------------------------------------------
 has_any_call2go_or  0  1
 cluster_label           
-0                   4  4
+0                   8  5
 1                   9  3
-2                   4  5
-3                   2  0
-4                   4  4
-5                   5  2
+2                   2  4
+3                   6  6
+4                   8  1
+5                   4  0

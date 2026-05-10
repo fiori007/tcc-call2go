@@ -4,23 +4,23 @@ DECISAO DE TOP-K -- Fase 18 (Substituicao por Rank Fusion)
 
 CRITERIO
 ------------------------------------------------------------
-  Universo total de artistas primarios: 228
-  Artistas com score_combined valido:   228
-  Percentil aplicado:                   20% (Top 46)
+  Universo total de artistas primarios: 276
+  Artistas com score_combined valido:   276
+  Percentil aplicado:                   20% (Top 56)
   Piso minimo (n para Mann-Whitney):    20
-  K final (max(20, ceil(N * 0.20))):    46
+  K final (max(20, ceil(N * 0.20))):    56
 
 COBERTURA DE SCORE
 ------------------------------------------------------------
-  Score total acumulado:        11.4581
-  Score do Top-46 acumulado:   9.3171
-  Percentual coberto:           81.3%
+  Score total acumulado:        11.4441
+  Score do Top-56 acumulado:   9.4887
+  Percentual coberto:           82.9%
 
 RELACAO COM O SEED HISTORICO (in_dataset)
 ------------------------------------------------------------
-  Artistas seed em fusion table: 37
-  Artistas seed dentro do Top-K: 26
-  Cobertura do seed pelo Top-K:  70.3%
+  Artistas seed em fusion table: 39
+  Artistas seed dentro do Top-K: 27
+  Cobertura do seed pelo Top-K:  69.2%
 
 JUSTIFICATIVA METODOLOGICA
 ------------------------------------------------------------
