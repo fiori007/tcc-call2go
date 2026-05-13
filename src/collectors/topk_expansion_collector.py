@@ -1,4 +1,4 @@
-"""Coletor de expansao para os artistas Top-K sem videos coletados (Fase 19).
+"""Coletor complementar para artistas Top-K sem videos coletados.
 
 Identifica artistas que estao no Top-K do Rank Fusion mas nao tem videos no
 youtube_call2go_flagged.csv (porque a v1 nao os incluia no seed). Para cada
@@ -177,7 +177,7 @@ def _append_jsonl(path: str, records: list):
 def collect_topk_expansion():
     """Roda a coleta dos artistas Top-K faltantes."""
     print("=" * 60)
-    print("TOP-K EXPANSION COLLECTOR -- Fase 19")
+    print("TOP-K EXPANSION COLLECTOR")
     print("=" * 60)
 
     missing = _identify_missing_topk_artists()

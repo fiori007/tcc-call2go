@@ -1,5 +1,5 @@
 ============================================================
-DECISAO DE TOP-K -- Fase 18 (Substituicao por Rank Fusion)
+DECISAO DE TOP-K -- Universo via Reciprocal Rank Fusion
 ============================================================
 
 CRITERIO

@@ -1,4 +1,4 @@
-"""Reducao dimensional PCA dos artistas Top-K (Fase 19, sklearn).
+"""Reducao dimensional PCA dos artistas Top-K (scikit-learn).
 
 Projeta os 46 artistas em um plano 2D baseado em similaridade multidimensional
 (score, popularidade, presenca, last.fm). Pontos coloridos por has_call2go
@@ -127,7 +127,7 @@ def _write_report(df: pd.DataFrame, result: dict):
     with open(_REPORT_PATH, 'w', encoding='utf-8') as f:
         f.write("=" * 60 + "\n")
         f.write("PCA 2D -- Artistas Top-K (sklearn)\n")
-        f.write("Fase 19 -- reducao dimensional\n")
+        f.write("Reducao dimensional 2D para visualizacao\n")
         f.write("=" * 60 + "\n\n")
 
         f.write("DATASET\n")

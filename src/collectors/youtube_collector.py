@@ -6,6 +6,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from dotenv import load_dotenv
 
+from src.config import MAX_VIDEOS_PER_ARTIST, MAX_SCAN_VIDEOS
+
 # Carrega as chaves do arquivo .env
 load_dotenv()
 
@@ -61,7 +63,7 @@ def get_channel_about(youtube, channel_id):
     }
 
 
-def get_channel_videos(youtube, channel_id, max_results=20):
+def get_channel_videos(youtube, channel_id, max_results=MAX_VIDEOS_PER_ARTIST):
     """
     Busca os vídeos MAIS VISUALIZADOS do canal.
 
@@ -81,7 +83,7 @@ def get_channel_videos(youtube, channel_id, max_results=20):
     uploads_playlist = 'UU' + channel_id[2:]
     video_ids = []
     next_page_token = None
-    max_scan = 200  # Escaneia até 200 vídeos para encontrar os top N
+    max_scan = MAX_SCAN_VIDEOS  # Escaneia ate N videos para encontrar os top max_results
 
     while len(video_ids) < max_scan:
         try:

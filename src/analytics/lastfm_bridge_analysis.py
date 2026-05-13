@@ -30,7 +30,6 @@ import matplotlib.pyplot as plt
 import os
 import re
 import glob
-import unicodedata
 import pandas as pd
 import numpy as np
 from scipy import stats
@@ -48,7 +47,7 @@ from src.analytics._universe import filter_videos_to_topk, load_topk_dataframe
 def _load_seed(path="data/seed/legacy_v1_artistas.csv"):
     """Carrega base de artistas (referencia historica do seed Janeiro-Abril 2026).
 
-    Fase 18: ainda usado para compatibilidade descritiva. As analises
+    Usado para compatibilidade descritiva. As analises
     estatisticas seguem o universo Top-K via filter_videos_to_topk().
     """
     return pd.read_csv(path)
@@ -59,7 +58,7 @@ def _load_youtube_flagged(path="data/processed/youtube_call2go_flagged.csv"):
     df = pd.read_csv(path)
     for col in ['view_count', 'like_count', 'comment_count']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
-    # Fase 18: restringe ao Top-K do Rank Fusion
+    # Restringe ao Top-K do Rank Fusion
     return filter_videos_to_topk(df, artist_col='artist_name')
 
 
@@ -112,19 +111,7 @@ def _load_lastfm_chart_tracks(data_dir="data/raw"):
     return pd.read_csv(files[-1])
 
 
-def _normalize(name):
-    """Normaliza nome para matching: lowercase, sem acentos, sem pontuacao."""
-    if not isinstance(name, str):
-        return ''
-    name = name.lower().strip()
-    # Remove acentos
-    name = unicodedata.normalize('NFD', name)
-    name = ''.join(c for c in name if unicodedata.category(c) != 'Mn')
-    # Remove pontuacao e caracteres especiais
-    name = re.sub(r'[^\w\s]', '', name)
-    # Normaliza espacos
-    name = re.sub(r'\s+', ' ', name).strip()
-    return name
+from src.helpers.normalization import normalize_name as _normalize
 
 
 # ============================================================

@@ -16,7 +16,7 @@ def run_hypothesis_test():
     df_all = pd.read_sql_query(query, conn)
     conn.close()
 
-    # Fase 18: restringe ao universo Top-K do Rank Fusion (substitui seed antigo)
+    # Restringe ao universo Top-K do Rank Fusion
     summary = topk_summary()
     print(f"  Universo Rank Fusion: {summary['total']} artistas total | "
           f"Top-K: {summary['in_top_k']}")

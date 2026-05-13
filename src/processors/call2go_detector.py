@@ -2,7 +2,7 @@
 
 Instrumento de mensuracao do TCC -- nao e o objeto de estudo.
 
-Versao 2 (Fase 18, 02/05/2026): adiciona R6/R7/R8 para reduzir FN e
+Detector multicamada com regras R1-R8 e heuristica strict para reduzir FN e
 recalibra confianca de videos auto-gerados (OAC) para reduzir FP.
 - R6: deep links Spotify (spotify:artist:..., spotify:track:...)
 - R7: agregadores com referencia a Spotify (linktr.ee, lnk.bio,
@@ -340,7 +340,7 @@ def process_videos():
             is_oac = bool(scraped_data.get(channel_id, {}).get(
                 'is_auto_generated_channel', False))
 
-            # Heuristica de confianca rebaixada (Fase 18, 02/05/2026):
+            # Heuristica de confianca rebaixada (R8 strict):
             # Videos auto-gerados pelo YouTube tem descricao da distribuidora
             # (nao do artista) -- copia-e-cola padronizado de "ouca no Spotify".
             # Isso INFLA Call2Go sem refletir estrategia ativa do artista.

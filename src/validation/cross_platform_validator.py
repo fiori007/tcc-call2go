@@ -37,7 +37,7 @@ def load_youtube_data(flagged_file="data/processed/youtube_call2go_flagged.csv",
                       raw_file="data/raw/youtube_videos_raw.jsonl"):
     """Carrega dados do YouTube (flagged + raw para descrições).
 
-    Fase 18: filtra para o universo Top-K do Rank Fusion.
+    Filtra para o universo Top-K do Rank Fusion.
     """
     if not os.path.exists(flagged_file):
         print(f"[ERRO] Arquivo não encontrado: {flagged_file}")
@@ -50,7 +50,7 @@ def load_youtube_data(flagged_file="data/processed/youtube_call2go_flagged.csv",
     for col in ['view_count', 'like_count', 'comment_count']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
 
-    # Fase 18: restringe ao Top-K
+    # Restringe ao Top-K
     df = filter_videos_to_topk(df, artist_col='artist_name')
     return df
 
