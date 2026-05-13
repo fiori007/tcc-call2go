@@ -1,6 +1,6 @@
 ============================================================
 ML CLASSIFICATION -- Random Forest predizendo Call2Go
-Fase 19 (sklearn integration)
+Random Forest (scikit-learn) -- 5-fold stratified CV
 ============================================================
 
 DATASET

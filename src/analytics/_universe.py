@@ -1,9 +1,7 @@
 """Helper compartilhado: define o universo analitico (Top-K do Rank Fusion).
 
-Fase 18 (substituicao por Rank Fusion). A logica antiga de filtrar pelos
-67 artistas seed (in_dataset) foi abandonada. Todos os modulos analiticos
-devem consumir este helper para obter o conjunto de artistas que entram
-nas analises.
+Todos os modulos analiticos consomem este helper para obter o conjunto
+de artistas que entram nas analises.
 
 Uso tipico:
     from src.analytics._universe import filter_videos_to_topk
@@ -16,28 +14,13 @@ Ou:
 """
 
 import os
-import re
-import unicodedata
-from typing import Optional
 
 import pandas as pd
 
+from src.helpers.normalization import normalize_name as _normalize_name
+
 
 _RANKING_FUSION_PATH = "data/processed/ranking_fusion_scores.csv"
-
-
-def _normalize_name(name: str) -> str:
-    """Normaliza nome de artista para matching (mesma logica de ranking_fusion).
-
-    NFKD lowercase, remove acentos e pontuacao, colapsa espacos.
-    """
-    if not isinstance(name, str):
-        return ""
-    norm = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode("ascii")
-    norm = norm.lower()
-    norm = re.sub(r"[^\w\s]", " ", norm)
-    norm = re.sub(r"\s+", " ", norm).strip()
-    return norm
 
 
 def load_topk_artists(path: str = _RANKING_FUSION_PATH) -> set:

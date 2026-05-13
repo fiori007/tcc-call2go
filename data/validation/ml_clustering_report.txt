@@ -1,6 +1,6 @@
 ============================================================
 ML CLUSTERING -- KMeans + silhouette (sklearn)
-Fase 19 -- agrupamento comportamental nao-supervisionado
+Agrupamento comportamental nao-supervisionado
 ============================================================
 
 FEATURES USADAS

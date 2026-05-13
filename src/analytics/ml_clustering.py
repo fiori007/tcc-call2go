@@ -1,4 +1,4 @@
-"""Clustering nao-supervisionado de artistas (Fase 19, sklearn).
+"""Clustering nao-supervisionado de artistas (KMeans + silhouette, scikit-learn).
 
 Aplica KMeans sobre vetores comportamentais dos artistas Top-K, descobrindo
 agrupamentos automaticos que substituem (ou complementam) a taxonomia
@@ -44,8 +44,8 @@ _FEATURES = [
     'score_combined',
 ]
 
-# Faixa de K a testar
-_K_RANGE = list(range(2, 7))
+# Faixa de K a testar (centralizada em src/config.py)
+from src.config import ML_K_RANGE as _K_RANGE
 
 
 def _prepare_features(df: pd.DataFrame) -> tuple:
@@ -130,7 +130,7 @@ def _write_report(df: pd.DataFrame, k_search: dict, summary, counts):
     with open(_REPORT_PATH, 'w', encoding='utf-8') as f:
         f.write("=" * 60 + "\n")
         f.write("ML CLUSTERING -- KMeans + silhouette (sklearn)\n")
-        f.write("Fase 19 -- agrupamento comportamental nao-supervisionado\n")
+        f.write("Agrupamento comportamental nao-supervisionado\n")
         f.write("=" * 60 + "\n\n")
 
         f.write("FEATURES USADAS\n")

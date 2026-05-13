@@ -28,7 +28,6 @@ import matplotlib.pyplot as plt
 import os
 import re
 import glob
-import unicodedata
 import calendar
 import pandas as pd
 import numpy as np
@@ -37,19 +36,7 @@ from scipy import stats
 import matplotlib
 matplotlib.use('Agg')
 
-
-# ============================================================
-# NORMALIZACAO DE NOMES
-# ============================================================
-
-def _normalize_name(name: str) -> str:
-    """Normaliza nome para matching: minusculo, sem acentos, sem pontuacao."""
-    name = str(name).lower().strip()
-    name = unicodedata.normalize('NFKD', name)
-    name = ''.join(c for c in name if not unicodedata.combining(c))
-    name = re.sub(r'[^a-z0-9 ]', '', name)
-    name = re.sub(r'\s+', ' ', name).strip()
-    return name
+from src.helpers.normalization import normalize_name as _normalize_name
 
 
 # ============================================================
@@ -383,9 +370,9 @@ def compute_fusion_score(monthly_df: pd.DataFrame) -> pd.DataFrame:
 # TOP-K  -- subset analitico para visualizacoes
 # ============================================================
 
-# Constantes do criterio Top-K (justificadas no relatorio gerado)
-_TOP_K_PERCENTILE = 0.20  # Top-20% por score combinado
-_TOP_K_FALLBACK = 100      # mesmo que percentil falhe, usa 100 fixo
+# Constantes do criterio Top-K (centralizadas em src/config.py)
+from src.config import TOP_K_PERCENTILE as _TOP_K_PERCENTILE
+from src.config import TOP_K_FLOOR as _TOP_K_FLOOR
 
 
 def _compute_top_k(df: pd.DataFrame) -> pd.DataFrame:
@@ -412,7 +399,7 @@ def _compute_top_k(df: pd.DataFrame) -> pd.DataFrame:
         df['in_top_k'] = False
         return df
 
-    k = max(20, math.ceil(n_with_score * _TOP_K_PERCENTILE))
+    k = max(_TOP_K_FLOOR, math.ceil(n_with_score * _TOP_K_PERCENTILE))
     k = min(k, n_with_score)  # nao excede o universo
 
     # Marca Top-K via global_rank_combined (1-indexed)
@@ -445,7 +432,7 @@ def _write_topk_report(df: pd.DataFrame, n_with_score: int, k: int):
 
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write("=" * 60 + "\n")
-        f.write("DECISAO DE TOP-K -- Fase 18 (Substituicao por Rank Fusion)\n")
+        f.write("DECISAO DE TOP-K -- Universo via Reciprocal Rank Fusion\n")
         f.write("=" * 60 + "\n\n")
 
         f.write("CRITERIO\n")
@@ -526,14 +513,14 @@ def build_fusion_table(artists_csv: str) -> pd.DataFrame:
     n_weeks_yt = len(yt_charts)
     print(f"  Semanas carregadas: Spotify={n_weeks_sp}, YouTube={n_weeks_yt}")
 
-    # Fase 18: Normalizacao por NUMERO DE MESES, nao semanas.
+    # Normalizacao por NUMERO DE MESES, nao semanas.
     # O periodo Janeiro-Abril 2026 cobre 4 meses (Jan/Fev/Mar/Abr). Score de cada
     # artista e somado por mes (1/best_rank_mes), e dividido por
     # n_meses para garantir comparabilidade entre plataformas com
     # janelas iguais e robustez a futuras expansoes (ex: Q2 2026).
     n_meses_sp = 4  # Jan, Fev, Mar, Abr
     n_meses_yt = 4
-    print(f"  Meses (normalizacao Fase 18): Spotify={n_meses_sp}, YouTube={n_meses_yt}")
+    print(f"  Meses (normalizacao): Spotify={n_meses_sp}, YouTube={n_meses_yt}")
 
     print("\n--- MAPA DE ARTISTAS FEATURED ---")
     featured_map = _build_featured_map(sp_charts, yt_charts)
@@ -957,7 +944,7 @@ def compare_call2go_groups(df_fusion: pd.DataFrame,
     """
     Compara scores de fusao entre artistas com e sem Call2Go.
 
-    Fase 18: universo passa a ser o Top-K do Rank Fusion (in_top_k == True),
+    Universo analitico: Top-K do Rank Fusion (in_top_k == True),
     nao mais o seed historico (in_dataset). has_call2go e disponivel apenas
     para artistas que tenham videos coletados (subset). NaN onde nao ha dado.
 
@@ -1086,14 +1073,14 @@ def analyze_lastfm_correlations(df_fusion: pd.DataFrame,
     Calcula correlacoes (Pearson + Spearman) entre scores de fusao
     e metricas do Last.fm (listeners, playcount).
 
-    Fase 18: restringe ao Top-K do Rank Fusion (in_top_k) em vez do seed
+    Restringe ao Top-K do Rank Fusion (in_top_k) em vez do seed
     historico. Last.fm continua sendo merge por nome -- artistas sem dado
     Last.fm sao excluidos da analise.
     Salva heatmap da matriz Spearman em fusion_lastfm_correlation.png.
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    # Fase 18: Top-K substitui o seed como universo analitico
+    # Top-K e o universo analitico primario
     df_ds = df_fusion[df_fusion['in_top_k'] == True].copy()
     df_ds['artist_norm_seed'] = df_ds['artist_normalized']
 
@@ -1210,7 +1197,7 @@ def temporal_lag_analysis(df_fusion: pd.DataFrame,
         print("[AVISO] Datas Spotify nao disponiveis, pulando analise temporal.")
         return None
 
-    # Fase 18: Top-K substitui o seed
+    # Top-K e o universo analitico primario
     df_ds = df_fusion[df_fusion['in_top_k'] == True].copy()
     # artist_name_seed pode ser NaN para Top-K artistas que nao estavam no seed
     # original; nesse caso usamos artist_normalized como fallback de identificacao

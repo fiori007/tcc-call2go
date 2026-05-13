@@ -1,6 +1,6 @@
 ============================================================
 PCA 2D -- Artistas Top-K (sklearn)
-Fase 19 -- reducao dimensional
+Reducao dimensional 2D para visualizacao
 ============================================================
 
 DATASET

@@ -5,9 +5,9 @@ Responde a pergunta do orientador: a atividade no YouTube (publicacao de
 videos + uso de Call2Go) antecede a entrada dos artistas no chart Spotify,
 ou e o contrario?
 
-Diferente de temporal_lag_analysis() (que usa sp_first_release_date de apenas
-6 artistas), este modulo usa first_chart_week_spotify (entrada no chart BR Q1
-2026) e cobre todos os 39 artistas seed encontrados nos charts.
+Diferente de temporal_lag_analysis() (que usa sp_first_release_date), este
+modulo usa first_chart_week_spotify (entrada no chart BR Janeiro-Abril 2026)
+e cobre os artistas Top-K com presenca nos charts.
 
 Analises realizadas:
   A. Defasagem (lag) YouTube activity -> Spotify chart entry
@@ -71,14 +71,7 @@ WINDOW_LABELS = ["-90:-60", "-60:-30", "-30:0", "0:+30"]
 #  Normaliza nome do artista (para match entre tabelas)               #
 # ------------------------------------------------------------------ #
 
-def _normalize(name):
-    import unicodedata
-    import re
-    if not isinstance(name, str):
-        return ''
-    nfkd = unicodedata.normalize('NFKD', name.lower())
-    ascii_str = nfkd.encode('ascii', 'ignore').decode('ascii')
-    return re.sub(r'[^a-z0-9\s]', '', ascii_str).strip()
+from src.helpers.normalization import normalize_name as _normalize
 
 
 # ------------------------------------------------------------------ #
@@ -107,7 +100,7 @@ def run_chart_temporal_analysis():
     df_fusion = pd.read_csv(FUSION_CSV)
     df_yt = pd.read_csv(FLAGGED_CSV)
 
-    # Fase 18: filtra Top-K do Rank Fusion (substitui in_dataset)
+    # Filtra para o universo Top-K do Rank Fusion
     seed_artists = df_fusion[
         (df_fusion['in_top_k'] == True) &
         (df_fusion['first_chart_week_spotify'].notna())

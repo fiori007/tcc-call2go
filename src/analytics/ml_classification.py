@@ -1,4 +1,4 @@
-"""Classificador supervisionado para predizer adocao de Call2Go (Fase 19).
+"""Classificador supervisionado para predizer adocao de Call2Go.
 
 Usa Random Forest sobre features cross-platform (score, popularity, followers,
 listeners, scrobbles, presence_count) para responder:
@@ -6,9 +6,10 @@ listeners, scrobbles, presence_count) para responder:
     "Dadas as caracteristicas de um artista, da para PREDIZER se ele usa
      Call2Go? E quais variaveis sao mais informativas para essa predicao?"
 
-Complementa a regressao logistica do confounder_analysis (statsmodels):
-- Statsmodels: testa significancia individual e interpretabilidade (LLR, OR)
-- Sklearn RF: captura interacoes nao-lineares + feature importance
+Complementa a regressao logistica do confounder_analysis:
+- Regressao logistica (sklearn + inferencia manual): significancia
+  individual e interpretabilidade (LRT, OR)
+- Random Forest: captura interacoes nao-lineares + feature importance
 """
 
 import os
@@ -27,7 +28,7 @@ from sklearn.metrics import (
 )
 from sklearn.preprocessing import StandardScaler
 
-from src.config import RANDOM_SEED, VALIDATION_DIR, PLOT_DPI
+from src.config import RANDOM_SEED, VALIDATION_DIR, PLOT_DPI, RANDOM_FOREST_TREES, CV_FOLDS
 from src.analytics._universe import load_topk_dataframe, filter_videos_to_topk
 
 
@@ -88,15 +89,15 @@ def _train_evaluate(df: pd.DataFrame) -> dict:
 
     # Modelo
     rf = RandomForestClassifier(
-        n_estimators=200,
+        n_estimators=RANDOM_FOREST_TREES,
         max_depth=None,
         min_samples_leaf=2,
         class_weight='balanced',
         random_state=RANDOM_SEED,
     )
 
-    # 5-fold stratified CV (com piso de min(5, classe minoritaria))
-    n_splits = min(5, int(min(np.bincount(y))))
+    # 5-fold stratified CV (com piso de min(CV_FOLDS, classe minoritaria))
+    n_splits = min(CV_FOLDS, int(min(np.bincount(y))))
     if n_splits < 2:
         return {
             'error': 'classe minoritaria com menos de 2 amostras -- CV inviavel',
@@ -190,7 +191,7 @@ def _write_report(result: dict):
     with open(_REPORT_PATH, 'w', encoding='utf-8') as f:
         f.write("=" * 60 + "\n")
         f.write("ML CLASSIFICATION -- Random Forest predizendo Call2Go\n")
-        f.write("Fase 19 (sklearn integration)\n")
+        f.write("Random Forest (scikit-learn) -- 5-fold stratified CV\n")
         f.write("=" * 60 + "\n\n")
 
         f.write("DATASET\n")

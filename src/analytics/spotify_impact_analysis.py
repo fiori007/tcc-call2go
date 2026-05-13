@@ -34,7 +34,7 @@ def run_spotify_impact_test():
     df_all = pd.read_sql_query(query, conn)
     conn.close()
 
-    # Fase 18: filtra para o universo Top-K do Rank Fusion
+    # Filtra para o universo Top-K do Rank Fusion
     df = filter_videos_to_topk(df_all, artist_col='artist_name')
     print(f"  Apos filtro Top-K: {len(df)}/{len(df_all)} videos")
 
