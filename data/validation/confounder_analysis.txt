@@ -13,66 +13,26 @@ Dataset: 27 artistas com metricas Spotify completas.
 ------------------------------------------------------------
 REGRESSAO LOGISTICA -- has_any_call2go_or ~ popularity + followers
 ------------------------------------------------------------
-======================================================================
-Logistic Regression Inference Report (sklearn-based)
-======================================================================
-  N observations              : 27
-  Convergiu                   : True
-  Log-likelihood (modelo)     : -17.4312
-  Log-likelihood (null)       : -18.5480
-  Pseudo-R² (McFadden)        : 0.0602
-  LLR statistic               : 2.2336
-  LLR df                      : 2
-  LLR p-value                 : 0.3273
+  N observacoes: 27 (positivos: 12)
+  Odds Ratios (OR = exp(coef)) -- medida descritiva de associacao:
+    popularity     OR = 1.0028
+    followers      OR = 1.0000
 
-  Coeficientes (Wald):
-  ------------------------------------------------------------------
-  variável                    coef        se       z         p
-  ------------------------------------------------------------------
-  (intercept)               0.0000    5.2237   0.000    1.0000
-  popularity                0.0028    0.0701   0.039    0.9685
-  followers                -0.0000    0.0000  -1.011    0.3121
-
-  Odds Ratios (IC 95%):
-  (intercept)           OR=1.0000 IC95=[0.0000, 27956.4053]
-  popularity            OR=1.0028 IC95=[0.8740, 1.1505]
-  followers             OR=1.0000 IC95=[1.0000, 1.0000]
-======================================================================
-
-Leitura: OR > 1 e IC 95% nao cruzando 1 indica que aumento na
-variavel aumenta as odds de adotar Call2Go. OR = 1 = sem efeito.
+Leitura: OR proximo de 1 indica ausencia de associacao pratica
+entre a variavel e a adocao de Call2Go. OR > 1 = associacao
+positiva; OR < 1 = associacao negativa.
 
 ------------------------------------------------------------
 REGRESSAO LOGISTICA -- has_any_call2go_and ~ popularity + followers
 ------------------------------------------------------------
-======================================================================
-Logistic Regression Inference Report (sklearn-based)
-======================================================================
-  N observations              : 27
-  Convergiu                   : True
-  Log-likelihood (modelo)     : -8.0247
-  Log-likelihood (null)       : -9.4185
-  Pseudo-R² (McFadden)        : 0.1480
-  LLR statistic               : 2.7875
-  LLR df                      : 2
-  LLR p-value                 : 0.2481
+  N observacoes: 27 (positivos: 3)
+  Odds Ratios (OR = exp(coef)) -- medida descritiva de associacao:
+    popularity     OR = 0.9865
+    followers      OR = 1.0000
 
-  Coeficientes (Wald):
-  ------------------------------------------------------------------
-  variável                    coef        se       z         p
-  ------------------------------------------------------------------
-  (intercept)              -0.0002    6.9535  -0.000    1.0000
-  popularity               -0.0136    0.0964  -0.141    0.8880
-  followers                -0.0000    0.0000  -1.020    0.3076
-
-  Odds Ratios (IC 95%):
-  (intercept)           OR=0.9998 IC95=[0.0000, 829327.5197]
-  popularity            OR=0.9865 IC95=[0.8167, 1.1916]
-  followers             OR=1.0000 IC95=[1.0000, 1.0000]
-======================================================================
-
-Leitura: OR > 1 e IC 95% nao cruzando 1 indica que aumento na
-variavel aumenta as odds de adotar Call2Go. OR = 1 = sem efeito.
+Leitura: OR proximo de 1 indica ausencia de associacao pratica
+entre a variavel e a adocao de Call2Go. OR > 1 = associacao
+positiva; OR < 1 = associacao negativa.
 
 ------------------------------------------------------------
 ESTRATIFICACAO POR QUARTIL DE POPULARITY (H2 Mann-Whitney)
@@ -87,9 +47,11 @@ Q4        33        147         3010           0.0154    significativo
 ------------------------------------------------------------
 INTERPRETACAO
 ------------------------------------------------------------
-Modelo logistico (LRT): p = 0.3273 > 0.05.
-Popularidade Spotify NAO prediz adocao de Call2Go.
-Hipotese de pratica reativa nao se sustenta em escala global.
+Odds ratios (alvo OR): popularity OR=1.0028, followers OR=1.0000.
+Ambos essencialmente iguais a 1: a popularidade Spotify
+pre-existente NAO mostra associacao pratica com a adocao
+de Call2Go. Hipotese de pratica reativa nao se sustenta
+em escala global.
 
 H2 SIGNIFICATIVA em quartis: ['Q1', 'Q4'].
 Heterogeneidade do efeito por nivel de popularidade.

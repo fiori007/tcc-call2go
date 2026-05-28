@@ -7,8 +7,7 @@ listeners, scrobbles, presence_count) para responder:
      Call2Go? E quais variaveis sao mais informativas para essa predicao?"
 
 Complementa a regressao logistica do confounder_analysis:
-- Regressao logistica (sklearn + inferencia manual): significancia
-  individual e interpretabilidade (LRT, OR)
+- Regressao logistica (sklearn): odds ratios como medida de associacao
 - Random Forest: captura interacoes nao-lineares + feature importance
 """
 

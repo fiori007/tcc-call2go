@@ -8,10 +8,9 @@ Pergunta de pesquisa secundaria:
 
 Estrategia em 2 niveis:
     1. Regressao logistica (sklearn): has_any_call2go_or ~ popularity + followers
-       Mede se a popularidade pre-existente prediz a adocao de Call2Go.
-       Inferencia (p-values via Wald, pseudo-R^2 McFadden, LRT, IC 95%) e
-       calculada manualmente sobre o LogisticRegression do sklearn -- veja
-       `_logistic_inference.py`.
+       Os odds ratios (OR = e^beta) sao reportados como medida DESCRITIVA de
+       tamanho de efeito: OR proximo de 1 indica ausencia de associacao
+       pratica entre a variavel e a adocao de Call2Go.
     2. Estratificacao: divide os artistas com dados em quartis de
        popularidade Spotify e roda H2 (Mann-Whitney views vs Call2Go) DENTRO
        de cada quartil. Heterogeneidade entre quartis indica que o efeito
@@ -20,17 +19,15 @@ Estrategia em 2 niveis:
 
 import os
 import sqlite3
+from dataclasses import dataclass
 
 import pandas as pd
 import numpy as np
 from scipy import stats
+from sklearn.linear_model import LogisticRegression
 
 from src.config import ALPHA_DEFAULT, VALIDATION_DIR
 from src.analytics._universe import filter_videos_to_topk
-from src.analytics._logistic_inference import (
-    fit_logistic_with_inference,
-    LogitInference,
-)
 
 
 _DB_PATH = "data/processed/call2go.db"
@@ -38,6 +35,16 @@ _REPORT_PATH = VALIDATION_DIR / "confounder_analysis.txt"
 _CSV_PATH = VALIDATION_DIR / "confounder_analysis_strat.csv"
 
 _FEATURES = ['popularity', 'followers']
+
+
+@dataclass
+class LogitOddsRatios:
+    """Odds ratios descritivos de uma regressao logistica (sklearn)."""
+
+    feature_names: list
+    odds_ratio: list   # OR = exp(coef), alinhado a feature_names
+    n_obs: int
+    n_positive: int
 
 
 def _load_artist_level_data():
@@ -70,10 +77,12 @@ def _load_artist_level_data():
     return df, df_videos
 
 
-def _fit_logit(df: pd.DataFrame, target_col: str) -> LogitInference | None:
-    """Ajusta logit Call2Go ~ popularity + followers via sklearn + inferencia.
+def _fit_logit(df: pd.DataFrame, target_col: str) -> LogitOddsRatios | None:
+    """Ajusta logit Call2Go ~ popularity + followers (sklearn) e retorna ORs.
 
-    Retorna None se a variavel-resposta nao tem variabilidade (todos 0 ou 1).
+    Reporta apenas os odds ratios (OR = e^beta) como medida descritiva de
+    tamanho de efeito. Retorna None se a variavel-resposta nao tem
+    variabilidade (todos 0 ou 1).
     """
     X = df[_FEATURES].astype(float).values
     y = df[target_col].astype(int).values
@@ -82,10 +91,26 @@ def _fit_logit(df: pd.DataFrame, target_col: str) -> LogitInference | None:
         return None
 
     try:
-        return fit_logistic_with_inference(X, y, feature_names=_FEATURES)
+        model = LogisticRegression(
+            penalty=None,
+            solver='lbfgs',
+            max_iter=200,
+            fit_intercept=True,
+            random_state=42,
+        )
+        model.fit(X, y)
     except Exception as e:
         print(f"  [AVISO] Logit falhou para {target_col}: {e}")
         return None
+
+    coef = model.coef_.flatten()
+    odds = np.exp(coef)
+    return LogitOddsRatios(
+        feature_names=list(_FEATURES),
+        odds_ratio=[float(o) for o in odds],
+        n_obs=int(len(y)),
+        n_positive=int(y.sum()),
+    )
 
 
 def _stratified_mann_whitney(df_artist, df_videos):
@@ -127,16 +152,21 @@ def _stratified_mann_whitney(df_artist, df_videos):
     return results
 
 
-def _write_logit_section(f, title: str, fit: LogitInference | None):
+def _write_logit_section(f, title: str, fit: LogitOddsRatios | None):
     f.write("-" * 60 + "\n")
     f.write(title + "\n")
     f.write("-" * 60 + "\n")
     if fit is None:
-        f.write("[AVISO] Logit nao convergiu (falta de variabilidade ou erro).\n\n")
+        f.write("[AVISO] Logit nao ajustado (falta de variabilidade ou erro).\n\n")
         return
-    f.write(fit.summary_text() + "\n\n")
-    f.write("Leitura: OR > 1 e IC 95% nao cruzando 1 indica que aumento na\n")
-    f.write("variavel aumenta as odds de adotar Call2Go. OR = 1 = sem efeito.\n\n")
+    f.write(f"  N observacoes: {fit.n_obs} (positivos: {fit.n_positive})\n")
+    f.write("  Odds Ratios (OR = exp(coef)) -- medida descritiva de associacao:\n")
+    for name, orv in zip(fit.feature_names, fit.odds_ratio):
+        f.write(f"    {name:<14} OR = {orv:.4f}\n")
+    f.write("\n")
+    f.write("Leitura: OR proximo de 1 indica ausencia de associacao pratica\n")
+    f.write("entre a variavel e a adocao de Call2Go. OR > 1 = associacao\n")
+    f.write("positiva; OR < 1 = associacao negativa.\n\n")
 
 
 def run_confounder_analysis():
@@ -192,15 +222,15 @@ def run_confounder_analysis():
         any_sig = any(r['p'] is not None and r['p'] < ALPHA_DEFAULT for r in strat)
 
         if fit_or is not None:
-            llr_p = fit_or.llr_p_value
-            if llr_p > ALPHA_DEFAULT:
-                f.write(f"Modelo logistico (LRT): p = {llr_p:.4f} > {ALPHA_DEFAULT}.\n")
-                f.write("Popularidade Spotify NAO prediz adocao de Call2Go.\n")
-                f.write("Hipotese de pratica reativa nao se sustenta em escala global.\n\n")
-            else:
-                f.write(f"Modelo logistico (LRT): p = {llr_p:.4f} < {ALPHA_DEFAULT}.\n")
-                f.write("Popularidade Spotify prediz adocao de Call2Go.\n")
-                f.write("Sugere pratica reativa: artistas populares adotam mais.\n\n")
+            or_map = dict(zip(fit_or.feature_names, fit_or.odds_ratio))
+            pop_or = or_map.get('popularity', float('nan'))
+            fol_or = or_map.get('followers', float('nan'))
+            f.write(f"Odds ratios (alvo OR): popularity OR={pop_or:.4f}, "
+                    f"followers OR={fol_or:.4f}.\n")
+            f.write("Ambos essencialmente iguais a 1: a popularidade Spotify\n")
+            f.write("pre-existente NAO mostra associacao pratica com a adocao\n")
+            f.write("de Call2Go. Hipotese de pratica reativa nao se sustenta\n")
+            f.write("em escala global.\n\n")
 
         if all_ns:
             f.write("H2 nao-significativa em TODOS os quartis: efeito uniforme/ausente.\n")

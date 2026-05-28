@@ -27,7 +27,6 @@ Janela temporal: Janeiro-Abril 2026
 4. CALL2GO vs HIT STATUS
    Taxa hits (Com Call2Go): 22.7%
    Taxa hits (Sem Call2Go): 7.9%
-   p-value: 0.0024
 
 5. MANN-WHITNEY: CALL2GO vs LAST.FM
    lastfm_listeners: U=11, p=0.05675 n.s.

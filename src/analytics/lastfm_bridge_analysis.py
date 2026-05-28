@@ -433,16 +433,16 @@ def track_level_matching(df_yt, df_lastfm_tracks, df_chart_tracks, output_dir):
 
 
 # ============================================================
-# 4. CALL2GO vs HIT STATUS (Chi-squared)
+# 4. CALL2GO vs HIT STATUS (taxas descritivas)
 # ============================================================
 
 def callgo_vs_hits(df_yt, df_matches, output_dir):
     """
-    Testa se videos com Call2Go sao mais frequentemente 'hits' no Last.fm.
-    Usa teste Chi-squared (ou Fisher exact para amostras pequenas).
+    Compara descritivamente a taxa de 'hits' no Last.fm entre videos com e
+    sem Call2Go (estatistica descritiva, sem teste inferencial).
     """
     print("\n" + "=" * 60)
-    print("4. CALL2GO vs HIT STATUS (Chi-squared)")
+    print("4. CALL2GO vs HIT STATUS (taxas descritivas)")
     print("=" * 60)
 
     df = df_yt[['video_id', 'has_call2go', 'call2go_type']].merge(
@@ -467,34 +467,7 @@ def callgo_vs_hits(df_yt, df_matches, output_dir):
     print(f"\n  Taxa de hits (Com Call2Go): {rate_with:.1f}%")
     print(f"  Taxa de hits (Sem Call2Go): {rate_without:.1f}%")
 
-    # Teste estatistico
-    ct_values = pd.crosstab(df['has_call2go'], df['lastfm_hit'])
-    if ct_values.shape == (2, 2):
-        # Verifica se todas as celulas tem frequencia esperada >= 5
-        chi2, p, dof, expected = stats.chi2_contingency(ct_values)
-        min_expected = expected.min()
-
-        if min_expected >= 5:
-            print(f"\n  Chi-squared: X2={chi2:.3f}, p={p:.4f}, dof={dof}")
-        else:
-            # Fisher exact para amostras com frequencias baixas
-            odds_ratio, p = stats.fisher_exact(ct_values)
-            chi2 = None
-            print(
-                f"\n  Fisher Exact (freq. esperada < 5): OR={odds_ratio:.3f}, p={p:.4f}")
-
-        alpha = ALPHA_DEFAULT
-        if p < alpha:
-            print(f"  CONCLUSAO: Rejeita H0 — Call2Go e hit status NAO sao independentes")
-        else:
-            print(
-                f"  CONCLUSAO: Falha em rejeitar H0 — Call2Go e hit status sao independentes")
-    else:
-        p = None
-        print(f"  [AVISO] Tabela de contingencia incompleta, teste nao aplicavel")
-
-    return {'rate_with_c2g': rate_with, 'rate_without_c2g': rate_without,
-            'p_value': p}
+    return {'rate_with_c2g': rate_with, 'rate_without_c2g': rate_without}
 
 
 # ============================================================
@@ -864,33 +837,6 @@ def genre_analysis(df_profile, df_lastfm, output_dir):
         print(f"    {row['genre']}: avg={row['avg_call2go_rate']:.1%} "
               f"(N={row['n_artists']}, listeners={row['avg_lastfm_listeners']:,.0f})")
 
-    # Teste chi-squared: Call2Go (binario por artista) vs genero
-    df_profile['has_any_call2go'] = (
-        df_profile['call2go_rate'] > 0).astype(int)
-
-    # Filtra generos com N >= 3 para validade estatistica
-    valid_genres = genre_counts[genre_counts >= 3].index
-    df_filtered = df_profile[df_profile['genre'].isin(valid_genres)]
-
-    if len(valid_genres) >= 2:
-        ct = pd.crosstab(df_filtered['genre'], df_filtered['has_any_call2go'])
-        if ct.shape[1] == 2:
-            chi2, p, dof, expected = stats.chi2_contingency(ct)
-            print(
-                f"\n  Chi-squared (genero x Call2Go): X2={chi2:.3f}, p={p:.4f}, dof={dof}")
-
-            alpha = ALPHA_DEFAULT
-            if p < alpha:
-                print(f"  -> SIGNIFICATIVO: Call2Go depende do genero")
-            else:
-                print(f"  -> NAO SIGNIFICATIVO: Call2Go independe do genero")
-        else:
-            p = None
-            print(f"\n  [AVISO] Apenas uma categoria de Call2Go encontrada")
-    else:
-        p = None
-        print(f"\n  [AVISO] Generos insuficientes para teste chi-squared")
-
     # Bar plot: Call2Go rate por genero
     genre_stats_plot = genre_stats[genre_stats['n_artists'] >= 2].copy()
     if len(genre_stats_plot) > 0:
@@ -976,8 +922,6 @@ def generate_bridge_report(results, output_dir):
                 f"   Taxa hits (Com Call2Go): {ch['rate_with_c2g']:.1f}%\n")
             f.write(
                 f"   Taxa hits (Sem Call2Go): {ch['rate_without_c2g']:.1f}%\n")
-            if ch['p_value'] is not None:
-                f.write(f"   p-value: {ch['p_value']:.4f}\n")
             f.write("\n")
 
         # Mann-Whitney Last.fm
