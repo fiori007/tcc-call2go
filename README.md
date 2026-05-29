@@ -45,11 +45,24 @@ python run_pipeline.py --from-step 6
 python run_pipeline.py --force-channel-scrape
 ```
 
+### Sincronizar figuras para os documentos LaTeX
+
+O pipeline grava figuras em `data/plots/` e `data/validation/`. Os documentos
+(artigo e colinha) leem de `artigo_latex/figs/`. Apos (re)gerar os graficos,
+sincronize com o mapa explicito em [`scripts/sync_figures.py`](scripts/sync_figures.py):
+
+```powershell
+python run_pipeline.py --skip-collect --strict   # regenera os graficos
+python scripts/sync_figures.py                    # data/plots + data/validation -> artigo_latex/figs
+# entao recompilar o LaTeX (artigo e colinha)
+```
+
 ## Estrutura
 
 ```
 tcc_call2go/
-  run_pipeline.py            # Orquestrador (15 etapas)
+  run_pipeline.py            # Orquestrador (20 etapas)
+  scripts/sync_figures.py    # Sincroniza figuras do pipeline -> artigo_latex/figs
   requirements.txt           # Dependencias pinadas
   src/
     config.py                # Constantes centrais (paths, alphas, seeds)
@@ -58,7 +71,7 @@ tcc_call2go/
     db/                      # Data Warehouse SQLite (batch/rebuild)
     analytics/               # EDA, testes de hipotese, ranking fusion, temporal
     validation/              # Cross-validation, auditoria de links, regex audit
-  tests/                     # Testes do detector (77 casos adversariais)
+  tests/                     # Testes unitarios do detector (95 testes)
   data/
     seed/                    # artistas.csv (67 artistas)
     raw/                     # JSONL/CSV brutos das APIs

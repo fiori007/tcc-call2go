@@ -1,7 +1,7 @@
 ============================================================
 RELATORIO -- FUSAO DE RANKINGS CROSS-PLATFORM Janeiro-Abril 2026
 ============================================================
-Gerado em: 2026-05-28 16:35:20
+Gerado em: 2026-05-28 21:29:31
 
 Total de artistas primarios nos charts: 276
 Artistas do dataset (seed, encontrados como primarios): 39

@@ -135,9 +135,23 @@ def step_06_detect_call2go():
 
 
 def step_07_build_database():
-    """Constrói o Data Warehouse SQLite."""
+    """Constrói o Data Warehouse SQLite e define o universo Top-K (Rank Fusion).
+
+    O universo analítico (Top-K via Reciprocal Rank Fusion) é materializado
+    aqui, logo após o Data Warehouse, porque as etapas estatísticas 8-12
+    (EDA, Mann-Whitney, cross-platform, Last.fm bridge, bidirecional) filtram
+    os vídeos para o Top-K lendo `data/processed/ranking_fusion_scores.csv`.
+    Esse arquivo é (re)gerado integralmente na etapa 14, mas precisa existir
+    ANTES da etapa 8: numa execução limpa, sem ele, o filtro Top-K cairia
+    silenciosamente para o corpus inteiro (`filter_videos_to_topk` retorna
+    todos os vídeos quando o arquivo não existe), alterando os resultados.
+    A construção é idempotente e determinística (mesmos charts brutos →
+    mesma tabela), então a etapa 14 a refaz sem divergência.
+    """
     from src.db.db_builder import build_database
+    from src.analytics.ranking_fusion import build_fusion_table
     build_database()
+    build_fusion_table("data/seed/legacy_v1_artistas.csv")
 
 
 def step_08_eda_analysis():
