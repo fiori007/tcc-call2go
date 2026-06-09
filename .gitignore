@@ -46,6 +46,9 @@ SBC_Conferences_Template*/
 # === Pasta do artigo LaTeX (documento final) ===
 artigo_latex/
 
+# === Pasta do artigo (versão de trabalho, mantida apenas localmente) ===
+artigo_final/
+
 # === Padrões e Regras (documentos internos) ===
 PADROES&REGRAS/
 
