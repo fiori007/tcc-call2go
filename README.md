@@ -73,7 +73,7 @@ tcc_call2go/
     validation/              # Cross-validation, auditoria de links, regex audit
   tests/                     # Testes unitarios do detector (95 testes)
   data/
-    seed/                    # artistas.csv (67 artistas)
+    seed/                    # legacy_v1_artistas.csv (seed historico; universo de analise = Top-K 56 via RRF)
     raw/                     # JSONL/CSV brutos das APIs
     processed/               # Flagged CSV, SQLite DB, ranking fusion
     plots/                   # Graficos PNG (DPI 300)
@@ -88,10 +88,12 @@ pytest tests/ -v
 
 ## Resultados e artigo
 
-Os resultados estatisticos finais e o artigo LaTeX (formato SBC) ficam em
-`artigo_latex/` (gitignored, local-only). Nao incluidos neste README por design --
-este arquivo serve a quem precisa **rodar o codigo**, nao a quem precisa
-**ler o trabalho**.
+O **artigo final** (PDF, formato SBC) esta versionado em
+[`artigo_latex/TCC_Lucas_Fiori_Call2Go.pdf`](artigo_latex/TCC_Lucas_Fiori_Call2Go.pdf).
+Os fontes LaTeX e os relatorios estatisticos brutos permanecem locais: a pasta
+`artigo_latex/` esta no `.gitignore`, com excecao do PDF final (versionado
+explicitamente). Este README serve a quem precisa **rodar o codigo**; o PDF, a quem
+precisa **ler o trabalho**.
 
 ## Licenca / Autoria
 
